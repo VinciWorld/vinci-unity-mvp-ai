@@ -1,84 +1,84 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.PackageManager;
 using UnityEngine;
+using Vinci.Core.UI;
 using Vinci.Core.Utils;
 
-public class ScreenManager : PersistentSingleton<ScreenManager>
+public class ViewManager : PersistentSingleton<ViewManager>
 {
     [SerializeField]
-    private Screen _startingScreen;
+    private View _startingView;
     [SerializeField]
-    private Screen[] _screens;
+    private View[] _Views;
 
-    private Screen _currentScreen;
+    private View _currentView;
 
-    private readonly Stack<Screen> _history = new Stack<Screen>();
+    private readonly Stack<View> _history = new Stack<View>();
 
     private void Start()
     {
-        for (int i = 0; i < instance._screens.Length; i++)
+        for (int i = 0; i < instance._Views.Length; i++)
         {
-            _screens[i].Initialize();
-            _screens[i].Hide();
+            _Views[i].Initialize();
+            _Views[i].Hide();
         } 
 
-        if(instance._startingScreen != null)
+        if(instance._startingView != null)
         {
-            Show(_startingScreen, true);
+            Show(_startingView, true);
         }
     }
 
-    public static T GetScreen<T>() where T : Screen
+    public static T GetView<T>() where T : View
     {
-        for(int i = 0; 1 < instance._screens.Length; i++)
+        for(int i = 0; 1 < instance._Views.Length; i++)
         {
-            if(instance._screens[i] is T tScreen)
+            if(instance._Views[i] is T tView)
             {
-                return tScreen;
+                return tView;
             }
         }
 
         return null;
     }
 
-    public static T Show<T>(bool remeber = true) where T : Screen
+    public static T Show<T>(bool remeber = true) where T : View
     {
-        for (int i = 0; i < instance._screens.Length; i++)
+        for (int i = 0; i < instance._Views.Length; i++)
         {
-            if (instance._screens[i] is T)
+            if (instance._Views[i] is T)
             {
-                if(instance._currentScreen != null)
+                if(instance._currentView != null)
                 {
                     if(remeber)
                     {
-                        instance._history.Push(instance._currentScreen);
+                        instance._history.Push(instance._currentView);
                     }
 
-                    instance._currentScreen.Hide();
+                    instance._currentView.Hide();
                 }
 
-                instance._screens[i].Show();
-                instance._currentScreen = instance._screens[i];
+                instance._Views[i].Show();
+                instance._currentView = instance._Views[i];
             }
         }
 
         return null;
     }
 
-    public static void Show(Screen screen, bool remeber = true)
+    public static void Show(View View, bool remeber = true)
     {
-        if(instance._currentScreen != null)
+        if(instance._currentView != null)
         {
             if(remeber)
             {
-                instance._history.Push(instance._currentScreen);
+                instance._history.Push(instance._currentView);
             }
-            instance._currentScreen.Hide();
+            instance._currentView.Hide();
         }
-        screen.Show();
+        View.Show();
 
-        instance._currentScreen = screen;
+        instance._currentView = View;
     }
 
     public static void ShowLast()

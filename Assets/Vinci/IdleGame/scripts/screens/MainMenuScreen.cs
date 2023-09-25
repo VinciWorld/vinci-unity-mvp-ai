@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Vinci.Core.UI;
 
-public class MainMenuScreen : Screen
+public class MainMenuScreen : View
 {
     [SerializeField]
     private Button _btnHeadquarters;
@@ -17,6 +18,6 @@ public class MainMenuScreen : Screen
 
     void OnBtnHeadquartersPressed()
     {
-        ScreenManager.Show<HeadquartersScreen>();
+        ViewManager.Show<HeadquartersScreen>();
     }
 }

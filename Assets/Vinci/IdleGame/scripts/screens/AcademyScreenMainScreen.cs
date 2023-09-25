@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Vinci.Core.UI;
 
-public class AcademyScreenMainScreen : Screen
+public class AcademyScreenMainScreen : View
 {
     [SerializeField]
     private Button _backButton;
@@ -13,12 +14,12 @@ public class AcademyScreenMainScreen : Screen
 
     public override void Initialize()
     {
-        _backButton.onClick.AddListener(() => ScreenManager.ShowLast());
+        _backButton.onClick.AddListener(() => ViewManager.ShowLast());
         _trainButton.onClick.AddListener(OnBtnTrainButtonPressed);
     }
 
     void OnBtnTrainButtonPressed()
     {
-        ScreenManager.Show<HeadquartersScreen>();
+        ViewManager.Show<HeadquartersScreen>();
     }
 }
