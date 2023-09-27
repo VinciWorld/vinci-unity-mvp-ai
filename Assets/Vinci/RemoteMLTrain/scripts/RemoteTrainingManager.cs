@@ -5,42 +5,24 @@ using System;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Text;
+using Vinci.Core.Utils;
 
-public class RemoteTrainingManager : MonoBehaviour 
+public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager> 
 {
     private WebSocket _webSocket;
-
-    public delegate void WebSocketMessageReceived(WebSocket webSocket, string message);
-    public event WebSocketMessageReceived OnWebSocketMessageReceived;
-
-    public delegate void WebSocketBinaryReceived(WebSocket webSocket, byte[] data);
-    public event WebSocketBinaryReceived OnWebSocketBinaryReceived;
-
-    public delegate void WebSocketOpened(WebSocket webSocket);
-    public event WebSocketOpened OnWebSocketOpened;
-
-    public delegate void WebSocketClosed(WebSocket webSocket, UInt16 code, string message);
-    public event WebSocketClosed OnWebSocketClosed;
-
-    public delegate void WebSocketError(WebSocket webSocket, string error);
-    public event WebSocketError OnWebSocketError;
 
     const string websockt_prefix = "ws://";
     const string centralNode = "127.0.0.1:8000";
 
     const string endpointPostTrainJob = "/ws/v1/client-stream";
     const string endpointWebsoctClientStream = "/ws/v1/client-stream";
-    
+
+    public event Action<Metrics> metricsReceived;
+    public event Action<Actions> actionsReceived;
+    public event Action<string> statusReceived;
 
 
-    public void ConnectWebSocketTotrainNodeFromServer()
-    {
-        string url = websockt_prefix + centralNode + endpointPostTrainJob;
-
-        InitializeWebSocket(url);
-    }
-
-    async public Task<TrainJobResponse> SendTrainJob(TrainJobRequest requestData)
+    async public Task<PostResponseTrainJob> StartRemoteTrainning(PostTrainJobRequest requestData)
     {
         string url = websockt_prefix + centralNode + endpointPostTrainJob;
 
@@ -53,8 +35,21 @@ public class RemoteTrainingManager : MonoBehaviour
 
         if (response.StatusCode == 200)
         {
-            TrainJobResponse trainJobResponse = JsonConvert.DeserializeObject<TrainJobResponse>(response.DataAsText);
+            PostResponseTrainJob trainJobResponse = JsonConvert.DeserializeObject<PostResponseTrainJob>(response.DataAsText);
             
+            switch(trainJobResponse.status)
+            {
+                case TrainJobStatus.SUBMITTED:
+                case TrainJobStatus.RETRIEVED:
+                case TrainJobStatus.STARTING:
+                case TrainJobStatus.RUNNING:
+                    ConnectWebSocketCentralNodeClientStream();
+                    break;
+                case TrainJobStatus.SUCCEEDED:
+                    //Retrieve trained model
+                    break;
+            }
+
             return trainJobResponse;
         }
         else
@@ -63,10 +58,19 @@ public class RemoteTrainingManager : MonoBehaviour
         }
     }
 
-    private void OnWebsocktSocketOpen(WebSocket webSocket)
+
+    public void ConnectWebSocketToTrainNodeFromServer()
     {
-        Debug.Log("WebSocket is now Open!");
-        _webSocket = webSocket;
+        string url = websockt_prefix + centralNode + endpointWebsoctClientStream;
+
+        InitializeWebSocket(url);
+    }
+
+    public void ConnectWebSocketCentralNodeClientStream()
+    {
+        string url = websockt_prefix + centralNode + endpointWebsoctClientStream;
+
+        InitializeWebSocket(url);
     }
 
     private void SendWebSocketJson(string jsonData)
@@ -77,21 +81,63 @@ public class RemoteTrainingManager : MonoBehaviour
         }
     }
 
-
-
-
     private void InitializeWebSocket(string url)
     {
         _webSocket = new WebSocket(new Uri(url));
-        _webSocket.OnOpen += (WebSocket ws) => OnWebSocketOpened?.Invoke(ws);
-        _webSocket.OnMessage += (WebSocket ws, string message) => OnWebSocketMessageReceived?.Invoke(ws, message);
-        _webSocket.OnBinary += (WebSocket ws, byte[] data) => OnWebSocketBinaryReceived?.Invoke(ws, data);
-        _webSocket.OnClosed += (WebSocket ws, UInt16 code, string message) => OnWebSocketClosed?.Invoke(ws, code, message);
-        _webSocket.OnError += (WebSocket ws, string error) => OnWebSocketError?.Invoke(ws, error);
+        _webSocket.OnOpen += OnWebsocktSocketOpen;
+        _webSocket.OnMessage += OnWebsocketMessageReceived;
+        //_webSocket.OnBinary += (WebSocket ws, byte[] data) => OnWebSocketBinaryReceived?.Invoke(ws, data);
+        _webSocket.OnClosed += OnWebSocketClosed;
+        //_webSocket.OnError += (WebSocket ws, string error) => OnWebSocketError?.Invoke(ws, error);
         _webSocket.Open();
     }
 
-    public async Task<HTTPResponse> SendHTTPPostRequestAsync(string url, string jsonData)
+    private void OnWebsocktSocketOpen(WebSocket webSocket)
+    {
+        Debug.Log("WebSocket is now Open!");
+        _webSocket = webSocket;
+    }
+
+    private void OnWebsocketMessageReceived(WebSocket webSocket, string message)
+    {
+        Header header = JsonUtility.FromJson<Header>(message);
+        switch (header.msg_id)
+        {
+            case (int)MessagesID.METRICS:
+                Metrics metrics = JsonConvert.DeserializeObject<Metrics>(message);
+                metricsReceived?.Invoke(metrics);
+                Debug.Log("Metrics received: " + message);
+                break;
+
+            case (int)MessagesID.ACTIONS:
+                Actions action = JsonConvert.DeserializeObject<Actions>(message);
+                if (action.data != null)
+                {
+                    actionsReceived?.Invoke(action);
+                    //agent.UpdateActions(int.Parse(action.data));
+                }
+                break;
+
+            case (int)MessagesID.STATUS:
+              
+                statusReceived?.Invoke(message);
+                break;
+
+            default:
+
+                Debug.LogWarning("Unknown msg_id received: " + header.msg_id);
+                break;
+        }
+    }
+
+    private void OnWebSocketClosed(WebSocket webSocket, UInt16 code, string message)
+    {
+        //TODO: retry websocket connection
+        _webSocket = null;
+        Debug.Log("WebSocket is now Closed!");
+    }
+
+    private async Task<HTTPResponse> SendHTTPPostRequestAsync(string url, string jsonData)
     {
         var tcs = new TaskCompletionSource<HTTPResponse>();
 
@@ -118,4 +164,3 @@ public class RemoteTrainingManager : MonoBehaviour
         request.Send();
     }
 }
-
