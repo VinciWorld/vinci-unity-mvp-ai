@@ -3,7 +3,19 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - symbol_O
+  - ground
+  - target
+  - agent
+  - symbol_X
+  - stone
+  - pyramid
+  - block
+  - goal
+  - wall
+  - switchOff
+  - switchOn
   layers:
   - Default
   - TransparentFX
