@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BehaviorConfig", menuName = "Academy/BehaviorConfig", order = 1)]
@@ -17,35 +18,27 @@ public class BehaviorConfig : ScriptableObject
     public string init_path = null;
     public Hyperparameters hyperparameters = new Hyperparameters();
     public NetworkSettings network_settings = new NetworkSettings();
+
     public bool useMemory = false;
     public Memory memory = new Memory();
+
     public bool useBehavioralCloning = false;
     public BehavioralCloning behavioral_cloning = new BehavioralCloning();
-    public List<RewardSignalEntry> reward_signals = new List<RewardSignalEntry>();
+
     public bool useSelfPlay = false;
     public SelfPlay self_play = new SelfPlay();
 
-    public bool ShouldSerializebehavioral_cloning()
-    {
-        return useBehavioralCloning;
-    }
+    public List<RewardSignalEntry> reward_signals = new List<RewardSignalEntry>();
 
-    // Conditional Serialization for SelfPlay
-    public bool ShouldSerializeself_play()
-    {
-        return useSelfPlay;
-    }
+    public bool ShouldSerializebehavioral_cloning() => useBehavioralCloning;
+    public bool ShouldSerializeself_play() => useSelfPlay;
+    public bool ShouldSerializememory() => useMemory;
 
-    // Conditional Serialization for Memory
-    public bool ShouldSerializememory()
+    public void SerializeToJson()
     {
-        return useMemory;
-    }
-
-    // Method to serialize the object to JSON and log it
-    public void ToJson()
-    {
-        string json = JsonConvert.SerializeObject(this, Formatting.Indented);
+        JsonSerializerSettings settings = new JsonSerializerSettings();
+        settings.Converters.Add(new RewardSignalConverter());
+        string json = JsonConvert.SerializeObject(this, Formatting.Indented, settings);
         Debug.Log(json);
     }
 }
@@ -95,19 +88,6 @@ public class BehavioralCloning
 }
 
 [Serializable]
-public class RewardSignal
-{
-    public float strength = 1.0f;
-    public float gamma = 0.99f;
-    public int? encoding_size;
-    public float? learning_rate;
-    public string demo_path;
-    public bool? use_actions;
-    public bool? use_vail;
-    public NetworkSettings network_settings;
-}
-
-[Serializable]
 public class SelfPlay
 {
     public int window = 10;
@@ -117,11 +97,18 @@ public class SelfPlay
     public int team_change = 100000;
 }
 
+[Serializable]
+public class RewardSignal
+{
+    public float strength = 1.0f;
+    public float gamma = 0.99f;
+}
+
 public enum RewardSignalType
 {
     Extrinsic,
     Curiosity,
-    // Add other types as needed
+    Gail
 }
 
 [Serializable]
@@ -129,4 +116,49 @@ public class RewardSignalEntry
 {
     public RewardSignalType type;
     public RewardSignal rewardSignal;
+}
+
+[Serializable]
+public class ExtrinsicReward : RewardSignal { }
+
+[Serializable]
+public class CuriosityReward : RewardSignal
+{
+    public int encoding_size = 256;
+    public float learning_rate = 3.0e-4f;
+}
+
+[Serializable]
+public class GailReward : RewardSignal
+{
+    public int encoding_size = 128;
+    public string demo_path;
+    public float learning_rate = 3.0e-4f;
+    public bool use_actions = false;
+    public bool use_vail = false;
+}
+
+
+public class RewardSignalConverter : JsonConverter
+{
+    public override bool CanConvert(Type objectType)
+    {
+        return typeof(RewardSignal).IsAssignableFrom(objectType);
+    }
+
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    {
+        var type = value.GetType();
+        JObject jo = JObject.FromObject(value, serializer);
+        jo.Add("rewardType", type.Name);
+        jo.WriteTo(writer);
+    }
+
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    {
+        JObject jo = JObject.Load(reader);
+        string typeName = jo["rewardType"].Value<string>();
+        Type type = Type.GetType(typeName);
+        return jo.ToObject(type, serializer);
+    }
 }
