@@ -7,5 +7,7 @@ public class PlayerData
 {
     public string username;
 
-    public List<AgentData> agents;
+    public List<AgentConfig> agents;
+
+    
 }

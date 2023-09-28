@@ -6,12 +6,6 @@ namespace Vinci.Core.Managers
     {
         public PlayerData playerData;
 
-        // Start is called before the first frame update
-        void Start()
-        {
-            playerData = new PlayerData();
-
-        }
     }
 }
 

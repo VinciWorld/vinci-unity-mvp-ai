@@ -18,6 +18,7 @@ public class AcademyMainState : StateBase
         AcademyMainView mainView = ViewManager.GetView<AcademyMainView>();
         Debug.Log(mainView);
         mainView.homeButtonPressed += OnHomeButtonPressed;
+        
     }
 
     public override void OnExitState()
@@ -34,4 +35,14 @@ public class AcademyMainState : StateBase
     {
         await SceneLoader.instance.LoadScene("IdleGame");
     }
+
+    void OnTrainButtonPressed()
+    {
+        _controller.academyData.session.selectedAgent = _controller.academyData.availableAgents[0];
+        _controller.academyData.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
+
+        _controller.SwitchState(new AcademyTrainState(_controller));
+    }
+
+        
 }

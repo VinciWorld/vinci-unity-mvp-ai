@@ -6,13 +6,15 @@ using Vinci.Core.StateMachine;
 
 public class AcademyController : MonoBehaviour
 {
-    GameManager _manager;
+    public GameManager manager;
+    public EnvManager envManager;
+    public AcademyData academyData;
 
     private StateBase _activeState;
 
     void Start()
     {
-        _manager = GameManager.instance;
+        manager = GameManager.instance;
 
 
         SwitchState(new AcademyMainState(this));
