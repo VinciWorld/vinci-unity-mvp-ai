@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AgentData : MonoBehaviour
+[Serializable]
+public class AgentConfig
 {
     public string agentName;
     public string description;

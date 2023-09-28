@@ -14,7 +14,7 @@ public class AcademyTrainState : StateBase
     public override void OnEnterState()
     {
         AcademyTrainView mainView = ViewManager.GetView<AcademyTrainView>();
-        mainView.homeButtonPressed += OnHomeButtonPressed;
+        mainView.trainButtonPressed += OnHomeButtonPressed;
 
         PrepareEnv();
         StartTrainning();
@@ -38,7 +38,7 @@ public class AcademyTrainState : StateBase
     public void PrepareEnv()
     {
         _controller.envManager.CreateTrainEnv(_controller.academyData.session.selectedTrainEnv);
-        
+
         _controller.academyData.session.currentAgent = AgentFactory.instance.CreateAgent(
             _controller.academyData.session.selectedAgent,
             Vector3.zero, Quaternion.identity

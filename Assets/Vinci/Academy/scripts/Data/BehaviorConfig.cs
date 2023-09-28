@@ -34,12 +34,13 @@ public class BehaviorConfig : ScriptableObject
     public bool ShouldSerializeself_play() => useSelfPlay;
     public bool ShouldSerializememory() => useMemory;
 
-    public void SerializeToJson()
+    public string SerializeToJson()
     {
         JsonSerializerSettings settings = new JsonSerializerSettings();
         settings.Converters.Add(new RewardSignalConverter());
         string json = JsonConvert.SerializeObject(this, Formatting.Indented, settings);
         Debug.Log(json);
+        return json;
     }
 }
 

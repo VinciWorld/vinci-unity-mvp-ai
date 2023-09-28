@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 //using MLAgents;
 
+[Serializable]
 public class ModelConfig
 {
     public string run_id;

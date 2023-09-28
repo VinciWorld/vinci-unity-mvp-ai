@@ -18,7 +18,9 @@ public class AcademyMainState : StateBase
         AcademyMainView mainView = ViewManager.GetView<AcademyMainView>();
         Debug.Log(mainView);
         mainView.homeButtonPressed += OnHomeButtonPressed;
-        
+        mainView.trainButtonPressed += OnTrainButtonPressed;
+
+
     }
 
     public override void OnExitState()

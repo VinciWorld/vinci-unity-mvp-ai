@@ -12,16 +12,12 @@ public class AcademyMainView : View
     private Button _trainButton;
 
     public event Action homeButtonPressed;
+    public event Action trainButtonPressed;
 
 
     public override void Initialize()
     {
         _HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
-        //_trainButton.onClick.AddListener(OnBtnTrainButtonPressed);
-    }
-
-    void OnBtnTrainButtonPressed()
-    {
-        //ViewManager.Show<HeadquartersScreen>();
+        _trainButton.onClick.AddListener(() => trainButtonPressed?.Invoke());
     }
 }
