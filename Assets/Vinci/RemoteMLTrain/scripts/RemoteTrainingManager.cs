@@ -48,6 +48,10 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
                 case TrainJobStatus.SUCCEEDED:
                     //Retrieve trained model
                     break;
+
+                default:
+                    Debug.Log("status ntw recognised");
+                    break;
             }
 
             return trainJobResponse;
