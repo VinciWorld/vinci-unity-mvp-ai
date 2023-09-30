@@ -1,3 +1,6 @@
+using System;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using UnityEngine;
 using Vinci.Core.StateMachine;
 using Vinci.Core.UI;
@@ -13,11 +16,13 @@ public class AcademyTrainState : StateBase
 
     public override void OnEnterState()
     {
-        AcademyTrainView mainView = ViewManager.GetView<AcademyTrainView>();
-        mainView.trainButtonPressed += OnHomeButtonPressed;
+        AcademyTrainView trainView = ViewManager.GetView<AcademyTrainView>();
+        trainView.trainButtonPressed += OnHomeButtonPressed;
 
         PrepareEnv();
-        StartTrainning();
+        MainThreadDispatcher.Instance().EnqueueAsync(StartTraining);
+
+        
     }
 
     public override void OnExitState()
@@ -37,17 +42,23 @@ public class AcademyTrainState : StateBase
 
     public void PrepareEnv()
     {
-        _controller.envManager.CreateTrainEnv(_controller.academyData.session.selectedTrainEnv);
+        GameObject created_env = _controller.envManager.CreateTrainEnv(_controller.academyData.session.selectedTrainEnv);
 
-        _controller.academyData.session.currentAgent = AgentFactory.instance.CreateAgent(
+        GameObject created_agent = AgentFactory.instance.CreateAgent(
             _controller.academyData.session.selectedAgent,
-            Vector3.zero, Quaternion.identity
+            new Vector3(0, 1.54f, -8.5f), Quaternion.identity
 
+        );
+        _controller.academyData.session.currentAgent = created_agent;
+
+        created_env.GetComponent<EnvHallway>().Initialize(
+            created_agent.GetComponent<HallwayAgent>()
         );
     }
 
-    async void StartTrainning()
+    async void StartTraining()
     {
+        Debug.Log("Start training Thread");
         RemoteTrainManager.instance.actionsReceived += OnReceivedAgentActions;
         RemoteTrainManager.instance.metricsReceived += OnReceivedTrainMetrics;
         RemoteTrainManager.instance.statusReceived += OnReceivedTrainStatus;
@@ -59,7 +70,14 @@ public class AcademyTrainState : StateBase
             env_config = _controller.academyData.session.selectedTrainEnv.id
         };
 
-        PostResponseTrainJob response = await RemoteTrainManager.instance.StartRemoteTrainning(trainJobRequest);
+        try
+        {
+            PostResponseTrainJob response = await RemoteTrainManager.instance.StartRemoteTrainning(trainJobRequest);
+        }
+        catch(Exception e)
+        {
+            Debug.LogError("Unable to add job to the queue: " + e.Message);
+        }
     }
 
     void OnReceivedAgentActions(Actions actions)
