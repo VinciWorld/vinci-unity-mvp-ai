@@ -15,10 +15,12 @@ public class EnvManager : MonoBehaviour
 
         for (int i = 0; i < numEvns; i++)
         {
-            envInstatiate =  Instantiate(env.prefab, new Vector3(xPos, 0, 0), Quaternion.identity, transform);
+            envInstatiate =  GameObject.Instantiate(env.prefab);
 
             xPos += env.bounds.extents.x;
         }
+
+        Debug.Log(envInstatiate.transform.position);
 
         return envInstatiate;
     }
