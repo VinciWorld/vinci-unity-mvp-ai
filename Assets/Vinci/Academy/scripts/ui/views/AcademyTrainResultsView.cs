@@ -3,29 +3,31 @@ using UnityEngine;
 using UnityEngine.UI;
 using Vinci.Core.UI;
 
-public class AcademyTrainView : View
+public class AcademyTrainResultsView : View
 {
     [SerializeField]
     private Button _HomeButton;
-    
-    [SerializeField]
-    private Button _trainButton;
 
     [SerializeField]
-    private GameObject trainSteupSubView;
+    private Button _mintModelButton;
+
+    [SerializeField]
+    GameObject popupResults;
 
     public event Action homeButtonPressed;
-    public event Action trainButtonPressed;
+    public event Action mintModelButtonPressed;
+
 
     public override void Initialize()
     {
         _HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
-        _trainButton.onClick.AddListener(() => trainButtonPressed?.Invoke());
+        _mintModelButton.onClick.AddListener(() => mintModelButtonPressed?.Invoke());
+
+        SetPopupState(false);
     }
 
-    public void SetTrainSetupSubViewState(bool state)
+    public void SetPopupState(bool state)
     {
-        trainSteupSubView.SetActive(state);
+        popupResults.SetActive(state);
     }
-
 }

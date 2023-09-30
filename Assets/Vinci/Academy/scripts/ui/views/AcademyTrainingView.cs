@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Vinci.Core.UI;
 
-public class AcademyTrainningView : View
+public class AcademyTrainingView : View
 {
     [SerializeField]
     private Button _HomeButton;

@@ -11,9 +11,14 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
 {
     private WebSocket _webSocket;
 
-    const string websockt_prefix = "ws://";
-    const string centralNode = "127.0.0.1:8000";
-
+    [SerializeField]
+    private string centralNode = "127.0.0.1:8000";
+    
+    [SerializeField]
+    private string http_prefix = "http://";
+    [SerializeField]
+    private string websockt_prefix = "ws://";
+    
     const string endpointPostTrainJob = "/ws/v1/client-stream";
     const string endpointWebsoctClientStream = "/ws/v1/client-stream";
 
@@ -24,7 +29,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
 
     async public Task<PostResponseTrainJob> StartRemoteTrainning(PostTrainJobRequest requestData)
     {
-        string url = websockt_prefix + centralNode + endpointPostTrainJob;
+        string url = http_prefix + centralNode + endpointPostTrainJob;
 
         string json = JsonConvert.SerializeObject(requestData, new JsonSerializerSettings
         {
