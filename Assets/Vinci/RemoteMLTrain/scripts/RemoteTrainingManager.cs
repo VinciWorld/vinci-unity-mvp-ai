@@ -11,10 +11,15 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
 {
     private WebSocket _webSocket;
 
-    const string websockt_prefix = "ws://";
-    const string centralNode = "127.0.0.1:8000";
-
-    const string endpointPostTrainJob = "/ws/v1/client-stream";
+    [SerializeField]
+    private string centralNode = "127.0.0.1:8000";
+    
+    [SerializeField]
+    private string http_prefix = "http://";
+    [SerializeField]
+    private string websockt_prefix = "ws://";
+    
+    const string endpointPostTrainJob = "/api/v1/train-jobs";
     const string endpointWebsoctClientStream = "/ws/v1/client-stream";
 
     public event Action<Metrics> metricsReceived;
@@ -24,7 +29,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
 
     async public Task<PostResponseTrainJob> StartRemoteTrainning(PostTrainJobRequest requestData)
     {
-        string url = websockt_prefix + centralNode + endpointPostTrainJob;
+        string url = http_prefix + centralNode + endpointPostTrainJob;
 
         string json = JsonConvert.SerializeObject(requestData, new JsonSerializerSettings
         {
@@ -37,23 +42,6 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         {
             PostResponseTrainJob trainJobResponse = JsonConvert.DeserializeObject<PostResponseTrainJob>(response.DataAsText);
             
-            switch(trainJobResponse.status)
-            {
-                case TrainJobStatus.SUBMITTED:
-                case TrainJobStatus.RETRIEVED:
-                case TrainJobStatus.STARTING:
-                case TrainJobStatus.RUNNING:
-                    ConnectWebSocketCentralNodeClientStream();
-                    break;
-                case TrainJobStatus.SUCCEEDED:
-                    //Retrieve trained model
-                    break;
-
-                default:
-                    Debug.Log("status ntw recognised");
-                    break;
-            }
-
             return trainJobResponse;
         }
         else
@@ -92,7 +80,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         _webSocket.OnMessage += OnWebsocketMessageReceived;
         //_webSocket.OnBinary += (WebSocket ws, byte[] data) => OnWebSocketBinaryReceived?.Invoke(ws, data);
         _webSocket.OnClosed += OnWebSocketClosed;
-        //_webSocket.OnError += (WebSocket ws, string error) => OnWebSocketError?.Invoke(ws, error);
+        _webSocket.OnError += OnWebSocketError;
         _webSocket.Open();
     }
 
@@ -139,6 +127,12 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         //TODO: retry websocket connection
         _webSocket = null;
         Debug.Log("WebSocket is now Closed!");
+    }
+
+    private void OnWebSocketError(WebSocket ws, string error)
+    {
+        Debug.Log("Websockt error: " + error);
+        _webSocket = null;
     }
 
     private async Task<HTTPResponse> SendHTTPPostRequestAsync(string url, string jsonData)

@@ -5,5 +5,6 @@ public class AcademySession
 {
     public TrainEnvironment selectedTrainEnv;
     public AgentConfig selectedAgent;
-    public GameObject currentAgent;
+    public GameObject currentAgentInstance;
+    public GameObject currentEnvInstanc;
 }
