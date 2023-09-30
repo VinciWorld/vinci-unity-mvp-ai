@@ -20,7 +20,7 @@ public class AcademyTrainResultsView : View
 
     public override void Initialize()
     {
-        _HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
+        //_HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
         _mintModelButton.onClick.AddListener(() => mintModelButtonPressed?.Invoke());
 
         SetPopupState(false);

@@ -8,7 +8,7 @@ using Vinci.Core.UI;
 public class AcademyTrainState : StateBase
 {
     AcademyController _controller;
-
+    AcademyTrainView trainView;
     public AcademyTrainState(AcademyController controller)
     {
         _controller = controller;
@@ -16,9 +16,14 @@ public class AcademyTrainState : StateBase
 
     public override void OnEnterState()
     {
-        AcademyTrainView trainView = ViewManager.GetView<AcademyTrainView>();
+        Debug.Log("AcademyTrainView");
+        trainView = ViewManager.GetView<AcademyTrainView>();
+        ViewManager.Show<AcademyTrainView>();
         trainView.homeButtonPressed += OnHomeButtonPressed;
         trainView.trainButtonPressed += OnTrainButtonPressed;
+
+        trainView.SetTrainSetupSubViewState(true);
+        trainView.SetTrainHudSubViewState(false);
     }
 
     public override void OnExitState()
@@ -39,7 +44,10 @@ public class AcademyTrainState : StateBase
     void OnTrainButtonPressed()
     {
         PrepareEnv();
-        MainThreadDispatcher.Instance().EnqueueAsync(StartTraining);
+        MainThreadDispatcher.Instance().EnqueueAsync(ConnectToRemoteInstance);
+
+        trainView.SetTrainSetupSubViewState(false);
+        trainView.SetTrainHudSubViewState(true);
     }
 
 
@@ -60,11 +68,11 @@ public class AcademyTrainState : StateBase
         );
 
 
-        _controller.academyData.session.currentAgent = created_agent;
-        _controller.academyData.session.currentEnv = created_env;
+        _controller.academyData.session.currentAgentInstance = created_agent;
+        _controller.academyData.session.currentEnvInstanc = created_env;
     }
 
-    async void StartTraining()
+    async void ConnectToRemoteInstance()
     {
         Debug.Log("Starting training Thread");
         RemoteTrainManager.instance.actionsReceived += OnReceivedAgentActions;
@@ -81,6 +89,25 @@ public class AcademyTrainState : StateBase
         try
         {
             PostResponseTrainJob response = await RemoteTrainManager.instance.StartRemoteTrainning(trainJobRequest);
+
+            switch (response.status)
+            {
+                case TrainJobStatus.SUBMITTED:
+                case TrainJobStatus.RETRIEVED:
+                case TrainJobStatus.STARTING:
+                case TrainJobStatus.RUNNING:
+                    RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
+                    break;
+                case TrainJobStatus.SUCCEEDED:
+                    //Retrieve trained model
+                    break;
+
+                default:
+                    Debug.Log("status not recognised");
+                    break;
+            }
+
+            Debug.Log("response: " + response + " run_id: " + response.run_id);
         }
         catch(Exception e)
         {

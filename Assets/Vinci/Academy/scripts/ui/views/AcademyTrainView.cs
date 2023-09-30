@@ -7,11 +7,15 @@ using Vinci.Core.UI;
 public class AcademyTrainView : View
 {
     [SerializeField]
+    private GameObject trainSteupSubView;
+    [SerializeField]
+    private GameObject trainInfoHudView;
+
+    [SerializeField]
     private Button _HomeButton;
     [SerializeField]
     private Button _trainButton;
-    [SerializeField]
-    private GameObject trainSteupSubView;
+
 
     [Header("Train Info")]
     [SerializeField]
@@ -42,6 +46,11 @@ public class AcademyTrainView : View
     public void SetTrainSetupSubViewState(bool state)
     {
         trainSteupSubView.SetActive(state);
+    }
+
+    public void SetTrainHudSubViewState(bool state)
+    {
+        trainInfoHudView.SetActive(state);
     }
 
     public void UpdateMetrics(
