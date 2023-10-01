@@ -18,6 +18,7 @@ public class EnvHallway : MonoBehaviour
     Material _groundMaterial;
 
     HallwayAgent _agent;
+    public HallwayAgent agent => _agent; 
 
     void Start()
     {
@@ -33,6 +34,8 @@ public class EnvHallway : MonoBehaviour
 
         m_GroundRenderer = ground.GetComponent<Renderer>();
         _groundMaterial = m_GroundRenderer.material;
+
+        _agent.ResetPosition(ground.transform.position);
     }
 
     void OnEpisodeBegin()

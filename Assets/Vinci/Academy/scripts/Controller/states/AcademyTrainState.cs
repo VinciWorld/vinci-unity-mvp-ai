@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Unity.Barracuda;
 using UnityEngine;
 using Vinci.Core.StateMachine;
 using Vinci.Core.UI;
@@ -90,7 +91,7 @@ public class AcademyTrainState : StateBase
         {
             PostResponseTrainJob response = await RemoteTrainManager.instance.StartRemoteTrainning(trainJobRequest);
 
-            switch (response.status)
+            switch (response.job_status)
             {
                 case TrainJobStatus.SUBMITTED:
                 case TrainJobStatus.RETRIEVED:
@@ -99,7 +100,7 @@ public class AcademyTrainState : StateBase
                     RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
                     break;
                 case TrainJobStatus.SUCCEEDED:
-                    //Retrieve trained model
+                    LoadTrainedModel(response.run_id);
                     break;
 
                 default:
@@ -115,12 +116,19 @@ public class AcademyTrainState : StateBase
         }
     }
 
+    async private void  LoadTrainedModel(string runId)
+    {
+        NNModel nnModel =  await RemoteTrainManager.instance.DownloadNNModel(runId);
+
+
+    }
+
     void OnReceivedAgentActions(Actions actions)
     {
         Debug.Log("Actions received: " + actions.data);
     }
 
-    void OnReceivedTrainMetrics(Metrics metrics)
+    void OnReceivedTrainMetrics(MetricsMsg metrics)
     {
         Debug.Log("Metrics received: " + metrics.Step);
     }

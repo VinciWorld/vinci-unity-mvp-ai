@@ -6,6 +6,7 @@ using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
 using Unity.Barracuda;
 using System;
+using Newtonsoft.Json;
 
 public class HallwayAgent : Agent
 {
@@ -18,7 +19,7 @@ public class HallwayAgent : Agent
     BehaviorParameters _beahivor;
 
     public event Action episodeBegin;
-    public event Action<int> OnActionsReceived;
+    public event Action<string> actionsReceived;
     public event Action<bool> goalCompleted;
 
     int _actionFromServer = 0;
@@ -89,11 +90,17 @@ public class HallwayAgent : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
         var discreteActionsOut = actionBuffers.DiscreteActions;
-        OnActionsReceived?.Invoke(discreteActionsOut[0]);
-        
+
         AddReward(-1f / MaxStep);
         MoveAgent(actionBuffers.DiscreteActions);
 
+        ActionsHallwayMsg actions = new ActionsHallwayMsg();
+        actions.stepCount = Academy.Instance.StepCount;
+        actions.episodeCount = Academy.Instance.EpisodeCount;
+        actions.dir = discreteActionsOut[0];
+
+        string jsonActions = JsonConvert.SerializeObject(actions);
+        actionsReceived?.Invoke(jsonActions);
     }
 
     void OnCollisionEnter(Collision col)
