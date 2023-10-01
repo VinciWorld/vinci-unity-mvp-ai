@@ -10,6 +10,7 @@ public class AcademyTrainState : StateBase
 {
     AcademyController _controller;
     AcademyTrainView trainView;
+
     public AcademyTrainState(AcademyController controller)
     {
         _controller = controller;
@@ -60,8 +61,8 @@ public class AcademyTrainState : StateBase
 
         GameObject created_agent = AgentFactory.instance.CreateAgent(
             _controller.academyData.session.selectedAgent,
-            new Vector3(0, 1.54f, -8.5f), Quaternion.identity
-
+            new Vector3(0, 1.54f, -8.5f), Quaternion.identity,
+            created_env.transform
         );
 
         created_env.GetComponent<EnvHallway>().Initialize(
@@ -70,7 +71,7 @@ public class AcademyTrainState : StateBase
 
 
         _controller.academyData.session.currentAgentInstance = created_agent;
-        _controller.academyData.session.currentEnvInstanc = created_env;
+        _controller.academyData.session.currentEnvInstance = created_env;
     }
 
     async void ConnectToRemoteInstance()
@@ -83,8 +84,14 @@ public class AcademyTrainState : StateBase
         PostTrainJobRequest trainJobRequest = new PostTrainJobRequest
         {
             agent_config = "agent_config",
-            nn_model_config = _controller.academyData.session.selectedAgent.modelConfig.behavior.SerializeToJson(),
-            env_config = _controller.academyData.session.selectedTrainEnv.id
+            nn_model_config = new TrainJobNNModelConfig
+            {
+                steps = 10000
+            },
+            env_config = new TrainJobEnvConfig
+            {
+                env_id = _controller.academyData.session.selectedTrainEnv.env_id
+            }
         };
 
         try
@@ -119,18 +126,27 @@ public class AcademyTrainState : StateBase
     async private void  LoadTrainedModel(string runId)
     {
         NNModel nnModel =  await RemoteTrainManager.instance.DownloadNNModel(runId);
-
-
     }
 
-    void OnReceivedAgentActions(Actions actions)
+    void OnReceivedAgentActions(string actionsJson)
     {
-        Debug.Log("Actions received: " + actions.data);
+        _controller.academyData.session.currentAgentInstance.GetComponent<HallwayAgent>().UpdateActions(actionsJson);
+
+        TrainInfo trainInfo = JsonUtility.FromJson<TrainInfo>(actionsJson);
+        trainView.UptadeInfo(trainInfo.episodeCount, trainInfo.stepCount);
+
+        Debug.Log("Actions received: " + actionsJson);
     }
 
     void OnReceivedTrainMetrics(MetricsMsg metrics)
     {
-        Debug.Log("Metrics received: " + metrics.Step);
+        trainView.UpdateMetrics(
+            metrics.MeanReward,
+            metrics.MeanReward,
+            metrics.StdOfReward
+        );
+
+        Debug.Log("Metrics received: " + metrics);
     }
 
     void OnReceivedTrainStatus(string status)

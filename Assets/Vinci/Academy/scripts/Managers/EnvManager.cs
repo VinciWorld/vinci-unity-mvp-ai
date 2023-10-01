@@ -26,7 +26,7 @@ public class EnvManager : MonoBehaviour
         for (int i = 0; i < numEvns; i++)
         {
             envsInstatiate.Add(Instantiate(envConfig.prefab, new Vector3(xPos, 0, 0), Quaternion.identity));
-            xPos += envConfig.bounds.extents.x;
+            xPos += envConfig.bounds.extents.x + spacing;
         }
 
         return envsInstatiate;

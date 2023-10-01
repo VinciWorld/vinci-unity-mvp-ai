@@ -41,6 +41,13 @@ public class ActionsHallwayMsg
 }
 
 [System.Serializable]
+public class TrainInfo
+{
+    public int stepCount = 0;
+    public int episodeCount = 0;
+}
+
+[System.Serializable]
 public class EpisodeBeginMsg
 {
     public int id = (int)MessagesID.ON_EPISODE_BEGIN;

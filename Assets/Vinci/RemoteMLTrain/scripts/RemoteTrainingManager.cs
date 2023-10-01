@@ -26,7 +26,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
 
     public event Action<MetricsMsg> metricsReceived;
     public event Action episodeBegin;
-    public event Action<ActionsHallwayMsg> actionsReceived;
+    public event Action<string> actionsReceived;
     public event Action<string> statusReceived;
     public event Action<PostResponseTrainJob> trainJobConfigReceived;
 
@@ -122,12 +122,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
                 break;
 
             case (int)MessagesID.ACTIONS:
-                ActionsHallwayMsg action = JsonConvert.DeserializeObject<ActionsHallwayMsg>(message);
-                if (action.dir != null)
-                {
-                    actionsReceived?.Invoke(action);
-                    //agent.UpdateActions(int.Parse(action.data));
-                }
+                actionsReceived?.Invoke(message);
                 break;
 
             case (int)MessagesID.STATUS:
@@ -139,8 +134,11 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
                 trainJobConfigReceived?.Invoke(trainJobConfig);
                 break;
 
-            default:
+            case (int)MessagesID.ON_EPISODE_BEGIN:
+                episodeBegin?.Invoke();
+                break;
 
+            default:
                 Debug.LogWarning("Unknown msg_id received: " + header.msg_id);
                 break;
         }

@@ -1981,11 +1981,12 @@ MonoBehaviour:
         type: 3}
       modelConfig:
         run_id: 
-        isModelTrained: 0
+        isModelTraining: 0
+        isModelLoaded: 0
         behavior: {fileID: 11400000, guid: 352a18a929b34784ebab697fed62ea8c, type: 2}
         nnModel_path: 
     availableTrainEnvs:
-    - id: 0
+    - env_id: 0001
       envName: Hallway
       bounds:
         m_Center: {x: 0, y: 0, z: 0}
@@ -2038,6 +2039,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerData:
     username: 
+    currentAgentConfig:
+      agentName: 
+      description: 
+      AgentPrefab: {fileID: 0}
+      modelConfig:
+        run_id: 
+        isModelTraining: 0
+        isModelLoaded: 0
+        behavior: {fileID: 0}
+        nnModel_path: 
     agents: []
 --- !u!1 &441955037
 GameObject:
@@ -8032,6 +8043,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: HallwayEnv
+      objectReference: {fileID: 0}
+    - target: {fileID: 6010992232370436985, guid: c28c97282c68923428614184441f6d5f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

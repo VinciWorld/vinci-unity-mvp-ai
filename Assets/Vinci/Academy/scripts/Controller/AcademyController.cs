@@ -19,9 +19,11 @@ public class AcademyController : MonoBehaviour
 
 
 #if UNITY_EDITOR && !UNITY_SERVER
-        SwitchState(new AcademyServerInstanceState(this));
+        SwitchState(new AcademyMainState(this));
+
 #elif !UNITY_EDITOR && UNITY_SERVER
         SwitchState(new AcademyServerInstanceState(this));
+        
 #endif
 
     }

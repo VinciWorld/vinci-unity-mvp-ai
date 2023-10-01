@@ -13,6 +13,6 @@ public class AcademyData
 
     public TrainEnvironmentConfig GetTrainEnvById(string id)
     {
-        return availableTrainEnvs.FirstOrDefault(env => env.id == id);
+        return availableTrainEnvs.FirstOrDefault(env => env.env_id == id);
     }
 }

@@ -41,7 +41,6 @@ public class AcademyMainState : StateBase
 
     void OnSelectAgentButtonPressed()
     {
-        Debug.Log("OnSelect");
         _controller.academyData.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
         _controller.academyData.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
 
