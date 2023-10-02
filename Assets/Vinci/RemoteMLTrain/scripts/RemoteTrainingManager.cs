@@ -24,6 +24,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
     const string endpointTainJobs = "/api/v1/train-jobs";
     const string endpointWebsoctClientStream = "/ws/v1/client-stream";
 
+    public event Action websocketOpen;
     public event Action<MetricsMsg> metricsReceived;
     public event Action episodeBegin;
     public event Action<string> actionsReceived;
@@ -109,11 +110,13 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
     private void OnWebsocktSocketOpen(WebSocket webSocket)
     {
         Debug.Log("WebSocket is now Open!");
+        websocketOpen?.Invoke();
         _webSocket = webSocket;
     }
 
     private void OnWebsocketMessageReceived(WebSocket webSocket, string message)
     {
+        Debug.Log(message);
         Header header = JsonUtility.FromJson<Header>(message);
         switch (header.msg_id)
         {

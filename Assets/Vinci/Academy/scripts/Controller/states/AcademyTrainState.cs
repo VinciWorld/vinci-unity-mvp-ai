@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Unity.Barracuda;
 using UnityEngine;
 using Vinci.Core.StateMachine;
@@ -77,6 +78,7 @@ public class AcademyTrainState : StateBase
     async void ConnectToRemoteInstance()
     {
         Debug.Log("Starting training Thread");
+        RemoteTrainManager.instance.websocketOpen += OnWebSocketOpen;
         RemoteTrainManager.instance.actionsReceived += OnReceivedAgentActions;
         RemoteTrainManager.instance.metricsReceived += OnReceivedTrainMetrics;
         RemoteTrainManager.instance.statusReceived += OnReceivedTrainStatus;
@@ -104,6 +106,7 @@ public class AcademyTrainState : StateBase
                 case TrainJobStatus.RETRIEVED:
                 case TrainJobStatus.STARTING:
                 case TrainJobStatus.RUNNING:
+                    _controller.manager.playerData.currentAgentConfig.SetRunID(response.run_id);
                     RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
                     break;
                 case TrainJobStatus.SUCCEEDED:
@@ -126,6 +129,15 @@ public class AcademyTrainState : StateBase
     async private void  LoadTrainedModel(string runId)
     {
         NNModel nnModel =  await RemoteTrainManager.instance.DownloadNNModel(runId);
+    }
+
+    void OnWebSocketOpen()
+    {
+        string run_id = _controller.manager.playerData.currentAgentConfig.GetModelRunID();
+        RunId data = new RunId { run_id = run_id };
+
+        string json = JsonConvert.SerializeObject(data);
+        RemoteTrainManager.instance.SendWebSocketJson(json);
     }
 
     void OnReceivedAgentActions(string actionsJson)

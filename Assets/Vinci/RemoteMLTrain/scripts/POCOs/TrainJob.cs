@@ -38,6 +38,11 @@ public class TrainJobEnvConfig
     public int num_of_areas;
 }
 
+public class RunId
+{
+    public string run_id { get; set; }
+}
+
 
 #nullable enable
 public class PostTrainJobRequest
@@ -47,6 +52,5 @@ public class PostTrainJobRequest
     public TrainJobEnvConfig? env_config;
     public TrainJobNNModelConfig? nn_model_config;
 }
-
 
 
