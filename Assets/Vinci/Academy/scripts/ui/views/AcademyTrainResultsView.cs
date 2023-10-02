@@ -9,7 +9,7 @@ public class AcademyTrainResultsView : View
 
     [Header("Results")]
     [SerializeField]
-    GameObject popupResults;
+    GameObject resultsSubView;
 
     [SerializeField]
     private Button _HomeButton;
@@ -34,25 +34,49 @@ public class AcademyTrainResultsView : View
     [SerializeField]
     private TextMeshProUGUI _goalFailedCountText;
     [SerializeField]
-    private TextMeshProUGUI _winRationText;
+    private TextMeshProUGUI _goalSuccessRationText;
 
 
     public event Action homeButtonPressed;
     public event Action mintModelButtonPressed;
-    public event Action trainAgianButtonPressed;
-    public event Action testModelButton;
+    public event Action trainAgainButtonPressed;
+    public event Action testModelButtonPressed;
+    public event Action stopTestModelButtonPressed;
 
 
     public override void Initialize()
     {
         //_HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
         _mintModelButton.onClick.AddListener(() => mintModelButtonPressed?.Invoke());
+        _trainAgainButton.onClick.AddListener(() => trainAgainButtonPressed?.Invoke());
+        _testModelButton.onClick.AddListener(() => testModelButtonPressed?.Invoke());
+        _stopTestModelButton.onClick.AddListener(() => stopTestModelButtonPressed?.Invoke());
 
-        SetPopupState(false);
+        ShowResultsSubView();
     }
 
-    public void SetPopupState(bool state)
+    public void ShowResultsSubView()
     {
-        popupResults.SetActive(state);
+        resultsSubView.SetActive(true);
+        popUpTestModel.SetActive(false);
+    }
+
+    public void ShowTestModelMetrics()
+    {
+        resultsSubView.SetActive(false);
+        popUpTestModel.SetActive(true);
+    }
+
+    public void UpdateTrainResults(int stepsTrained, float meanReward)
+    {
+        _stepTrainedCount.text = stepsTrained.ToString();
+        _meanRweard.text = meanReward.ToString("F00");
+    }
+
+    public void UpdateTestMetrics(int goalCompletedCount, int goalFailedCount, float goalSuccessRatio)
+    {
+        _goalCompletedCountText.text = goalCompletedCount.ToString();
+        _goalFailedCountText.text = goalFailedCount.ToString();
+        _meanRweard.text = goalSuccessRatio.ToString("F0");
     }
 }
