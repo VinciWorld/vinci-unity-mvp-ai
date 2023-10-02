@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 
-[CustomEditor(typeof(BehaviorConfig))]
+[CustomEditor(typeof(BehaviorConfigSmall))]
 public class BehaviorConfigEditor : Editor
 {
     SerializedProperty rewardSignalsProperty;

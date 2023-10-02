@@ -20,7 +20,7 @@ public class AcademyMainState : StateBase
         mainView.homeButtonPressed += OnHomeButtonPressed;
         mainView.selectAgentButtonPressed += OnSelectAgentButtonPressed;
 
-        //TODO: Clone agent!
+        //TODO: Clone agent! This will be done in the create step!
         _controller.manager.playerData.AddAgent(_controller.academyData.availableAgents[0]);
     }
 
@@ -41,11 +41,9 @@ public class AcademyMainState : StateBase
 
     void OnSelectAgentButtonPressed()
     {
-        _controller.academyData.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
-        _controller.academyData.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
+        _controller.session.selectedAgent = _controller.manager.playerData.currentAgentConfig;
+        _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
 
         _controller.SwitchState(new AcademyTrainState(_controller));
     }
-
-
 }

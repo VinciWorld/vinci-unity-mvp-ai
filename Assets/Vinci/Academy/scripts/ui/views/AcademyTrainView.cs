@@ -11,19 +11,17 @@ public class AcademyTrainView : View
     [SerializeField]
     private GameObject trainInfoHudView;
 
+    [Header("Setup Sub View")]
     [SerializeField]
     private Button _HomeButton;
     [SerializeField]
     private Button _trainButton;
 
-
-    [Header("Train Info")]
+    [Header("Train Info Sub View")]
     [SerializeField]
     private TextMeshProUGUI episodesCountText;
     [SerializeField]
     private TextMeshProUGUI stepsCountText;
-    [SerializeField]
-    private TextMeshProUGUI rewardText;
     [SerializeField]
     private TextMeshProUGUI meanRewardText;
     [SerializeField]
@@ -61,15 +59,12 @@ public class AcademyTrainView : View
     }
 
     public void UpdateMetrics(
-        float reward,
         float meanReward,
         float stdReward
     )
     {
-        rewardText.text = reward.ToString("F001");
         meanRewardText.text = meanReward.ToString("F001");
         stdRewardText.text = stdReward.ToString("F001");
-
     }
 
     public void UpdateGameInfo(int wins, int loses)

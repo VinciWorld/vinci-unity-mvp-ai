@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using Unity.Barracuda;
 
 [System.Serializable]
 public class PlayerData
@@ -40,5 +41,12 @@ public class PlayerData
     public bool GetIsModelLoaded()
     {
         return currentAgentConfig.GetIsModelLoaded();
+    }
+
+    public void SetModelAndPath(string modelPath, NNModel nnModel)
+    {
+        currentAgentConfig.modelConfig.nnModel_path = modelPath;
+        currentAgentConfig.modelConfig.nnModel = nnModel;
+        currentAgentConfig.modelConfig.isModelLoaded = true;
     }
 }

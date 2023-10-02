@@ -9,10 +9,14 @@ using Vinci.Core.Utils;
 using Unity.Barracuda;
 using Unity.Barracuda.ONNX;
 using System.IO;
+using Cysharp.Threading.Tasks;
 
 public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager> 
 {
+
     private WebSocket _webSocket;
+
+    public bool isConnected => _webSocket != null;
 
     [SerializeField]
     private string centralNode = "127.0.0.1:8000";
@@ -28,7 +32,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
     public event Action<MetricsMsg> metricsReceived;
     public event Action episodeBegin;
     public event Action<string> actionsReceived;
-    public event Action<string> statusReceived;
+    public event Action<TrainJobStatusMsg> statusReceived;
     public event Action<PostResponseTrainJob> trainJobConfigReceived;
 
 
@@ -57,7 +61,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         }
     }
 
-    async public Task<NNModel> DownloadNNModel(string runId)
+    async public Task<byte[]> DownloadNNModel(string runId)
     {
         string url = http_prefix + centralNode + endpointTainJobs + "/" + runId + "/nn-models";
 
@@ -65,7 +69,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
 
         if (response.StatusCode == 200)
         {
-            return LoadOnnxModel(response.Data);
+            return response.Data;
         }
         else
         {
@@ -131,7 +135,8 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
                 break;
 
             case (int)MessagesID.STATUS:
-                statusReceived?.Invoke(message);
+                TrainJobStatusMsg trainStatus = JsonConvert.DeserializeObject<TrainJobStatusMsg>(message);
+                statusReceived?.Invoke(trainStatus);
                 break;
 
             case (int)MessagesID.TRAIN_JOB_CONFIG:
@@ -204,26 +209,5 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         request.AddHeader("Content-Type", "application/json");
         request.RawData = System.Text.Encoding.UTF8.GetBytes(jsonData);
         request.Send();
-    }
-
-    NNModel LoadOnnxModel(byte[] rawModel)
-    {
-        var converter = new ONNXModelConverter(true);
-        var onnxModel = converter.Convert(rawModel);
-
-        NNModelData assetData = ScriptableObject.CreateInstance<NNModelData>();
-        using (var memoryStream = new MemoryStream())
-        using (var writer = new BinaryWriter(memoryStream))
-        {
-            ModelWriter.Save(writer, onnxModel);
-            assetData.Value = memoryStream.ToArray();
-        }
-        assetData.name = "Data";
-        assetData.hideFlags = HideFlags.HideInHierarchy;
-
-        var asset = ScriptableObject.CreateInstance<NNModel>();
-        asset.modelData = assetData;
-
-        return asset;
     }
 }

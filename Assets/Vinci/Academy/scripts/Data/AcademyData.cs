@@ -7,7 +7,6 @@ using System.Linq;
 [Serializable]
 public class AcademyData
 {
-    public AcademySession session = new AcademySession();
     public List<AgentConfig> availableAgents;
     public List<TrainEnvironmentConfig> availableTrainEnvs;
 

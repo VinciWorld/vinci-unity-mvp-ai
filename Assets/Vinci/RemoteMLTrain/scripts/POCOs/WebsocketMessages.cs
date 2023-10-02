@@ -29,6 +29,13 @@ public class MetricsMsg
 
 }
 
+public class TrainJobStatusMsg
+{
+    public int id;
+    public string run_id;
+    public TrainJobStatus status;
+}
+
 [System.Serializable]
 public class ActionsHallwayMsg
 {

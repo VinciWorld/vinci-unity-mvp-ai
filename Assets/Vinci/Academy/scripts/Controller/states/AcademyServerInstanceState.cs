@@ -23,7 +23,7 @@ public class AcademyServerInstanceState : StateBase
 
     public override void OnEnterState()
     {
-        TrainJobEnvConfig config = new TrainJobEnvConfig();
+        EnvConfigSmall config = new EnvConfigSmall();
         config.env_id = "0001";
         config.num_of_areas = 8;
 
@@ -42,7 +42,7 @@ public class AcademyServerInstanceState : StateBase
 
     }
 
-    public void StartTraining(TrainJobEnvConfig trainEnvConfig)
+    public void StartTraining(EnvConfigSmall trainEnvConfig)
     {
         TrainEnvironmentConfig envConfig = _controller.academyData.GetTrainEnvById(trainEnvConfig.env_id);
 

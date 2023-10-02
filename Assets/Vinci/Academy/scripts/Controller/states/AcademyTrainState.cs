@@ -1,9 +1,12 @@
 using System;
+using System.IO;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Unity.Barracuda;
+using Unity.Barracuda.ONNX;
 using UnityEngine;
+using Vinci.Core.Managers;
 using Vinci.Core.StateMachine;
 using Vinci.Core.UI;
 
@@ -20,7 +23,9 @@ public class AcademyTrainState : StateBase
     public override void OnEnterState()
     {
         Debug.Log("AcademyTrainView");
+
         trainView = ViewManager.GetView<AcademyTrainView>();
+
         ViewManager.Show<AcademyTrainView>();
         trainView.homeButtonPressed += OnHomeButtonPressed;
         trainView.trainButtonPressed += OnTrainButtonPressed;
@@ -46,38 +51,65 @@ public class AcademyTrainState : StateBase
 
     void OnTrainButtonPressed()
     {
+        //TODO: Check if model is already trained or if it is trainning
+
+        if(!RemoteTrainManager.instance.isConnected)
+        {
+            MainThreadDispatcher.Instance().EnqueueAsync(ConnectToRemoteInstance);
+        }
+
         PrepareEnv();
-        MainThreadDispatcher.Instance().EnqueueAsync(ConnectToRemoteInstance);
 
         trainView.SetTrainSetupSubViewState(false);
         trainView.SetTrainHudSubViewState(true);
     }
 
+    async void OnReceivedTrainStatus(TrainJobStatusMsg trainJobStatus)
+    {
+        if( trainJobStatus.status == TrainJobStatus.SUCCEEDED)
+        {
+            trainView.SetTrainSetupSubViewState(false);
+            trainView.SetTrainHudSubViewState(false);
+
+            Byte[] rawModel = await RemoteTrainManager.instance.DownloadNNModel(trainJobStatus.run_id);
+
+            SaveAndLoadModel(trainJobStatus.run_id, rawModel);
+
+            _controller.SwitchState(new AcademyResultsState(_controller));
+
+        }
+        Debug.Log("Status received: " + trainJobStatus.status);
+    }
 
     public void PrepareEnv()
     {
         GameObject created_env = _controller.envManager.CreateTrainEnv(
-            _controller.academyData.session.selectedTrainEnv
+            _controller.session.selectedTrainEnv
         );
+
+        _controller.session.currentEnvInstance = created_env;
+    }
+
+    public void CreateAgent()
+    {
+        GameObject envSelected = _controller.session.currentEnvInstance;
 
         GameObject created_agent = AgentFactory.instance.CreateAgent(
-            _controller.academyData.session.selectedAgent,
+            _controller.session.selectedAgent,
             new Vector3(0, 1.54f, -8.5f), Quaternion.identity,
-            created_env.transform
+            envSelected.transform
         );
 
-        created_env.GetComponent<EnvHallway>().Initialize(
+        envSelected.GetComponent<EnvHallway>().Initialize(
             created_agent.GetComponent<HallwayAgent>()
         );
 
-
-        _controller.academyData.session.currentAgentInstance = created_agent;
-        _controller.academyData.session.currentEnvInstance = created_env;
+        _controller.session.currentAgentInstance = created_agent;
     }
 
     async void ConnectToRemoteInstance()
     {
-        Debug.Log("Starting training Thread");
+        Debug.Log("Starting remote training Thread");
         RemoteTrainManager.instance.websocketOpen += OnWebSocketOpen;
         RemoteTrainManager.instance.actionsReceived += OnReceivedAgentActions;
         RemoteTrainManager.instance.metricsReceived += OnReceivedTrainMetrics;
@@ -86,13 +118,14 @@ public class AcademyTrainState : StateBase
         PostTrainJobRequest trainJobRequest = new PostTrainJobRequest
         {
             agent_config = "agent_config",
-            nn_model_config = new TrainJobNNModelConfig
+            nn_model_config = new BehaviorConfigSmall
             {
-                steps = 10000
+                steps = _controller.session.selectedAgent.modelConfig.behavior.steps,
+                behavior_name = _controller.session.selectedAgent.modelConfig.behavior.behavior_name
             },
-            env_config = new TrainJobEnvConfig
+            env_config = new EnvConfigSmall
             {
-                env_id = _controller.academyData.session.selectedTrainEnv.env_id
+                env_id = _controller.session.selectedTrainEnv.env_id
             }
         };
 
@@ -100,17 +133,18 @@ public class AcademyTrainState : StateBase
         {
             PostResponseTrainJob response = await RemoteTrainManager.instance.StartRemoteTrainning(trainJobRequest);
 
+            _controller.manager.playerData.currentAgentConfig.SetRunID(response.run_id);
+            CreateAgent();
+            RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
+
             switch (response.job_status)
             {
                 case TrainJobStatus.SUBMITTED:
                 case TrainJobStatus.RETRIEVED:
                 case TrainJobStatus.STARTING:
                 case TrainJobStatus.RUNNING:
-                    _controller.manager.playerData.currentAgentConfig.SetRunID(response.run_id);
-                    RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
                     break;
                 case TrainJobStatus.SUCCEEDED:
-                    LoadTrainedModel(response.run_id);
                     break;
 
                 default:
@@ -122,13 +156,10 @@ public class AcademyTrainState : StateBase
         }
         catch(Exception e)
         {
+            trainView.SetTrainSetupSubViewState(true);
+            trainView.SetTrainHudSubViewState(false);
             Debug.LogError("Unable to add job to the queue: " + e.Message);
         }
-    }
-
-    async private void  LoadTrainedModel(string runId)
-    {
-        NNModel nnModel =  await RemoteTrainManager.instance.DownloadNNModel(runId);
     }
 
     void OnWebSocketOpen()
@@ -140,20 +171,9 @@ public class AcademyTrainState : StateBase
         RemoteTrainManager.instance.SendWebSocketJson(json);
     }
 
-    void OnReceivedAgentActions(string actionsJson)
-    {
-        _controller.academyData.session.currentAgentInstance.GetComponent<HallwayAgent>().UpdateActions(actionsJson);
-
-        TrainInfo trainInfo = JsonUtility.FromJson<TrainInfo>(actionsJson);
-        trainView.UptadeInfo(trainInfo.episodeCount, trainInfo.stepCount);
-
-        Debug.Log("Actions received: " + actionsJson);
-    }
-
     void OnReceivedTrainMetrics(MetricsMsg metrics)
     {
         trainView.UpdateMetrics(
-            metrics.MeanReward,
             metrics.MeanReward,
             metrics.StdOfReward
         );
@@ -161,8 +181,61 @@ public class AcademyTrainState : StateBase
         Debug.Log("Metrics received: " + metrics);
     }
 
-    void OnReceivedTrainStatus(string status)
+    void OnReceivedAgentActions(string actionsJson)
     {
-        Debug.Log("Status received: " + status);
+        _controller.session.currentAgentInstance.GetComponent<HallwayAgent>().UpdateActions(actionsJson);
+
+        TrainInfo trainInfo = JsonUtility.FromJson<TrainInfo>(actionsJson);
+        trainView.UptadeInfo(trainInfo.episodeCount, trainInfo.stepCount);
+
+        Debug.Log("Actions received: " + actionsJson);
     }
+
+    void SaveAndLoadModel(string runId, Byte[] rawModel)
+    {
+        string behaviourName = GameManager.instance.playerData.currentAgentConfig.modelConfig.behavior.behavior_name;
+        string directoryPath = Path.Combine(Application.persistentDataPath, "runs", runId, "models");
+        string filePath = Path.Combine(directoryPath, $"{behaviourName}.onnx");
+
+        // Ensure the directory exists
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        // Convert and Save model to disk
+        NNModel nnModel = SaveAndConvertModel(filePath, rawModel);
+
+        GameManager.instance.playerData.SetModelAndPath(filePath, nnModel);
+
+        // Load model on current agent
+        _controller.session
+        .currentAgentInstance.GetComponent<HallwayAgent>()
+        .LoadModel(behaviourName, nnModel);
+    }
+
+    NNModel SaveAndConvertModel(string filePath, byte[] rawModel)
+    {
+        //Save model to disk
+        File.WriteAllBytes(filePath, rawModel);
+
+        var converter = new ONNXModelConverter(true);
+        var onnxModel = converter.Convert(rawModel);
+
+        NNModelData assetData = ScriptableObject.CreateInstance<NNModelData>();
+        using (var memoryStream = new MemoryStream())
+        using (var writer = new BinaryWriter(memoryStream))
+        {
+            ModelWriter.Save(writer, onnxModel);
+            assetData.Value = memoryStream.ToArray();
+        }
+        assetData.name = "Data";
+        assetData.hideFlags = HideFlags.HideInHierarchy;
+
+        var asset = ScriptableObject.CreateInstance<NNModel>();
+        asset.modelData = assetData;
+
+        return asset;
+    }
+
 }
