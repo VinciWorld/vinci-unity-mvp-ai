@@ -53,16 +53,19 @@ public class AcademyTrainView : View
         trainInfoHudView.SetActive(state);
     }
 
+    public void UptadeInfo(
+        int episodesCount, int stepsCount)
+    {
+        episodesCountText.text = episodesCount.ToString();
+        stepsCountText.text = stepsCount.ToString();
+    }
+
     public void UpdateMetrics(
-        int episodesCount,
-        int stepsCount,
         float reward,
         float meanReward,
         float stdReward
     )
     {
-        episodesCountText.text = episodesCount.ToString();
-        stepsCountText.text = stepsCount.ToString();
         rewardText.text = reward.ToString("F001");
         meanRewardText.text = meanReward.ToString("F001");
         stdRewardText.text = stdReward.ToString("F001");

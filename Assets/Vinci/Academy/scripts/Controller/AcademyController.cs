@@ -17,7 +17,15 @@ public class AcademyController : MonoBehaviour
         manager = GameManager.instance;
 
 
+
+#if UNITY_EDITOR && !UNITY_SERVER
         SwitchState(new AcademyMainState(this));
+
+#elif !UNITY_EDITOR && UNITY_SERVER
+        SwitchState(new AcademyServerInstanceState(this));
+        
+#endif
+
     }
 
     private void Update()

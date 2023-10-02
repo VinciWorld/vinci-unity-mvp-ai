@@ -6,6 +6,9 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Text;
 using Vinci.Core.Utils;
+using Unity.Barracuda;
+using Unity.Barracuda.ONNX;
+using System.IO;
 
 public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager> 
 {
@@ -13,28 +16,31 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
 
     [SerializeField]
     private string centralNode = "127.0.0.1:8000";
-    
     [SerializeField]
     private string http_prefix = "http://";
     [SerializeField]
     private string websockt_prefix = "ws://";
     
-    const string endpointPostTrainJob = "/api/v1/train-jobs";
+    const string endpointTainJobs = "/api/v1/train-jobs";
     const string endpointWebsoctClientStream = "/ws/v1/client-stream";
 
-    public event Action<Metrics> metricsReceived;
-    public event Action<Actions> actionsReceived;
+    public event Action<MetricsMsg> metricsReceived;
+    public event Action episodeBegin;
+    public event Action<string> actionsReceived;
     public event Action<string> statusReceived;
+    public event Action<PostResponseTrainJob> trainJobConfigReceived;
 
 
     async public Task<PostResponseTrainJob> StartRemoteTrainning(PostTrainJobRequest requestData)
     {
-        string url = http_prefix + centralNode + endpointPostTrainJob;
+        string url = http_prefix + centralNode + endpointTainJobs;
 
         string json = JsonConvert.SerializeObject(requestData, new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore
         });
+
+        Debug.Log(json);
 
         HTTPResponse response = await SendHTTPPostRequestAsync(url, json);
 
@@ -50,8 +56,24 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         }
     }
 
+    async public Task<NNModel> DownloadNNModel(string runId)
+    {
+        string url = http_prefix + centralNode + endpointTainJobs + "/" + runId + "/nn-models";
 
-    public void ConnectWebSocketToTrainNodeFromServer()
+        HTTPResponse response = await SendHTTPGetRequestAsync(url);
+
+        if (response.StatusCode == 200)
+        {
+            return LoadOnnxModel(response.Data);
+        }
+        else
+        {
+            throw new Exception($"HTTP Request failed with status code {response.StatusCode}: {response.Message}");
+        }
+    }
+
+
+    public void ConnectWebSocketToTrainInstance()
     {
         string url = websockt_prefix + centralNode + endpointWebsoctClientStream;
 
@@ -65,7 +87,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         InitializeWebSocket(url);
     }
 
-    private void SendWebSocketJson(string jsonData)
+    public void SendWebSocketJson(string jsonData)
     {
         if (_webSocket != null && _webSocket.IsOpen)
         {
@@ -96,27 +118,29 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         switch (header.msg_id)
         {
             case (int)MessagesID.METRICS:
-                Metrics metrics = JsonConvert.DeserializeObject<Metrics>(message);
+                MetricsMsg metrics = JsonConvert.DeserializeObject<MetricsMsg>(message);
                 metricsReceived?.Invoke(metrics);
                 Debug.Log("Metrics received: " + message);
                 break;
 
             case (int)MessagesID.ACTIONS:
-                Actions action = JsonConvert.DeserializeObject<Actions>(message);
-                if (action.data != null)
-                {
-                    actionsReceived?.Invoke(action);
-                    //agent.UpdateActions(int.Parse(action.data));
-                }
+                actionsReceived?.Invoke(message);
                 break;
 
             case (int)MessagesID.STATUS:
-              
                 statusReceived?.Invoke(message);
                 break;
 
-            default:
+            case (int)MessagesID.TRAIN_JOB_CONFIG:
+                PostResponseTrainJob trainJobConfig = JsonConvert.DeserializeObject<PostResponseTrainJob>(message);
+                trainJobConfigReceived?.Invoke(trainJobConfig);
+                break;
 
+            case (int)MessagesID.ON_EPISODE_BEGIN:
+                episodeBegin?.Invoke();
+                break;
+
+            default:
                 Debug.LogWarning("Unknown msg_id received: " + header.msg_id);
                 break;
         }
@@ -154,11 +178,49 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         return await tcs.Task;
     }
 
+    public async Task<HTTPResponse> SendHTTPGetRequestAsync(string url)
+    {
+        var tcs = new TaskCompletionSource<HTTPResponse>();
+
+        HTTPRequest request = new HTTPRequest(new Uri(url), HTTPMethods.Get, (req, resp) =>
+        {
+            if (req.Exception != null)
+                tcs.SetException(req.Exception);
+            else
+                tcs.SetResult(resp);
+        });
+
+        request.Send();
+
+        return await tcs.Task;
+    }
+
     private void SendHTTPPostRequest(string url, string jsonData, OnRequestFinishedDelegate callback)
     {
         HTTPRequest request = new HTTPRequest(new Uri(url), HTTPMethods.Post, callback);
         request.AddHeader("Content-Type", "application/json");
         request.RawData = System.Text.Encoding.UTF8.GetBytes(jsonData);
         request.Send();
+    }
+
+    NNModel LoadOnnxModel(byte[] rawModel)
+    {
+        var converter = new ONNXModelConverter(true);
+        var onnxModel = converter.Convert(rawModel);
+
+        NNModelData assetData = ScriptableObject.CreateInstance<NNModelData>();
+        using (var memoryStream = new MemoryStream())
+        using (var writer = new BinaryWriter(memoryStream))
+        {
+            ModelWriter.Save(writer, onnxModel);
+            assetData.Value = memoryStream.ToArray();
+        }
+        assetData.name = "Data";
+        assetData.hideFlags = HideFlags.HideInHierarchy;
+
+        var asset = ScriptableObject.CreateInstance<NNModel>();
+        asset.modelData = assetData;
+
+        return asset;
     }
 }

@@ -6,6 +6,7 @@ using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
 using Unity.Barracuda;
 using System;
+using Newtonsoft.Json;
 
 public class HallwayAgent : Agent
 {
@@ -18,7 +19,7 @@ public class HallwayAgent : Agent
     BehaviorParameters _beahivor;
 
     public event Action episodeBegin;
-    public event Action<int> OnActionsReceived;
+    public event Action<string> actionsReceived;
     public event Action<bool> goalCompleted;
 
     int _actionFromServer = 0;
@@ -32,23 +33,20 @@ public class HallwayAgent : Agent
         SetupAgent();
     }
 
-    public void LoadModel(string behaviorName, NNModel model)
-    {
-        _beahivor.BehaviorType = BehaviorType.HeuristicOnly;
-        SetModel(behaviorName, model);
-        _beahivor.BehaviorType = BehaviorType.InferenceOnly;
-    }
-
-    public void SetupAgent()
-    {
-        hallwaySettings = FindObjectOfType<HallwaySettings>();
-        _agentRb = GetComponent<Rigidbody>();
-    }
-
     public override void Initialize()
     {
         base.Initialize();
+        SetupAgent();
         _statsRecorder = Academy.Instance.StatsRecorder;
+        
+    }
+
+    public override void OnEpisodeBegin()
+    {
+        episodeBegin?.Invoke();
+        _agentRb.velocity *= 0f;
+        _statsRecorder.Add("Goal/Correct", 0, StatAggregationMethod.Sum);
+        _statsRecorder.Add("Goal/Wrong", 0, StatAggregationMethod.Sum);
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -58,8 +56,6 @@ public class HallwayAgent : Agent
             sensor.AddObservation(StepCount / (float)MaxStep);
         }
     }
-
-
 
     public void MoveAgent(ActionSegment<int> act)
     {
@@ -83,17 +79,28 @@ public class HallwayAgent : Agent
                 break;
         }
         transform.Rotate(rotateDir, Time.deltaTime * 150f);
-        _agentRb.AddForce(dirToGo * hallwaySettings.agentRunSpeed, ForceMode.VelocityChange);
+        if(hallwaySettings != null)
+        {
+            _agentRb.AddForce(dirToGo * hallwaySettings.agentRunSpeed, ForceMode.VelocityChange);
+        }
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
         var discreteActionsOut = actionBuffers.DiscreteActions;
-        OnActionsReceived?.Invoke(discreteActionsOut[0]);
-        
+
         AddReward(-1f / MaxStep);
         MoveAgent(actionBuffers.DiscreteActions);
 
+        ActionsHallwayMsg actions = new ActionsHallwayMsg
+        {
+            stepCount = Academy.Instance.StepCount,
+            episodeCount = Academy.Instance.EpisodeCount,
+            dir = discreteActionsOut[0]
+        };
+
+        string jsonActions = JsonConvert.SerializeObject(actions);
+        actionsReceived?.Invoke(jsonActions);
     }
 
     void OnCollisionEnter(Collision col)
@@ -117,10 +124,12 @@ public class HallwayAgent : Agent
         }
     }
 
-    public void UpdateActions(int value)
+    public void UpdateActions(string actionsJson)
     {
-        _actionFromServer = value;
-        Debug.Log(_actionFromServer + " server: " + value);
+        ActionsHallwayMsg action = JsonConvert.DeserializeObject<ActionsHallwayMsg>(actionsJson);
+        
+        _actionFromServer = action.dir;  
+        Debug.Log("server: " + _actionFromServer);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -147,13 +156,19 @@ public class HallwayAgent : Agent
         }
     }
 
-    public override void OnEpisodeBegin()
-    {   
-        episodeBegin?.Invoke();
-        _agentRb.velocity *= 0f;
-        _statsRecorder.Add("Goal/Correct", 0, StatAggregationMethod.Sum);
-        _statsRecorder.Add("Goal/Wrong", 0, StatAggregationMethod.Sum);
+    public void LoadModel(string behaviorName, NNModel model)
+    {
+        _beahivor.BehaviorType = BehaviorType.HeuristicOnly;
+        SetModel(behaviorName, model);
+        _beahivor.BehaviorType = BehaviorType.InferenceOnly;
     }
+
+    public void SetupAgent()
+    {
+        hallwaySettings = FindObjectOfType<HallwaySettings>();
+        _agentRb = GetComponent<Rigidbody>();
+    }
+
 
     public void ResetPosition(Vector3 groundPos)
     {

@@ -7,27 +7,34 @@ using Vinci.Academy.Ml.Data;
 public class EnvManager : MonoBehaviour
 {
 
-    public GameObject CreateTrainEnv(TrainEnvironment env, int numEvns = 1, float spacing = 5f)
+    public GameObject CreateTrainEnv(TrainEnvironmentConfig envConfig)
     {
-        float xPos = 0f;
         GameObject envInstatiate = null;
 
-
-        for (int i = 0; i < numEvns; i++)
-        {
-            envInstatiate =  GameObject.Instantiate(env.prefab);
-
-            xPos += env.bounds.extents.x;
-        }
-
-        Debug.Log(envInstatiate.transform.position);
+        envInstatiate =  Instantiate(envConfig.prefab, new Vector3(0, 0, 0), Quaternion.identity);
 
         return envInstatiate;
     }
 
+    public List<GameObject> CreateMutipleTrainEnvs(
+        TrainEnvironmentConfig envConfig, int numEvns = 1, float spacing = 5f)
+    {
+        float xPos = 0f;
+        List<GameObject> envsInstatiate = new List<GameObject>();
+
+
+        for (int i = 0; i < numEvns; i++)
+        {
+            envsInstatiate.Add(Instantiate(envConfig.prefab, new Vector3(xPos, 0, 0), Quaternion.identity));
+            xPos += envConfig.bounds.extents.x + spacing;
+        }
+
+        return envsInstatiate;
+    }
+
     //private TrainEnvironment GetEnvById(string envId)
     //{
-       // return trainEnvironments.FirstOrDefault(env => env.id == envId);
+    // return trainEnvironments.FirstOrDefault(env => env.id == envId);
     //}
 
 

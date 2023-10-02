@@ -3,8 +3,8 @@ using Vinci.Academy.Ml.Data;
 
 public class AcademySession
 {
-    public TrainEnvironment selectedTrainEnv;
+    public TrainEnvironmentConfig selectedTrainEnv;
     public AgentConfig selectedAgent;
     public GameObject currentAgentInstance;
-    public GameObject currentEnvInstanc;
+    public GameObject currentEnvInstance;
 }

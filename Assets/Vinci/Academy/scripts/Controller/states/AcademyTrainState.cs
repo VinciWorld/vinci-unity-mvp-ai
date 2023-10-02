@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Unity.Barracuda;
 using UnityEngine;
 using Vinci.Core.StateMachine;
 using Vinci.Core.UI;
@@ -9,6 +10,7 @@ public class AcademyTrainState : StateBase
 {
     AcademyController _controller;
     AcademyTrainView trainView;
+
     public AcademyTrainState(AcademyController controller)
     {
         _controller = controller;
@@ -59,8 +61,8 @@ public class AcademyTrainState : StateBase
 
         GameObject created_agent = AgentFactory.instance.CreateAgent(
             _controller.academyData.session.selectedAgent,
-            new Vector3(0, 1.54f, -8.5f), Quaternion.identity
-
+            new Vector3(0, 1.54f, -8.5f), Quaternion.identity,
+            created_env.transform
         );
 
         created_env.GetComponent<EnvHallway>().Initialize(
@@ -69,7 +71,7 @@ public class AcademyTrainState : StateBase
 
 
         _controller.academyData.session.currentAgentInstance = created_agent;
-        _controller.academyData.session.currentEnvInstanc = created_env;
+        _controller.academyData.session.currentEnvInstance = created_env;
     }
 
     async void ConnectToRemoteInstance()
@@ -82,15 +84,21 @@ public class AcademyTrainState : StateBase
         PostTrainJobRequest trainJobRequest = new PostTrainJobRequest
         {
             agent_config = "agent_config",
-            nn_model_config = _controller.academyData.session.selectedAgent.modelConfig.behavior.SerializeToJson(),
-            env_config = _controller.academyData.session.selectedTrainEnv.id
+            nn_model_config = new TrainJobNNModelConfig
+            {
+                steps = 10000
+            },
+            env_config = new TrainJobEnvConfig
+            {
+                env_id = _controller.academyData.session.selectedTrainEnv.env_id
+            }
         };
 
         try
         {
             PostResponseTrainJob response = await RemoteTrainManager.instance.StartRemoteTrainning(trainJobRequest);
 
-            switch (response.status)
+            switch (response.job_status)
             {
                 case TrainJobStatus.SUBMITTED:
                 case TrainJobStatus.RETRIEVED:
@@ -99,7 +107,7 @@ public class AcademyTrainState : StateBase
                     RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
                     break;
                 case TrainJobStatus.SUCCEEDED:
-                    //Retrieve trained model
+                    LoadTrainedModel(response.run_id);
                     break;
 
                 default:
@@ -115,14 +123,30 @@ public class AcademyTrainState : StateBase
         }
     }
 
-    void OnReceivedAgentActions(Actions actions)
+    async private void  LoadTrainedModel(string runId)
     {
-        Debug.Log("Actions received: " + actions.data);
+        NNModel nnModel =  await RemoteTrainManager.instance.DownloadNNModel(runId);
     }
 
-    void OnReceivedTrainMetrics(Metrics metrics)
+    void OnReceivedAgentActions(string actionsJson)
     {
-        Debug.Log("Metrics received: " + metrics.Step);
+        _controller.academyData.session.currentAgentInstance.GetComponent<HallwayAgent>().UpdateActions(actionsJson);
+
+        TrainInfo trainInfo = JsonUtility.FromJson<TrainInfo>(actionsJson);
+        trainView.UptadeInfo(trainInfo.episodeCount, trainInfo.stepCount);
+
+        Debug.Log("Actions received: " + actionsJson);
+    }
+
+    void OnReceivedTrainMetrics(MetricsMsg metrics)
+    {
+        trainView.UpdateMetrics(
+            metrics.MeanReward,
+            metrics.MeanReward,
+            metrics.StdOfReward
+        );
+
+        Debug.Log("Metrics received: " + metrics);
     }
 
     void OnReceivedTrainStatus(string status)
