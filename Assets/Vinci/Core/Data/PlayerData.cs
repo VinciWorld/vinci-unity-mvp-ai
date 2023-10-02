@@ -13,6 +13,7 @@ public class PlayerData
 
     public void AddAgent(AgentConfig newAgent)
     {
+        currentAgentConfig = newAgent;
         agents.Add(newAgent);
     }
 

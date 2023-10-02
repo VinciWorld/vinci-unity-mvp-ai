@@ -40,6 +40,8 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
             NullValueHandling = NullValueHandling.Ignore
         });
 
+        Debug.Log(json);
+
         HTTPResponse response = await SendHTTPPostRequestAsync(url, json);
 
         if (response.StatusCode == 200)
