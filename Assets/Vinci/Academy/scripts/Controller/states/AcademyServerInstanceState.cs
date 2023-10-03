@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Unity.Barracuda;
 using UnityEngine;
-using Vinci.Academy.Ml.Data;
+using Vinci.Academy.Environement;
 using Vinci.Core.StateMachine;
 using Vinci.Core.UI;
 
@@ -14,7 +14,7 @@ public class AcademyServerInstanceState : StateBase
     AcademyController _controller;
     AcademyTrainView trainView;
 
-    EnvHallway mainEnv;
+    EnvironementBase mainEnv;
 
     public AcademyServerInstanceState(AcademyController controller)
     {
@@ -51,28 +51,28 @@ public class AcademyServerInstanceState : StateBase
             Debug.LogWarning("Unable to find env with id: " + envConfig.env_id);
         }
 
-        List<GameObject> envsInstances = _controller.envManager.CreateMutipleTrainEnvs(
+        List<EnvironementBase> envsInstances = _controller.envManager.CreateMutipleTrainEnvs(
             envConfig, trainEnvConfig.num_of_areas, 5f
         );
 
        for(int i = 0; i < envsInstances.Count; i++)
        {
-            EnvHallway env = envsInstances[i].GetComponent<EnvHallway>();
 
-            if(i == 0) mainEnv = env;
+
+            if(i == 0) mainEnv = envsInstances[i];
 
             GameObject created_agent = AgentFactory.instance.CreateAgent(
                 _controller.academyData.availableAgents[0],
                 new Vector3(0, 1.54f, -8.5f), Quaternion.identity,
-                env.transform
+                envsInstances[i].transform
 
             );
 
-            env.Initialize(created_agent.GetComponent<HallwayAgent>());
+            envsInstances[i].Initialize(created_agent.GetComponent<HallwayAgent>());
         }
 
-        mainEnv.agent.episodeBegin += OnEpisodeBegin;
-        mainEnv.agent.actionsReceived += OnActionReceived;
+        mainEnv.GetAgent().episodeBegin += OnEpisodeBegin;
+        mainEnv.GetAgent().actionsReceived += OnActionReceived;
     }
 
     void ConnectWebSocketToTrainInstance()

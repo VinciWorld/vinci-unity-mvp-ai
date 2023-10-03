@@ -48,6 +48,7 @@ public class AcademyResultsState : StateBase
     void OnTestModelButtonPressed()
     {
         _resultsView.ShowTestModelMetrics();
+        EvaluateModel();
     }
 
     void OnStopTestButtonPressed()
@@ -63,6 +64,12 @@ public class AcademyResultsState : StateBase
     void OnMintModelButtonPRessed()
     {
         Debug.Log("Mint model!");
+    }
+
+    void EvaluateModel()
+    {
+        EnvHallway env = _controller.session.currentEnvInstance.GetComponent<EnvHallway>();
+
     }
 
     void OnGameUpdateResults(int goalCompletedCount, int goalFailedCount)

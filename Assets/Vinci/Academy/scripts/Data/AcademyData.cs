@@ -1,8 +1,8 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using Vinci.Academy.Ml.Data;
 using System.Linq;
+using Vinci.Academy.Environement;
 
 [Serializable]
 public class AcademyData

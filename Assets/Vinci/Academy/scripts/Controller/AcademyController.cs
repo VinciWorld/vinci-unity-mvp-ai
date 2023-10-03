@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vinci.Academy.Environement;
 using Vinci.Core.Managers;
 using Vinci.Core.StateMachine;
 

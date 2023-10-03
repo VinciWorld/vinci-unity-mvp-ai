@@ -2,7 +2,7 @@ using System.Collections;
 using Unity.MLAgents;
 using UnityEngine;
 
-public class EnvHallway : MonoBehaviour
+public class EnvHallway : EnvironementBase
 {
     public GameObject ground;
     public GameObject area;
@@ -18,19 +18,18 @@ public class EnvHallway : MonoBehaviour
     Material _groundMaterial;
 
     HallwayAgent _agent;
-    public HallwayAgent agent => _agent; 
 
     void Start()
     {
         hallwaySettings = GameObject.FindObjectOfType<HallwaySettings>();
     }
 
-    public void Initialize(HallwayAgent agent)
+    public override void Initialize(HallwayAgent agent)
     {
         _agent = agent;
-        _agent.episodeBegin += OnEpisodeBegin;
+        _agent.episodeBegin += EpisodeBegin;
         _agent.hallwaySettings = hallwaySettings;
-        _agent.goalCompleted += OnGoalComplete;
+        _agent.goalCompleted += GoalCompleted;
 
         m_GroundRenderer = ground.GetComponent<Renderer>();
         _groundMaterial = m_GroundRenderer.material;
@@ -38,7 +37,7 @@ public class EnvHallway : MonoBehaviour
         _agent.ResetPosition(ground.transform.position);
     }
 
-    void OnEpisodeBegin()
+    public override void EpisodeBegin()
     {
    
         var blockOffset = 0f;
@@ -77,7 +76,7 @@ public class EnvHallway : MonoBehaviour
         }
     }
 
-    public void OnGoalComplete(bool result)
+    public override void GoalCompleted(bool result)
     {
         if(result)
         {
@@ -98,5 +97,10 @@ public class EnvHallway : MonoBehaviour
         m_GroundRenderer.material = mat;
         yield return new WaitForSeconds(time);
         m_GroundRenderer.material = _groundMaterial;
+    }
+
+    public override HallwayAgent GetAgent()
+    {
+        return _agent;
     }
 }

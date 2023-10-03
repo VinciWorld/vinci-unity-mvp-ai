@@ -86,7 +86,7 @@ public class AcademyTrainState : StateBase
 
     public void PrepareEnv()
     {
-        GameObject created_env = _controller.envManager.CreateTrainEnv(
+        EnvironementBase created_env = _controller.envManager.CreateTrainEnv(
             _controller.session.selectedTrainEnv
         );
 
@@ -95,7 +95,7 @@ public class AcademyTrainState : StateBase
 
     public void CreateAgent()
     {
-        GameObject envSelected = _controller.session.currentEnvInstance;
+        EnvironementBase envSelected = _controller.session.currentEnvInstance;
 
         GameObject created_agent = AgentFactory.instance.CreateAgent(
             _controller.session.selectedAgent,

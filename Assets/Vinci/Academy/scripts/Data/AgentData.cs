@@ -7,8 +7,11 @@ public class AgentConfig
     public string agentName;
     public string description;
 
+    [System.NonSerialized]
     public GameObject AgentPrefab;
+    
     public ModelConfig modelConfig;
+
 
 
     public bool GetIsModelTraining()

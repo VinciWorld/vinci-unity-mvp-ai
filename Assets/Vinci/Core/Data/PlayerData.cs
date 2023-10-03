@@ -2,6 +2,8 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using Unity.Barracuda;
+using System.Linq;
+using Vinci.Academy.Environement;
 
 [System.Serializable]
 public class PlayerData
@@ -10,6 +12,10 @@ public class PlayerData
 
     public AgentConfig currentAgentConfig;
     public List<AgentConfig> agents;
+
+
+    //Relation between model and train env
+    public Dictionary<string, TrainEnvironmentConfig> modelTrainingEnv;
 
     public void AddAgent(AgentConfig newAgent)
     {
