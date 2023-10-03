@@ -159,6 +159,7 @@ public class HallwayAgent : Agent
     public void LoadModel(string behaviorName, NNModel model)
     {
         _beahivor.BehaviorType = BehaviorType.HeuristicOnly;
+        Debug.Log(behaviorName);
         SetModel(behaviorName, model);
         _beahivor.BehaviorType = BehaviorType.InferenceOnly;
     }

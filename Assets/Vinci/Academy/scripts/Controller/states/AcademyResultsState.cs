@@ -1,3 +1,7 @@
+using System;
+using System.IO;
+using Unity.Barracuda;
+using Unity.Barracuda.ONNX;
 using UnityEngine;
 using Vinci.Core.Managers;
 using Vinci.Core.StateMachine;
@@ -16,6 +20,8 @@ public class AcademyResultsState : StateBase
     {
         AcademyTrainResultsView resultsView = ViewManager.GetView<AcademyTrainResultsView>();
         resultsView.mintModelButtonPressed += OnMintModelButtonPRessed;
+        resultsView.ShowResultsSubView();
+
     }
 
     public override void OnExitState()

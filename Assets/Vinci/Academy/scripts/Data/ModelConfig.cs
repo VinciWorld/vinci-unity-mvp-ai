@@ -15,5 +15,6 @@ public class ModelConfig
     public bool isModelMinted = false;
 
     public string nnModel_path;
+    [System.NonSerialized]
     public NNModel nnModel;
 }

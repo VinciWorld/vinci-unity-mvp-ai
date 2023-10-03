@@ -15,6 +15,9 @@ public class AcademyTrainState : StateBase
     AcademyController _controller;
     AcademyTrainView trainView;
 
+    bool isTrainJobComplete = false;
+    bool isModelLoaded = false;
+
     public AcademyTrainState(AcademyController controller)
     {
         _controller = controller;
@@ -64,20 +67,22 @@ public class AcademyTrainState : StateBase
         trainView.SetTrainHudSubViewState(true);
     }
 
-    async void OnReceivedTrainStatus(TrainJobStatusMsg trainJobStatus)
+    void OnReceivedTrainStatus(TrainJobStatusMsg trainJobStatus)
     {
         if( trainJobStatus.status == TrainJobStatus.SUCCEEDED)
         {
-            trainView.SetTrainSetupSubViewState(false);
-            trainView.SetTrainHudSubViewState(false);
-
-            Byte[] rawModel = await RemoteTrainManager.instance.DownloadNNModel(trainJobStatus.run_id);
-
-            SaveAndLoadModel(trainJobStatus.run_id, rawModel);
-
-            _controller.SwitchState(new AcademyResultsState(_controller));
-
+            try
+            {
+                trainView.SetTrainSetupSubViewState(false);
+                trainView.SetTrainHudSubViewState(false);
+    
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Unable to save and Load model: " + e.Message);
+            }
         }
+
         Debug.Log("Status received: " + trainJobStatus.status);
     }
 
@@ -114,6 +119,7 @@ public class AcademyTrainState : StateBase
         RemoteTrainManager.instance.actionsReceived += OnReceivedAgentActions;
         RemoteTrainManager.instance.metricsReceived += OnReceivedTrainMetrics;
         RemoteTrainManager.instance.statusReceived += OnReceivedTrainStatus;
+        RemoteTrainManager.instance.binaryDataReceived += OnBinaryDataRecived;
 
         PostTrainJobRequest trainJobRequest = new PostTrainJobRequest
         {
@@ -171,6 +177,12 @@ public class AcademyTrainState : StateBase
         RemoteTrainManager.instance.SendWebSocketJson(json);
     }
 
+    void OnBinaryDataRecived(byte[] data)
+    {
+        SaveAndLoadModel(data);
+        RemoteTrainManager.instance.CloseWebSocketConnection();
+    }
+
     void OnReceivedTrainMetrics(MetricsMsg metrics)
     {
         trainView.UpdateMetrics(
@@ -191,12 +203,15 @@ public class AcademyTrainState : StateBase
         Debug.Log("Actions received: " + actionsJson);
     }
 
-    void SaveAndLoadModel(string runId, Byte[] rawModel)
+    void SaveAndLoadModel(Byte[] rawModel)
     {
+        string runId = _controller.session.selectedAgent.GetModelRunID();
+
         string behaviourName = GameManager.instance.playerData.currentAgentConfig.modelConfig.behavior.behavior_name;
         string directoryPath = Path.Combine(Application.persistentDataPath, "runs", runId, "models");
         string filePath = Path.Combine(directoryPath, $"{behaviourName}.onnx");
 
+        Debug.Log("Model saved at: " + filePath);
         // Ensure the directory exists
         if (!Directory.Exists(directoryPath))
         {
@@ -205,6 +220,7 @@ public class AcademyTrainState : StateBase
 
         // Convert and Save model to disk
         NNModel nnModel = SaveAndConvertModel(filePath, rawModel);
+        nnModel.name = behaviourName;
 
         GameManager.instance.playerData.SetModelAndPath(filePath, nnModel);
 
@@ -237,5 +253,4 @@ public class AcademyTrainState : StateBase
 
         return asset;
     }
-
 }
