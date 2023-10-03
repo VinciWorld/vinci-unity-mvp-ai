@@ -170,6 +170,11 @@ public class HallwayAgent : Agent
         _agentRb = GetComponent<Rigidbody>();
     }
 
+    public void SetBehaviourType(BehaviorType type)
+    {
+        _beahivor.BehaviorType = type;
+    }
+
 
     public void ResetPosition(Vector3 groundPos)
     {

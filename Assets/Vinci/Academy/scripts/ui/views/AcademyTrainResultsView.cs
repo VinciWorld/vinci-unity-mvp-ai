@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,24 +25,16 @@ public class AcademyTrainResultsView : View
     [SerializeField]
     private TextMeshProUGUI _meanRweard;
 
-    [Header("Test Model")]
+    [Header("Evaluate Model")]
     [SerializeField]
     GameObject popUpTestModel;
     [SerializeField]
     private Button _stopTestModelButton;
-    [SerializeField]
-    private TextMeshProUGUI _goalCompletedCountTextHud;
-    [SerializeField]
-    private TextMeshProUGUI _goalFailedCountTextHud;
-    [SerializeField]
-    private TextMeshProUGUI _goalSuccessRationTextHud;
+    public KeyValueText keyValueTextPrefab;
+    public Transform parentTransformEvaluationHud;
+    public Transform parentTransformEvaluatioResults;
 
-    [SerializeField]
-    private TextMeshProUGUI _goalCompletedCountText;
-    [SerializeField]
-    private TextMeshProUGUI _goalFailedCountText;
-    [SerializeField]
-    private TextMeshProUGUI _goalSuccessRationText;
+    private Dictionary<string, KeyValueText> instantiatedPrefabs = new Dictionary<string, KeyValueText>();
 
 
     public event Action homeButtonPressed;
@@ -80,14 +73,39 @@ public class AcademyTrainResultsView : View
         _meanRweard.text = meanReward.ToString("F00");
     }
 
-    public void UpdateTestMetrics(int goalCompletedCount, int goalFailedCount, float goalSuccessRatio)
-    {
-        _goalCompletedCountText.text = goalCompletedCount.ToString();
-        _goalFailedCountText.text = goalFailedCount.ToString();
-        _goalSuccessRationText.text = goalSuccessRatio.ToString("F0");
 
-        _goalCompletedCountTextHud.text = goalCompletedCount.ToString();
-        _goalFailedCountTextHud.text = goalFailedCount.ToString();
-        _goalSuccessRationTextHud.text = goalSuccessRatio.ToString("F0");
+    public void UpdateEvaluationMetricsResults(Dictionary<string, string> metrics)
+    {
+        foreach (var metric in metrics)
+        {
+            if (!instantiatedPrefabs.TryGetValue(metric.Key, out KeyValueText keyValueTextInstance))
+            {
+                keyValueTextInstance = Instantiate(keyValueTextPrefab, parentTransformEvaluatioResults);
+                keyValueTextInstance.SetKeyAndValue(metric.Key, metric.Value);
+                instantiatedPrefabs[metric.Key] = keyValueTextInstance;
+            }
+            else
+            {
+                keyValueTextInstance.SetValue(metric.Value);
+            }
+        }
+    }
+
+
+    public void UpdateEvaluationMetrics(Dictionary<string, string> metrics)
+    {
+        foreach (var metric in metrics)
+        {
+            if (!instantiatedPrefabs.TryGetValue(metric.Key, out KeyValueText keyValueTextInstance))
+            {
+                keyValueTextInstance = Instantiate(keyValueTextPrefab, parentTransformEvaluationHud);
+                keyValueTextInstance.SetKeyAndValue(metric.Key, metric.Value);
+                instantiatedPrefabs[metric.Key] = keyValueTextInstance;
+            }
+            else
+            {
+                keyValueTextInstance.SetValue(metric.Value);
+            }
+        }
     }
 }

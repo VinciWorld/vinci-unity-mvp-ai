@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Unity.Barracuda;
 using Unity.Barracuda.ONNX;
@@ -11,6 +12,8 @@ public class AcademyResultsState : StateBase
 {
     AcademyController _controller;
     AcademyTrainResultsView _resultsView;
+
+    EnvironementBase currentEnv;
 
     public AcademyResultsState(AcademyController controller)
     {
@@ -33,6 +36,11 @@ public class AcademyResultsState : StateBase
             0.0f
         );
 
+        currentEnv = _controller.session.currentEnvInstance;
+        currentEnv.updateEnvResults += OnUpdateEnvResults;
+
+        _resultsView.UpdateEvaluationMetricsResults(currentEnv.GetEvaluationMetricResults());
+
     }
 
     public override void OnExitState()
@@ -47,13 +55,16 @@ public class AcademyResultsState : StateBase
 
     void OnTestModelButtonPressed()
     {
+        currentEnv.Reset();
         _resultsView.ShowTestModelMetrics();
         EvaluateModel();
     }
 
     void OnStopTestButtonPressed()
     {
+        _resultsView.UpdateEvaluationMetricsResults(currentEnv.GetEvaluationMetricResults());
         _resultsView.ShowResultsSubView();
+
     }
 
     void OnTrainAgainButtonPressed()
@@ -72,15 +83,8 @@ public class AcademyResultsState : StateBase
 
     }
 
-    void OnGameUpdateResults(int goalCompletedCount, int goalFailedCount)
+    void OnUpdateEnvResults(Dictionary<string, string> results)
     {
-        float successRatio = 0.0f;
-
-        if (goalCompletedCount != 0)
-        {
-            successRatio = (float)goalCompletedCount / (goalCompletedCount + goalFailedCount);
-        }
-
-        _resultsView.UpdateTestMetrics(goalCompletedCount, goalFailedCount, successRatio);
+        _resultsView.UpdateEvaluationMetrics(results);
     }
 }
