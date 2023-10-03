@@ -29,6 +29,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
     const string endpointWebsoctClientStream = "/ws/v1/client-stream";
 
     public event Action websocketOpen;
+    public event Action<byte[]> binaryDataReceived;
     public event Action<MetricsMsg> metricsReceived;
     public event Action episodeBegin;
     public event Action<string> actionsReceived;
@@ -77,7 +78,6 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         }
     }
 
-
     public void ConnectWebSocketToTrainInstance()
     {
         string url = websockt_prefix + centralNode + endpointWebsoctClientStream;
@@ -90,6 +90,11 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         string url = websockt_prefix + centralNode + endpointWebsoctClientStream;
 
         InitializeWebSocket(url);
+    }
+
+    public void CloseWebSocketConnection()
+    {
+        _webSocket.Close();
     }
 
     public void SendWebSocketJson(string jsonData)
@@ -105,7 +110,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         _webSocket = new WebSocket(new Uri(url));
         _webSocket.OnOpen += OnWebsocktSocketOpen;
         _webSocket.OnMessage += OnWebsocketMessageReceived;
-        //_webSocket.OnBinary += (WebSocket ws, byte[] data) => OnWebSocketBinaryReceived?.Invoke(ws, data);
+        _webSocket.OnBinary += OnWebSocketBinaryReceived;
         _webSocket.OnClosed += OnWebSocketClosed;
         _webSocket.OnError += OnWebSocketError;
         _webSocket.Open();
@@ -116,6 +121,11 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         Debug.Log("WebSocket is now Open!");
         websocketOpen?.Invoke();
         _webSocket = webSocket;
+    }
+
+    private void OnWebSocketBinaryReceived(WebSocket ws, byte[] data)
+    {
+        binaryDataReceived?.Invoke(data);
     }
 
     private void OnWebsocketMessageReceived(WebSocket webSocket, string message)
@@ -131,7 +141,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
                 break;
 
             case (int)MessagesID.ACTIONS:
-                actionsReceived?.Invoke(message);
+                //actionsReceived?.Invoke(message);
                 break;
 
             case (int)MessagesID.STATUS:
@@ -181,7 +191,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
 
         request.AddHeader("Content-Type", "application/json");
         request.RawData = Encoding.UTF8.GetBytes(jsonData);
-        request.Send();
+        await request.Send();
 
         return await tcs.Task;
     }
@@ -198,7 +208,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
                 tcs.SetResult(resp);
         });
 
-        request.Send();
+        await request.Send();
 
         return await tcs.Task;
     }
@@ -210,4 +220,6 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         request.RawData = System.Text.Encoding.UTF8.GetBytes(jsonData);
         request.Send();
     }
+
+
 }

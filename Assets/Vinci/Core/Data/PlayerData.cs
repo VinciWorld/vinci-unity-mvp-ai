@@ -9,7 +9,6 @@ public class PlayerData
     public string username;
 
     public AgentConfig currentAgentConfig;
-
     public List<AgentConfig> agents;
 
     public void AddAgent(AgentConfig newAgent)
@@ -47,6 +46,7 @@ public class PlayerData
     {
         currentAgentConfig.modelConfig.nnModel_path = modelPath;
         currentAgentConfig.modelConfig.nnModel = nnModel;
+        currentAgentConfig.modelConfig.isModelTraining = false;
         currentAgentConfig.modelConfig.isModelLoaded = true;
     }
 }
