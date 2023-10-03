@@ -25,8 +25,6 @@ public class AcademyTrainState : StateBase
 
     public override void OnEnterState()
     {
-        Debug.Log("AcademyTrainView");
-
         trainView = ViewManager.GetView<AcademyTrainView>();
 
         ViewManager.Show<AcademyTrainView>();
@@ -39,7 +37,7 @@ public class AcademyTrainState : StateBase
 
     public override void OnExitState()
     {
-
+        GameManager.instance.SavePlayerData();
     }
 
     public override void Tick(float deltaTime)
@@ -180,7 +178,9 @@ public class AcademyTrainState : StateBase
     void OnBinaryDataRecived(byte[] data)
     {
         SaveAndLoadModel(data);
+
         RemoteTrainManager.instance.CloseWebSocketConnection();
+        _controller.SwitchState(new AcademyResultsState(_controller));
     }
 
     void OnReceivedTrainMetrics(MetricsMsg metrics)

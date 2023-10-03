@@ -18,7 +18,7 @@ public class AcademyTrainResultsView : View
     [SerializeField]
     private Button _trainAgainButton;
     [SerializeField]
-    private Button _testModelButton;
+    private Button _evaluateButton;
     [SerializeField]
     private TextMeshProUGUI _stepTrainedCount;
     [SerializeField]
@@ -30,6 +30,13 @@ public class AcademyTrainResultsView : View
     [SerializeField]
     private Button _stopTestModelButton;
     [SerializeField]
+    private TextMeshProUGUI _goalCompletedCountTextHud;
+    [SerializeField]
+    private TextMeshProUGUI _goalFailedCountTextHud;
+    [SerializeField]
+    private TextMeshProUGUI _goalSuccessRationTextHud;
+
+    [SerializeField]
     private TextMeshProUGUI _goalCompletedCountText;
     [SerializeField]
     private TextMeshProUGUI _goalFailedCountText;
@@ -40,8 +47,8 @@ public class AcademyTrainResultsView : View
     public event Action homeButtonPressed;
     public event Action mintModelButtonPressed;
     public event Action trainAgainButtonPressed;
-    public event Action testModelButtonPressed;
-    public event Action stopTestModelButtonPressed;
+    public event Action evaluateModelButtonPressed;
+    public event Action stopEvaluateModelButtonPressed;
 
 
     public override void Initialize()
@@ -49,8 +56,8 @@ public class AcademyTrainResultsView : View
         //_HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
         _mintModelButton.onClick.AddListener(() => mintModelButtonPressed?.Invoke());
         _trainAgainButton.onClick.AddListener(() => trainAgainButtonPressed?.Invoke());
-        _testModelButton.onClick.AddListener(() => testModelButtonPressed?.Invoke());
-        _stopTestModelButton.onClick.AddListener(() => stopTestModelButtonPressed?.Invoke());
+        _evaluateButton.onClick.AddListener(() => evaluateModelButtonPressed?.Invoke());
+        _stopTestModelButton.onClick.AddListener(() => stopEvaluateModelButtonPressed?.Invoke());
 
         ShowResultsSubView();
     }
@@ -77,6 +84,10 @@ public class AcademyTrainResultsView : View
     {
         _goalCompletedCountText.text = goalCompletedCount.ToString();
         _goalFailedCountText.text = goalFailedCount.ToString();
-        _meanRweard.text = goalSuccessRatio.ToString("F0");
+        _goalSuccessRationText.text = goalSuccessRatio.ToString("F0");
+
+        _goalCompletedCountTextHud.text = goalCompletedCount.ToString();
+        _goalFailedCountTextHud.text = goalFailedCount.ToString();
+        _goalSuccessRationTextHud.text = goalSuccessRatio.ToString("F0");
     }
 }

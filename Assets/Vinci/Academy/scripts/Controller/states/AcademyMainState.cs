@@ -14,7 +14,6 @@ public class AcademyMainState : StateBase
 
     public override void OnEnterState()
     {
-        Debug.Log("Enter state Main");
         AcademyMainView mainView = ViewManager.GetView<AcademyMainView>();
 
         mainView.homeButtonPressed += OnHomeButtonPressed;
@@ -26,7 +25,7 @@ public class AcademyMainState : StateBase
 
     public override void OnExitState()
     {
-
+        GameManager.instance.SavePlayerData();
     }
 
     public override void Tick(float deltaTime)

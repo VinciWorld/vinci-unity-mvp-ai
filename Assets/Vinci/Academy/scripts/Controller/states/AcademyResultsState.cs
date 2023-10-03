@@ -10,6 +10,7 @@ using Vinci.Core.UI;
 public class AcademyResultsState : StateBase
 {
     AcademyController _controller;
+    AcademyTrainResultsView _resultsView;
 
     public AcademyResultsState(AcademyController controller)
     {
@@ -18,9 +19,19 @@ public class AcademyResultsState : StateBase
 
     public override void OnEnterState()
     {
-        AcademyTrainResultsView resultsView = ViewManager.GetView<AcademyTrainResultsView>();
-        resultsView.mintModelButtonPressed += OnMintModelButtonPRessed;
-        resultsView.ShowResultsSubView();
+        _resultsView = ViewManager.GetView<AcademyTrainResultsView>();
+        _resultsView.mintModelButtonPressed += OnMintModelButtonPRessed;
+        _resultsView.trainAgainButtonPressed += OnTrainAgainButtonPressed;
+        _resultsView.evaluateModelButtonPressed += OnTestModelButtonPressed;
+        _resultsView.stopEvaluateModelButtonPressed += OnStopTestButtonPressed;
+
+        ViewManager.Show<AcademyTrainResultsView>();
+        _resultsView.ShowResultsSubView();
+
+        _resultsView.UpdateTrainResults(
+            _controller.session.selectedAgent.modelConfig.behavior.steps,
+            0.0f
+        );
 
     }
 
@@ -34,10 +45,35 @@ public class AcademyResultsState : StateBase
 
     }
 
+    void OnTestModelButtonPressed()
+    {
+        _resultsView.ShowTestModelMetrics();
+    }
+
+    void OnStopTestButtonPressed()
+    {
+        _resultsView.ShowResultsSubView();
+    }
+
+    void OnTrainAgainButtonPressed()
+    {
+        _controller.SwitchState(new AcademyTrainState(_controller));
+    }
+
     void OnMintModelButtonPRessed()
     {
         Debug.Log("Mint model!");
     }
 
+    void OnGameUpdateResults(int goalCompletedCount, int goalFailedCount)
+    {
+        float successRatio = 0.0f;
 
+        if (goalCompletedCount != 0)
+        {
+            successRatio = (float)goalCompletedCount / (goalCompletedCount + goalFailedCount);
+        }
+
+        _resultsView.UpdateTestMetrics(goalCompletedCount, goalFailedCount, successRatio);
+    }
 }
