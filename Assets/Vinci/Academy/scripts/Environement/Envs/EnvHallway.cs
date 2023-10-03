@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.MLAgents;
+using Unity.MLAgents.Policies;
 using UnityEngine;
 
 public class EnvHallway : EnvironementBase
@@ -28,6 +29,7 @@ public class EnvHallway : EnvironementBase
 
     void Start()
     {
+        Academy.Instance.AutomaticSteppingEnabled = false;
         hallwaySettings = GameObject.FindObjectOfType<HallwaySettings>();
     }
 
@@ -155,5 +157,21 @@ public class EnvHallway : EnvironementBase
     public override HallwayAgent GetAgent()
     {
         return _agent;
+    }
+
+    public override void SetAgentBehavior(BehaviorType type)
+    {
+        _agent.SetBehaviorType(type);
+    }
+
+    public override void StartEnv()
+    {
+        Reset();
+        Academy.Instance.AutomaticSteppingEnabled = true;
+    }
+
+    public override void StopEnv()
+    {
+        Academy.Instance.AutomaticSteppingEnabled = false;
     }
 }

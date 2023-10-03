@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Unity.Barracuda;
 using Unity.Barracuda.ONNX;
@@ -14,9 +12,6 @@ public class AcademyTrainState : StateBase
 {
     AcademyController _controller;
     AcademyTrainView trainView;
-
-    bool isTrainJobComplete = false;
-    bool isModelLoaded = false;
 
     public AcademyTrainState(AcademyController controller)
     {
@@ -38,6 +33,9 @@ public class AcademyTrainState : StateBase
     public override void OnExitState()
     {
         GameManager.instance.SavePlayerData();
+
+        trainView.homeButtonPressed -= OnHomeButtonPressed;
+        trainView.trainButtonPressed -= OnTrainButtonPressed;
     }
 
     public override void Tick(float deltaTime)
@@ -137,7 +135,7 @@ public class AcademyTrainState : StateBase
         {
             PostResponseTrainJob response = await RemoteTrainManager.instance.StartRemoteTrainning(trainJobRequest);
 
-            _controller.manager.playerData.currentAgentConfig.SetRunID(response.run_id);
+            _controller.session.selectedAgent.SetRunID(response.run_id);
             CreateAgent();
             RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
 
@@ -168,7 +166,7 @@ public class AcademyTrainState : StateBase
 
     void OnWebSocketOpen()
     {
-        string run_id = _controller.manager.playerData.currentAgentConfig.GetModelRunID();
+        string run_id = _controller.session.selectedAgent.GetModelRunID();
         RunId data = new RunId { run_id = run_id };
 
         string json = JsonConvert.SerializeObject(data);
@@ -207,7 +205,7 @@ public class AcademyTrainState : StateBase
     {
         string runId = _controller.session.selectedAgent.GetModelRunID();
 
-        string behaviourName = GameManager.instance.playerData.currentAgentConfig.modelConfig.behavior.behavior_name;
+        string behaviourName = _controller.session.selectedAgent.modelConfig.behavior.behavior_name;
         string directoryPath = Path.Combine(Application.persistentDataPath, "runs", runId, "models");
         string filePath = Path.Combine(directoryPath, $"{behaviourName}.onnx");
 
@@ -222,7 +220,7 @@ public class AcademyTrainState : StateBase
         NNModel nnModel = SaveAndConvertModel(filePath, rawModel);
         nnModel.name = behaviourName;
 
-        GameManager.instance.playerData.SetModelAndPath(filePath, nnModel);
+        _controller.session.selectedAgent.SetModelAndPath(filePath, nnModel);
 
         // Load model on current agent
         _controller.session

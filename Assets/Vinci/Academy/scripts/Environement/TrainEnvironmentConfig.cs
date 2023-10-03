@@ -16,7 +16,6 @@ namespace Vinci.Academy.Environement
 
         public Bounds bounds;
 
-        [System.NonSerialized]
         public EnvironementBase prefab;
     }
 

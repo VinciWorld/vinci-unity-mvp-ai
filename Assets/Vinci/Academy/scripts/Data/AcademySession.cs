@@ -1,7 +1,9 @@
+using System;
 using UnityEngine;
 using Vinci.Academy.Environement;
 
 
+[Serializable]
 public class AcademySession
 {
     public TrainEnvironmentConfig selectedTrainEnv;

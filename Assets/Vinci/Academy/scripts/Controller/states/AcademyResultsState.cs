@@ -13,7 +13,7 @@ public class AcademyResultsState : StateBase
     AcademyController _controller;
     AcademyTrainResultsView _resultsView;
 
-    EnvironementBase currentEnv;
+    EnvironementBase currentEnvInstance;
 
     public AcademyResultsState(AcademyController controller)
     {
@@ -36,16 +36,28 @@ public class AcademyResultsState : StateBase
             0.0f
         );
 
-        currentEnv = _controller.session.currentEnvInstance;
-        currentEnv.updateEnvResults += OnUpdateEnvResults;
+        currentEnvInstance = _controller.session.currentEnvInstance;
+        currentEnvInstance.updateEnvResults += OnUpdateEnvResults;
+        currentEnvInstance.StopEnv();
+        currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.InferenceOnly);
 
-        _resultsView.UpdateEvaluationMetricsResults(currentEnv.GetEvaluationMetricResults());
 
+        Dictionary<string, string> evaluationREsults =
+             GameManager.instance.playerData.GetEvaluationResultsByKey(_controller.session.selectedTrainEnv.env_id);
+
+        if (_controller.session.selectedAgent.modelConfig.isEvaluated && evaluationREsults != null)
+        {   
+            _resultsView.UpdateEvaluationMetricsResults(evaluationREsults);
+        }
+        else
+        {
+            _resultsView.UpdateEvaluationMetricsResults(currentEnvInstance.GetEvaluationMetricResults());
+        }
     }
 
     public override void OnExitState()
     {
-
+        currentEnvInstance.updateEnvResults -= OnUpdateEnvResults;
     }
 
     public override void Tick(float deltaTime)
@@ -55,16 +67,23 @@ public class AcademyResultsState : StateBase
 
     void OnTestModelButtonPressed()
     {
-        currentEnv.Reset();
-        _resultsView.ShowTestModelMetrics();
         EvaluateModel();
     }
 
     void OnStopTestButtonPressed()
     {
-        _resultsView.UpdateEvaluationMetricsResults(currentEnv.GetEvaluationMetricResults());
-        _resultsView.ShowResultsSubView();
+        GameManager.instance.playerData.AddOrUpdateEvaluationResults(
+            _controller.session.selectedTrainEnv.env_id,
+            currentEnvInstance.GetEvaluationMetricResults()
+        );
 
+        GameManager.instance.SavePlayerData();
+
+        _resultsView.UpdateEvaluationMetricsResults(
+            GameManager.instance.playerData.GetEvaluationResultsByKey(_controller.session.selectedTrainEnv.env_id)
+        );
+
+        _resultsView.ShowResultsSubView();
     }
 
     void OnTrainAgainButtonPressed()
@@ -79,8 +98,9 @@ public class AcademyResultsState : StateBase
 
     void EvaluateModel()
     {
-        EnvHallway env = _controller.session.currentEnvInstance.GetComponent<EnvHallway>();
-
+        _resultsView.UpdateEvaluationMetrics(currentEnvInstance.GetEvaluationMetricResults());
+        _resultsView.ShowTestModelMetrics();
+        currentEnvInstance.StartEnv();
     }
 
     void OnUpdateEnvResults(Dictionary<string, string> results)

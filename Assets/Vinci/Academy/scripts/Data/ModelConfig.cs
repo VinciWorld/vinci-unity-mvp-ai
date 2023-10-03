@@ -23,6 +23,9 @@ public class ModelConfig
     public NNModel nnModel;
 
     public ModelPerformance performance;
+
+    public Dictionary<string, Dictionary<string, string>> modelEnvsEvaluationsResults = new();
+
 }
 
 [Serializable]

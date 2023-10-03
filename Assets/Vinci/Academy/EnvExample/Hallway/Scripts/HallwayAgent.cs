@@ -170,7 +170,7 @@ public class HallwayAgent : Agent
         _agentRb = GetComponent<Rigidbody>();
     }
 
-    public void SetBehaviourType(BehaviorType type)
+    public void SetBehaviorType(BehaviorType type)
     {
         _beahivor.BehaviorType = type;
     }

@@ -15,7 +15,8 @@ public class PlayerData
 
 
     //Relation between model and train env
-    public Dictionary<string, TrainEnvironmentConfig> modelTrainingEnv;
+    public Dictionary<string, TrainEnvironmentConfig> modelTrainingEnv = new Dictionary<string, TrainEnvironmentConfig>();
+
 
     public void AddAgent(AgentConfig newAgent)
     {
@@ -50,9 +51,16 @@ public class PlayerData
 
     public void SetModelAndPath(string modelPath, NNModel nnModel)
     {
-        currentAgentConfig.modelConfig.nnModel_path = modelPath;
-        currentAgentConfig.modelConfig.nnModel = nnModel;
-        currentAgentConfig.modelConfig.isModelTraining = false;
-        currentAgentConfig.modelConfig.isModelLoaded = true;
+        SetModelAndPath(modelPath, nnModel);
+    }
+
+    public void AddOrUpdateEvaluationResults(string envId, Dictionary<string, string> evaluationResults)
+    {
+        currentAgentConfig.AddOrUpdateEvaluationResults(envId, evaluationResults);
+    }
+
+    public Dictionary<string, string> GetEvaluationResultsByKey(string envId)
+    {
+        return currentAgentConfig.GetEvaluationResultsByKey(envId);
     }
 }

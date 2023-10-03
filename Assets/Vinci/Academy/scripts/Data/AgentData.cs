@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using Unity.Barracuda;
 using UnityEngine;
+using Vinci.Academy.Environement;
 
 [Serializable]
 public class AgentConfig
@@ -7,12 +10,21 @@ public class AgentConfig
     public string agentName;
     public string description;
 
-    [System.NonSerialized]
+    public List<TrainEnvironmentConfig> allowedEnvs;
+
     public GameObject AgentPrefab;
     
     public ModelConfig modelConfig;
 
 
+
+    public void SetModelAndPath(string modelPath, NNModel nnModel)
+    {
+        modelConfig.nnModel_path = modelPath;
+        modelConfig.nnModel = nnModel;
+        modelConfig.isModelTraining = false;
+        modelConfig.isModelLoaded = true;
+    }
 
     public bool GetIsModelTraining()
     {
@@ -44,5 +56,16 @@ public class AgentConfig
         return modelConfig.run_id;
     }
 
+    public void AddOrUpdateEvaluationResults(string envId, Dictionary<string, string> evaluationResults)
+    {
+        modelConfig.isEvaluated = true;
+        modelConfig.modelEnvsEvaluationsResults[envId] = evaluationResults;
+    }
+
+    public Dictionary<string, string> GetEvaluationResultsByKey(string envId)
+    {
+        modelConfig.modelEnvsEvaluationsResults.TryGetValue(envId, out Dictionary<string, string> results);
+        return results; 
+    }
 }
 
