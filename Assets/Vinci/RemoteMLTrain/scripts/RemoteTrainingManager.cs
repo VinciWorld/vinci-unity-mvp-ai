@@ -27,6 +27,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
     
     const string endpointTainJobs = "/api/v1/train-jobs";
     const string endpointWebsoctClientStream = "/ws/v1/client-stream";
+    const string endpointWebsoctServerStream = "/api/v1/train-instance-stream";
 
     public event Action websocketOpen;
     public event Action<byte[]> binaryDataReceived;
@@ -80,7 +81,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
 
     public void ConnectWebSocketToTrainInstance()
     {
-        string url = websockt_prefix + centralNode + endpointWebsoctClientStream;
+        string url = websockt_prefix + centralNode + endpointWebsoctServerStream;
 
         InitializeWebSocket(url);
     }
@@ -130,7 +131,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
 
     private void OnWebsocketMessageReceived(WebSocket webSocket, string message)
     {
-        Debug.Log(message);
+        //Debug.Log(message);
         Header header = JsonUtility.FromJson<Header>(message);
         switch (header.msg_id)
         {
@@ -141,7 +142,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
                 break;
 
             case (int)MessagesID.ACTIONS:
-                //actionsReceived?.Invoke(message);
+                actionsReceived?.Invoke(message);
                 break;
 
             case (int)MessagesID.STATUS:
@@ -150,8 +151,8 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
                 break;
 
             case (int)MessagesID.TRAIN_JOB_CONFIG:
-                PostResponseTrainJob trainJobConfig = JsonConvert.DeserializeObject<PostResponseTrainJob>(message);
-                trainJobConfigReceived?.Invoke(trainJobConfig);
+                TrainJobMsg trainJobConfig = JsonConvert.DeserializeObject<TrainJobMsg>(message);
+                trainJobConfigReceived?.Invoke(trainJobConfig.train_job);
                 break;
 
             case (int)MessagesID.ON_EPISODE_BEGIN:

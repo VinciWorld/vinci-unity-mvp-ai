@@ -7,6 +7,8 @@ using Vinci.Academy.Environement;
 [Serializable]
 public class AgentConfig
 {
+    public string id;
+
     public string agentName;
     public string description;
 
@@ -17,11 +19,16 @@ public class AgentConfig
     public ModelConfig modelConfig;
 
 
+    public void AddTrainMetrics(float meanReward, float stdReward, int stepsTrained)
+    {
+        modelConfig.AddTrainMetrics(meanReward, stdReward, stepsTrained);
+    }
 
     public void SetModelAndPath(string modelPath, NNModel nnModel)
     {
         modelConfig.nnModel_path = modelPath;
         modelConfig.nnModel = nnModel;
+
         modelConfig.isModelTraining = false;
         modelConfig.isModelLoaded = true;
     }

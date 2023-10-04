@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Unity.Barracuda;
+using Unity.MLAgents;
 using UnityEngine;
 using Vinci.Academy.Environement;
 using Vinci.Core.StateMachine;
@@ -23,13 +24,17 @@ public class AcademyServerInstanceState : StateBase
 
     public override void OnEnterState()
     {
+
+        Academy.Instance.AutomaticSteppingEnabled = false;
+
         EnvConfigSmall config = new EnvConfigSmall();
         config.env_id = "0001";
         config.num_of_areas = 8;
+        config.agent_id = "999";
 
-        StartTraining(config);
+        //StartTraining(config);
 
-        //ConnectWebSocketToTrainInstance();
+        ConnectWebSocketToTrainInstance();
     }
 
     public override void OnExitState()
@@ -44,11 +49,19 @@ public class AcademyServerInstanceState : StateBase
 
     public void StartTraining(EnvConfigSmall trainEnvConfig)
     {
+        Debug.Log("START TRAINNING");
+
         TrainEnvironmentConfig envConfig = _controller.academyData.GetTrainEnvById(trainEnvConfig.env_id);
+        AgentConfig agentConfig = _controller.academyData.GetAgentById(trainEnvConfig.agent_id);
 
         if(envConfig == null)
         {
-            Debug.LogWarning("Unable to find env with id: " + envConfig.env_id);
+            Debug.LogError("Unable to find env with id: " + trainEnvConfig.env_id);
+        }
+
+        if (agentConfig == null)
+        {
+            Debug.LogError("Unable to find agent with id: " + trainEnvConfig.agent_id);
         }
 
         List<EnvironementBase> envsInstances = _controller.envManager.CreateMutipleTrainEnvs(
@@ -57,12 +70,10 @@ public class AcademyServerInstanceState : StateBase
 
        for(int i = 0; i < envsInstances.Count; i++)
        {
-
-
             if(i == 0) mainEnv = envsInstances[i];
 
             GameObject created_agent = AgentFactory.instance.CreateAgent(
-                _controller.academyData.availableAgents[0],
+                agentConfig,
                 new Vector3(0, 1.54f, -8.5f), Quaternion.identity,
                 envsInstances[i].transform
 
@@ -71,8 +82,9 @@ public class AcademyServerInstanceState : StateBase
             envsInstances[i].Initialize(created_agent.GetComponent<HallwayAgent>());
         }
 
-        mainEnv.GetAgent().episodeBegin += OnEpisodeBegin;
-        mainEnv.GetAgent().actionsReceived += OnActionReceived;
+        RemoteTrainManager.instance.SendWebSocketJson("Instance: Start Training");
+
+        Academy.Instance.AutomaticSteppingEnabled = true;
     }
 
     void ConnectWebSocketToTrainInstance()

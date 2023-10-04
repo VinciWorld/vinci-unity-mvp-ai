@@ -44,6 +44,7 @@ public class BehaviorConfigSmall
 [Serializable]
 public class EnvConfigSmall
 {
+    public string agent_id;
     public string env_id;
     public int num_of_areas;
 }

@@ -6,6 +6,8 @@ using UnityEngine;
 public abstract class EnvironementBase : MonoBehaviour
 {
     public abstract event Action<Dictionary<string, string>> updateEnvResults;
+    public abstract event Action<string> actionsReceived;
+    public abstract event Action<int, int> episodeAndStepCountUpdated;
 
     public abstract HallwayAgent GetAgent();
 
@@ -20,4 +22,6 @@ public abstract class EnvironementBase : MonoBehaviour
     public abstract void SetAgentBehavior(BehaviorType type);
 
     public abstract Dictionary<string, string> GetEvaluationMetricResults();
+
+    public abstract void OnActionsFromServerReceived(string actions);
 }

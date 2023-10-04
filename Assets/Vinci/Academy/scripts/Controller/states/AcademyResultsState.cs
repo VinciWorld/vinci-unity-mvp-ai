@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Unity.Barracuda;
 using Unity.Barracuda.ONNX;
+using Unity.MLAgents;
 using UnityEngine;
 using Vinci.Core.Managers;
 using Vinci.Core.StateMachine;
@@ -32,8 +33,8 @@ public class AcademyResultsState : StateBase
         _resultsView.ShowResultsSubView();
 
         _resultsView.UpdateTrainResults(
-            _controller.session.selectedAgent.modelConfig.behavior.steps,
-            0.0f
+            _controller.session.selectedAgent.modelConfig.trainMetrics.stepsTrained,
+            _controller.session.selectedAgent.modelConfig.trainMetrics.meanReward
         );
 
         currentEnvInstance = _controller.session.currentEnvInstance;
@@ -62,7 +63,8 @@ public class AcademyResultsState : StateBase
 
     public override void Tick(float deltaTime)
     {
-
+        //Debug.Log("Episode: " + Academy.Instance.EpisodeCount);
+        //Debug.Log("Steps: " + Academy.Instance.StepCount);
     }
 
     void OnTestModelButtonPressed()
@@ -72,6 +74,8 @@ public class AcademyResultsState : StateBase
 
     void OnStopTestButtonPressed()
     {
+        currentEnvInstance.StopEnv();
+
         GameManager.instance.playerData.AddOrUpdateEvaluationResults(
             _controller.session.selectedTrainEnv.env_id,
             currentEnvInstance.GetEvaluationMetricResults()
@@ -100,7 +104,9 @@ public class AcademyResultsState : StateBase
     {
         _resultsView.UpdateEvaluationMetrics(currentEnvInstance.GetEvaluationMetricResults());
         _resultsView.ShowTestModelMetrics();
+
         currentEnvInstance.StartEnv();
+        _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.InferenceOnly);
     }
 
     void OnUpdateEnvResults(Dictionary<string, string> results)

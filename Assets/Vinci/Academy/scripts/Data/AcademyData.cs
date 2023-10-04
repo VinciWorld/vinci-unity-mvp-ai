@@ -14,4 +14,9 @@ public class AcademyData
     {
         return availableTrainEnvs.FirstOrDefault(env => env.env_id == id);
     }
+
+    public AgentConfig GetAgentById(string id)
+    {
+        return availableAgents.FirstOrDefault(agent => agent.id == id);
+    }
 }

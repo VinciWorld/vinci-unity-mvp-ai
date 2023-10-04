@@ -3,6 +3,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Unity.Barracuda;
 using Unity.Barracuda.ONNX;
+using Unity.MLAgents;
 using UnityEngine;
 using Vinci.Core.Managers;
 using Vinci.Core.StateMachine;
@@ -28,6 +29,9 @@ public class AcademyTrainState : StateBase
 
         trainView.SetTrainSetupSubViewState(true);
         trainView.SetTrainHudSubViewState(false);
+
+        Academy.Instance.AutomaticSteppingEnabled = false;
+   
     }
 
     public override void OnExitState()
@@ -36,6 +40,13 @@ public class AcademyTrainState : StateBase
 
         trainView.homeButtonPressed -= OnHomeButtonPressed;
         trainView.trainButtonPressed -= OnTrainButtonPressed;
+        _controller.session.currentEnvInstance.episodeAndStepCountUpdated -= trainView.UptadeInfo;
+
+        RemoteTrainManager.instance.websocketOpen -= OnWebSocketOpen;
+        RemoteTrainManager.instance.actionsReceived -= OnReceivedAgentActions;
+        RemoteTrainManager.instance.metricsReceived -= OnReceivedTrainMetrics;
+        RemoteTrainManager.instance.statusReceived -= OnReceivedTrainStatus;
+        RemoteTrainManager.instance.binaryDataReceived -= OnBinaryDataRecived;
     }
 
     public override void Tick(float deltaTime)
@@ -52,20 +63,22 @@ public class AcademyTrainState : StateBase
     {
         //TODO: Check if model is already trained or if it is trainning
 
-        if(!RemoteTrainManager.instance.isConnected)
+        PrepareEnv();
+        _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
+
+        if (!RemoteTrainManager.instance.isConnected)
         {
             MainThreadDispatcher.Instance().EnqueueAsync(ConnectToRemoteInstance);
         }
 
-        PrepareEnv();
-
         trainView.SetTrainSetupSubViewState(false);
         trainView.SetTrainHudSubViewState(true);
+        _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
     }
 
     void OnReceivedTrainStatus(TrainJobStatusMsg trainJobStatus)
     {
-        if( trainJobStatus.status == TrainJobStatus.SUCCEEDED)
+        if(trainJobStatus.status == TrainJobStatus.SUCCEEDED)
         {
             try
             {
@@ -78,6 +91,11 @@ public class AcademyTrainState : StateBase
                 Debug.LogError("Unable to save and Load model: " + e.Message);
             }
         }
+        else if(trainJobStatus.status == TrainJobStatus.FAILED)
+        {
+            Debug.Log("JOB FAILED");
+            _controller.SwitchState(new AcademyTrainState(_controller));
+        }
 
         Debug.Log("Status received: " + trainJobStatus.status);
     }
@@ -88,6 +106,18 @@ public class AcademyTrainState : StateBase
             _controller.session.selectedTrainEnv
         );
 
+
+        GameObject created_agent = AgentFactory.instance.CreateAgent(
+            _controller.session.selectedAgent,
+            new Vector3(0, 1.54f, -8.5f), Quaternion.identity,
+            created_env.transform
+        );
+
+        created_env.GetComponent<EnvHallway>().Initialize(
+            created_agent.GetComponent<HallwayAgent>()
+        );
+
+        _controller.session.currentAgentInstance = created_agent;
         _controller.session.currentEnvInstance = created_env;
     }
 
@@ -127,7 +157,9 @@ public class AcademyTrainState : StateBase
             },
             env_config = new EnvConfigSmall
             {
-                env_id = _controller.session.selectedTrainEnv.env_id
+                env_id = _controller.session.selectedTrainEnv.env_id,
+                num_of_areas = _controller.session.selectedTrainEnv.num_of_areas,
+                agent_id = _controller.session.selectedAgent.id
             }
         };
 
@@ -136,7 +168,7 @@ public class AcademyTrainState : StateBase
             PostResponseTrainJob response = await RemoteTrainManager.instance.StartRemoteTrainning(trainJobRequest);
 
             _controller.session.selectedAgent.SetRunID(response.run_id);
-            CreateAgent();
+           
             RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
 
             switch (response.job_status)
@@ -193,10 +225,10 @@ public class AcademyTrainState : StateBase
 
     void OnReceivedAgentActions(string actionsJson)
     {
-        _controller.session.currentAgentInstance.GetComponent<HallwayAgent>().UpdateActions(actionsJson);
+        _controller.session.currentEnvInstance.OnActionsFromServerReceived(actionsJson);
 
         TrainInfo trainInfo = JsonUtility.FromJson<TrainInfo>(actionsJson);
-        trainView.UptadeInfo(trainInfo.episodeCount, trainInfo.stepCount);
+        
 
         Debug.Log("Actions received: " + actionsJson);
     }

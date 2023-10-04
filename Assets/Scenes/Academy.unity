@@ -1319,7 +1319,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Train Performance
+  m_text: Train Metrics
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2662,7 +2662,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Environment  Evaluation
+  m_text: Evaluation Metrics
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3040,7 +3040,8 @@ MonoBehaviour:
   envManager: {fileID: 791300325}
   academyData:
     availableAgents:
-    - agentName: Big Eye
+    - id: 999
+      agentName: Big Eye
       description: What is a Cross?
       allowedEnvs: []
       AgentPrefab: {fileID: 5039102789477670585, guid: 20175c003f0502c4da4344f362648ed0,
@@ -3049,20 +3050,21 @@ MonoBehaviour:
         run_id: 
         behavior:
           behavior_name: Hallway
-          steps: 10000
+          steps: 15000
         isModelTraining: 0
         isModelLoaded: 0
         isModelMinted: 0
         isEvaluated: 0
         nnModel_path: 
-        performance:
+        trainMetrics:
           meanReward: 0
           stdReward: 0
           stepsTrained: 0
+          totalStepsTrained: 0
     availableTrainEnvs:
     - env_id: 0001
       envName: HallwayEnv
-      num_of_areas: 6
+      num_of_areas: 8
       bounds:
         m_Center: {x: 0, y: 0, z: 0}
         m_Extent: {x: 20, y: 0, z: 50}
@@ -3078,6 +3080,7 @@ MonoBehaviour:
         m_Extent: {x: 0, y: 0, z: 0}
       prefab: {fileID: 0}
     selectedAgent:
+      id: 
       agentName: 
       description: 
       allowedEnvs: []
@@ -3092,10 +3095,11 @@ MonoBehaviour:
         isModelMinted: 0
         isEvaluated: 0
         nnModel_path: 
-        performance:
+        trainMetrics:
           meanReward: 0
           stdReward: 0
           stepsTrained: 0
+          totalStepsTrained: 0
     currentAgentInstance: {fileID: 0}
     currentEnvInstance: {fileID: 0}
 --- !u!1 &409798737
@@ -3145,6 +3149,7 @@ MonoBehaviour:
   playerData:
     username: 
     currentAgentConfig:
+      id: 
       agentName: 
       description: 
       allowedEnvs: []
@@ -3159,10 +3164,11 @@ MonoBehaviour:
         isModelMinted: 0
         isEvaluated: 0
         nnModel_path: 
-        performance:
+        trainMetrics:
           meanReward: 0
           stdReward: 0
           stepsTrained: 0
+          totalStepsTrained: 0
     agents: []
 --- !u!114 &457484166 stripped
 MonoBehaviour:
