@@ -10,7 +10,7 @@ using System.Collections.Generic;
 public class HallwayAgent : Agent
 {
     public bool useVectorObs = true;
-    public int selection;
+    public int selection = 0;
     public HallwaySettings hallwaySettings;
     public EnvironementBase env;
 
@@ -93,7 +93,10 @@ public class HallwayAgent : Agent
         AddReward(-1f / MaxStep);
         MoveAgent(actionBuffers.DiscreteActions);
 
+#if !UNITY_EDITOR && UNITY_SERVER
         actionsBuffer.Add(discreteActionsOut[0]);
+#endif
+
     }
 
     void OnCollisionEnter(Collision col)

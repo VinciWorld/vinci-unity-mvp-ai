@@ -30,8 +30,13 @@ public class AcademyTrainState : StateBase
         trainView.SetTrainSetupSubViewState(true);
         trainView.SetTrainHudSubViewState(false);
 
+        RemoteTrainManager.instance.websocketOpen += OnWebSocketOpen;
+        RemoteTrainManager.instance.actionsReceived += OnReceivedAgentActions;
+        RemoteTrainManager.instance.metricsReceived += OnReceivedTrainMetrics;
+        RemoteTrainManager.instance.statusReceived += OnReceivedTrainStatus;
+        RemoteTrainManager.instance.binaryDataReceived += OnBinaryDataRecived;
+
         Academy.Instance.AutomaticSteppingEnabled = false;
-   
     }
 
     public override void OnExitState()
@@ -40,13 +45,17 @@ public class AcademyTrainState : StateBase
 
         trainView.homeButtonPressed -= OnHomeButtonPressed;
         trainView.trainButtonPressed -= OnTrainButtonPressed;
-        _controller.session.currentEnvInstance.episodeAndStepCountUpdated -= trainView.UptadeInfo;
-
+    
         RemoteTrainManager.instance.websocketOpen -= OnWebSocketOpen;
         RemoteTrainManager.instance.actionsReceived -= OnReceivedAgentActions;
         RemoteTrainManager.instance.metricsReceived -= OnReceivedTrainMetrics;
         RemoteTrainManager.instance.statusReceived -= OnReceivedTrainStatus;
         RemoteTrainManager.instance.binaryDataReceived -= OnBinaryDataRecived;
+
+        _controller.session.currentEnvInstance.episodeAndStepCountUpdated -= trainView.UptadeInfo;
+        _controller.session.currentEnvInstance.SetIsReplay(false);
+
+        GameObject.Destroy(_controller.session.currentEnvInstance);
     }
 
     public override void Tick(float deltaTime)
@@ -65,6 +74,8 @@ public class AcademyTrainState : StateBase
 
         PrepareEnv();
         _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
+        _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
+        _controller.session.currentEnvInstance.SetIsReplay(true);
 
         if (!RemoteTrainManager.instance.isConnected)
         {
@@ -73,7 +84,7 @@ public class AcademyTrainState : StateBase
 
         trainView.SetTrainSetupSubViewState(false);
         trainView.SetTrainHudSubViewState(true);
-        _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
+
     }
 
     void OnReceivedTrainStatus(TrainJobStatusMsg trainJobStatus)
@@ -141,11 +152,7 @@ public class AcademyTrainState : StateBase
     async void ConnectToRemoteInstance()
     {
         Debug.Log("Starting remote training Thread");
-        RemoteTrainManager.instance.websocketOpen += OnWebSocketOpen;
-        RemoteTrainManager.instance.actionsReceived += OnReceivedAgentActions;
-        RemoteTrainManager.instance.metricsReceived += OnReceivedTrainMetrics;
-        RemoteTrainManager.instance.statusReceived += OnReceivedTrainStatus;
-        RemoteTrainManager.instance.binaryDataReceived += OnBinaryDataRecived;
+
 
         PostTrainJobRequest trainJobRequest = new PostTrainJobRequest
         {
@@ -209,7 +216,9 @@ public class AcademyTrainState : StateBase
     {
         SaveAndLoadModel(data);
 
+
         RemoteTrainManager.instance.CloseWebSocketConnection();
+        _controller.session.currentEnvInstance.StopReplay();
         _controller.SwitchState(new AcademyResultsState(_controller));
     }
 
