@@ -63,8 +63,10 @@ public class AcademyTrainView : View
         float stdReward
     )
     {
-        meanRewardText.text = meanReward.ToString("F001");
-        stdRewardText.text = stdReward.ToString("F001");
+
+        Debug.Log("UPDAE METRICS " + meanReward + " : " + stdReward);
+        meanRewardText.text = meanReward.ToString("F3");
+        stdRewardText.text = stdReward.ToString("F3");
     }
 
     public void UpdateGameInfo(int wins, int loses)

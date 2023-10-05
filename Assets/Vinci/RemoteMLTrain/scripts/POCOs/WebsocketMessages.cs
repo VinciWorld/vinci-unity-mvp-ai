@@ -24,10 +24,10 @@ public class MetricsMsg
     public int msg_id;
 
     public string behaviour;
-    public int Step;
-    public float TimeElapsed;
-    public float MeanReward;
-    public float StdOfReward;
+    public int step;
+    public float time_elapsed;
+    public float mean_reward;
+    public float std_reward;
 
 }
 

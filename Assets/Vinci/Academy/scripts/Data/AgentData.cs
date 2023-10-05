@@ -19,9 +19,14 @@ public class AgentConfig
     public ModelConfig modelConfig;
 
 
-    public void AddTrainMetrics(float meanReward, float stdReward, int stepsTrained)
+    public void AddTrainMetrics(float meanReward, float stdReward)
     {
-        modelConfig.AddTrainMetrics(meanReward, stdReward, stepsTrained);
+        modelConfig.AddTrainMetrics(meanReward, stdReward);
+    }
+
+    public void AddStepsTrained(int stepsTrained)
+    {
+        modelConfig.AddStepsTrained(stepsTrained);
     }
 
     public void SetModelAndPath(string modelPath, NNModel nnModel)

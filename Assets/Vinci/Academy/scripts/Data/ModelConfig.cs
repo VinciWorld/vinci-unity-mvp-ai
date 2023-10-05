@@ -25,10 +25,14 @@ public class ModelConfig
     public ModelTrainMetrics trainMetrics = new();
     public Dictionary<string, Dictionary<string, string>> modelEnvsEvaluationsResults = new();
 
-    public void AddTrainMetrics(float meanReward, float stdReward, int stepsTrained)
+    public void AddTrainMetrics(float meanReward, float stdReward)
     {
         trainMetrics.meanReward = meanReward;
         trainMetrics.stdReward = stdReward;
+    }
+
+    public void AddStepsTrained(int stepsTrained)
+    {
         trainMetrics.stepsTrained = stepsTrained;
         trainMetrics.totalStepsTrained += stepsTrained;
     }

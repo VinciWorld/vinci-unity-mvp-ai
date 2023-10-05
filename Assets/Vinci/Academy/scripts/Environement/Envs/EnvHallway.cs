@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using BestHTTP.SecureProtocol.Org.BouncyCastle.Crypto.Engines;
 using Newtonsoft.Json;
 using Unity.MLAgents;
 using Unity.MLAgents.Policies;
@@ -180,6 +179,7 @@ public class EnvHallway : EnvironementBase
 
     public override void Reset()
     {
+        isFirstEpisode = false;
         goalsCompletedCount = 0;
         goalsFailedCount = 0;
         successRatio = 0;
@@ -292,13 +292,13 @@ public class EnvHallway : EnvironementBase
             totalStepCount += stepCount;
             stepCount = 0;
         }
-
-        Time.timeScale = 1f;
     }
 
     public override void StopReplay()
     {
         StopCoroutine(replayActionsLoopCoroutine);
+        replayActionsLoopCoroutine = null;
+        Time.timeScale = 1f;
     }
 
     public override void SetIsReplay(bool isResplay)

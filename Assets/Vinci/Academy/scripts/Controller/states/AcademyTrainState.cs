@@ -55,7 +55,6 @@ public class AcademyTrainState : StateBase
         _controller.session.currentEnvInstance.episodeAndStepCountUpdated -= trainView.UptadeInfo;
         _controller.session.currentEnvInstance.SetIsReplay(false);
 
-        GameObject.Destroy(_controller.session.currentEnvInstance);
     }
 
     public override void Tick(float deltaTime)
@@ -72,7 +71,13 @@ public class AcademyTrainState : StateBase
     {
         //TODO: Check if model is already trained or if it is trainning
 
-        PrepareEnv();
+        if(_controller.session.currentEnvInstance == null)
+        {
+            PrepareEnv();
+        } 
+
+        _controller.session.selectedAgent.AddStepsTrained(_controller.session.selectedAgent.modelConfig.behavior.steps);
+
         _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
         _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
         _controller.session.currentEnvInstance.SetIsReplay(true);
@@ -82,9 +87,11 @@ public class AcademyTrainState : StateBase
             MainThreadDispatcher.Instance().EnqueueAsync(ConnectToRemoteInstance);
         }
 
+        
+        trainView.UptadeInfo(0, 0);
+        trainView.UpdateMetrics(0,0);
         trainView.SetTrainSetupSubViewState(false);
         trainView.SetTrainHudSubViewState(true);
-
     }
 
     void OnReceivedTrainStatus(TrainJobStatusMsg trainJobStatus)
@@ -216,7 +223,6 @@ public class AcademyTrainState : StateBase
     {
         SaveAndLoadModel(data);
 
-
         RemoteTrainManager.instance.CloseWebSocketConnection();
         _controller.session.currentEnvInstance.StopReplay();
         _controller.SwitchState(new AcademyResultsState(_controller));
@@ -224,20 +230,17 @@ public class AcademyTrainState : StateBase
 
     void OnReceivedTrainMetrics(MetricsMsg metrics)
     {
-        trainView.UpdateMetrics(
-            metrics.MeanReward,
-            metrics.StdOfReward
-        );
+        _controller.session.selectedAgent.AddTrainMetrics(metrics.mean_reward, metrics.mean_reward);
 
-        Debug.Log("Metrics received: " + metrics);
+        trainView.UpdateMetrics(
+            metrics.mean_reward,
+            metrics.std_reward
+        );
     }
 
     void OnReceivedAgentActions(string actionsJson)
     {
         _controller.session.currentEnvInstance.OnActionsFromServerReceived(actionsJson);
-
-        TrainInfo trainInfo = JsonUtility.FromJson<TrainInfo>(actionsJson);
-        
 
         Debug.Log("Actions received: " + actionsJson);
     }

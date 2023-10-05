@@ -3,13 +3,15 @@ using UnityEngine;
 
 public class KeyValueText : MonoBehaviour 
 {
+    [SerializeField]
     TextMeshProUGUI labelText;
+    [SerializeField]
     TextMeshProUGUI valueText;
 
-    private void Awake() 
+    private void Start() 
     {
-        labelText = transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-        valueText = transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+        //labelText = transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+        //valueText = transform.GetChild(1).GetComponent<TextMeshProUGUI>();
     }
 
     public void SetKeyAndValue(string label, string value)

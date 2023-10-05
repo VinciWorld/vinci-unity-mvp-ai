@@ -43,12 +43,12 @@ public class AcademyResultsState : StateBase
         currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.InferenceOnly);
 
 
-        Dictionary<string, string> evaluationREsults =
+        Dictionary<string, string> evaluationResults =
              GameManager.instance.playerData.GetEvaluationResultsByKey(_controller.session.selectedTrainEnv.env_id);
 
-        if (_controller.session.selectedAgent.modelConfig.isEvaluated && evaluationREsults != null)
+        if (_controller.session.selectedAgent.modelConfig.isEvaluated && evaluationResults != null)
         {   
-            _resultsView.UpdateEvaluationMetricsResults(evaluationREsults);
+            _resultsView.UpdateEvaluationMetricsResults(evaluationResults);
         }
         else
         {
@@ -59,6 +59,11 @@ public class AcademyResultsState : StateBase
     public override void OnExitState()
     {
         currentEnvInstance.updateEnvResults -= OnUpdateEnvResults;
+
+        _resultsView.mintModelButtonPressed -= OnMintModelButtonPRessed;
+        _resultsView.trainAgainButtonPressed -= OnTrainAgainButtonPressed;
+        _resultsView.evaluateModelButtonPressed -= OnTestModelButtonPressed;
+        _resultsView.stopEvaluateModelButtonPressed -= OnStopTestButtonPressed;
     }
 
     public override void Tick(float deltaTime)

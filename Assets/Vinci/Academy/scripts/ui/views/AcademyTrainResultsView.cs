@@ -35,6 +35,7 @@ public class AcademyTrainResultsView : View
     public Transform parentTransformEvaluatioResults;
 
     private Dictionary<string, KeyValueText> instantiatedPrefabs = new Dictionary<string, KeyValueText>();
+    private Dictionary<string, KeyValueText> instantiatedPrefabsEvaluate = new Dictionary<string, KeyValueText>();
 
 
     public event Action homeButtonPressed;
@@ -70,7 +71,7 @@ public class AcademyTrainResultsView : View
     public void UpdateTrainResults(int stepsTrained, float meanReward)
     {
         _stepTrainedCount.text = stepsTrained.ToString();
-        _meanRweard.text = meanReward.ToString("F00");
+        _meanRweard.text = meanReward.ToString("F3");
     }
 
 
@@ -96,11 +97,12 @@ public class AcademyTrainResultsView : View
     {
         foreach (var metric in metrics)
         {
-            if (!instantiatedPrefabs.TryGetValue(metric.Key, out KeyValueText keyValueTextInstance))
+            if (!instantiatedPrefabsEvaluate.TryGetValue(metric.Key, out KeyValueText keyValueTextInstance))
             {
                 keyValueTextInstance = Instantiate(keyValueTextPrefab, parentTransformEvaluationHud);
+
                 keyValueTextInstance.SetKeyAndValue(metric.Key, metric.Value);
-                instantiatedPrefabs[metric.Key] = keyValueTextInstance;
+                instantiatedPrefabsEvaluate[metric.Key] = keyValueTextInstance;
             }
             else
             {
