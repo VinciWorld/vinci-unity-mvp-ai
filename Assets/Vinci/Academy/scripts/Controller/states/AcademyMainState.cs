@@ -6,6 +6,7 @@ using Vinci.Core.UI;
 public class AcademyMainState : StateBase
 {
     AcademyController _controller;
+    AcademyMainView _mainView;
 
     public AcademyMainState(AcademyController controller)
     {
@@ -14,19 +15,22 @@ public class AcademyMainState : StateBase
 
     public override void OnEnterState()
     {
-        Debug.Log("Enter state Main");
-        AcademyMainView mainView = ViewManager.GetView<AcademyMainView>();
+        _mainView = ViewManager.GetView<AcademyMainView>();
 
-        mainView.homeButtonPressed += OnHomeButtonPressed;
-        mainView.selectAgentButtonPressed += OnSelectAgentButtonPressed;
+        _mainView.homeButtonPressed += OnHomeButtonPressed;
+        _mainView.selectAgentButtonPressed += OnSelectAgentButtonPressed;
 
-        //TODO: Clone agent!
+        //TODO: Clone agent! This will be done in the create step!
         _controller.manager.playerData.AddAgent(_controller.academyData.availableAgents[0]);
+
+        _controller.session.selectedAgent = null;
     }
 
     public override void OnExitState()
     {
-
+        GameManager.instance.SavePlayerData();
+        _mainView.homeButtonPressed -= OnHomeButtonPressed;
+        _mainView.selectAgentButtonPressed -= OnSelectAgentButtonPressed;
     }
 
     public override void Tick(float deltaTime)
@@ -41,11 +45,9 @@ public class AcademyMainState : StateBase
 
     void OnSelectAgentButtonPressed()
     {
-        _controller.academyData.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
-        _controller.academyData.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
+        _controller.session.selectedAgent = _controller.manager.playerData.currentAgentConfig;
+        _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
 
         _controller.SwitchState(new AcademyTrainState(_controller));
     }
-
-
 }

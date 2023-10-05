@@ -4,8 +4,9 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Unity.Barracuda;
+using Unity.MLAgents;
 using UnityEngine;
-using Vinci.Academy.Ml.Data;
+using Vinci.Academy.Environement;
 using Vinci.Core.StateMachine;
 using Vinci.Core.UI;
 
@@ -14,7 +15,7 @@ public class AcademyServerInstanceState : StateBase
     AcademyController _controller;
     AcademyTrainView trainView;
 
-    EnvHallway mainEnv;
+    EnvironementBase mainEnv;
 
     public AcademyServerInstanceState(AcademyController controller)
     {
@@ -23,13 +24,17 @@ public class AcademyServerInstanceState : StateBase
 
     public override void OnEnterState()
     {
-        TrainJobEnvConfig config = new TrainJobEnvConfig();
+
+        Academy.Instance.AutomaticSteppingEnabled = false;
+
+        EnvConfigSmall config = new EnvConfigSmall();
         config.env_id = "0001";
         config.num_of_areas = 8;
+        config.agent_id = "999";
 
-        StartTraining(config);
+        //StartTraining(config);
 
-        //ConnectWebSocketToTrainInstance();
+        ConnectWebSocketToTrainInstance();
     }
 
     public override void OnExitState()
@@ -42,37 +47,44 @@ public class AcademyServerInstanceState : StateBase
 
     }
 
-    public void StartTraining(TrainJobEnvConfig trainEnvConfig)
+    public void StartTraining(EnvConfigSmall trainEnvConfig)
     {
+        Debug.Log("START TRAINNING");
+
         TrainEnvironmentConfig envConfig = _controller.academyData.GetTrainEnvById(trainEnvConfig.env_id);
+        AgentConfig agentConfig = _controller.academyData.GetAgentById(trainEnvConfig.agent_id);
 
         if(envConfig == null)
         {
-            Debug.LogWarning("Unable to find env with id: " + envConfig.env_id);
+            Debug.LogError("Unable to find env with id: " + trainEnvConfig.env_id);
         }
 
-        List<GameObject> envsInstances = _controller.envManager.CreateMutipleTrainEnvs(
+        if (agentConfig == null)
+        {
+            Debug.LogError("Unable to find agent with id: " + trainEnvConfig.agent_id);
+        }
+
+        List<EnvironementBase> envsInstances = _controller.envManager.CreateMutipleTrainEnvs(
             envConfig, trainEnvConfig.num_of_areas, 5f
         );
 
        for(int i = 0; i < envsInstances.Count; i++)
        {
-            EnvHallway env = envsInstances[i].GetComponent<EnvHallway>();
-
-            if(i == 0) mainEnv = env;
+            if(i == 0) mainEnv = envsInstances[i];
 
             GameObject created_agent = AgentFactory.instance.CreateAgent(
-                _controller.academyData.availableAgents[0],
+                agentConfig,
                 new Vector3(0, 1.54f, -8.5f), Quaternion.identity,
-                env.transform
+                envsInstances[i].transform
 
             );
 
-            env.Initialize(created_agent.GetComponent<HallwayAgent>());
+            envsInstances[i].Initialize(created_agent.GetComponent<HallwayAgent>());
         }
 
-        mainEnv.agent.episodeBegin += OnEpisodeBegin;
-        mainEnv.agent.actionsReceived += OnActionReceived;
+        RemoteTrainManager.instance.SendWebSocketJson("Instance: Start Training");
+
+        Academy.Instance.AutomaticSteppingEnabled = true;
     }
 
     void ConnectWebSocketToTrainInstance()

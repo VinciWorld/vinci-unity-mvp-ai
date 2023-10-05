@@ -1,10 +1,14 @@
+using System;
 using UnityEngine;
-using Vinci.Academy.Ml.Data;
+using Vinci.Academy.Environement;
 
+
+[Serializable]
 public class AcademySession
 {
     public TrainEnvironmentConfig selectedTrainEnv;
     public AgentConfig selectedAgent;
     public GameObject currentAgentInstance;
-    public GameObject currentEnvInstance;
+    public EnvironementBase currentEnvInstance;
+
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Vinci.Academy.Environement;
 using Vinci.Core.Managers;
 using Vinci.Core.StateMachine;
 
@@ -9,6 +10,7 @@ public class AcademyController : MonoBehaviour
     public GameManager manager;
     public EnvManager envManager;
     public AcademyData academyData;
+    public AcademySession session = new AcademySession();
 
     private StateBase _activeState;
 
@@ -16,14 +18,12 @@ public class AcademyController : MonoBehaviour
     {
         manager = GameManager.instance;
 
-
-
-#if UNITY_EDITOR && !UNITY_SERVER
+#if UNITY_EDITOR
         SwitchState(new AcademyMainState(this));
 
 #elif !UNITY_EDITOR && UNITY_SERVER
         SwitchState(new AcademyServerInstanceState(this));
-        
+
 #endif
 
     }

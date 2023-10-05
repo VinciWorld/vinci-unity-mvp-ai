@@ -17,7 +17,6 @@ public class AcademyMainView : View
 
     public override void Initialize()
     {
-        Debug.Log("Initialize AcademyMainView");
         _HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
         _selectAgentButton.onClick.AddListener(() => selectAgentButtonPressed?.Invoke());
     }

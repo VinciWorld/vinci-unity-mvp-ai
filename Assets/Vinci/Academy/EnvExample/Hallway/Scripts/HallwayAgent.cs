@@ -5,32 +5,33 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
 using Unity.Barracuda;
-using System;
-using Newtonsoft.Json;
+using System.Collections.Generic;
 
 public class HallwayAgent : Agent
 {
     public bool useVectorObs = true;
     public int selection;
     public HallwaySettings hallwaySettings;
+    public EnvironementBase env;
 
     Rigidbody _agentRb;
     StatsRecorder _statsRecorder;
     BehaviorParameters _beahivor;
 
-    public event Action episodeBegin;
-    public event Action<string> actionsReceived;
-    public event Action<bool> goalCompleted;
+    private int _actionFromServer = 0;
+   
 
-    int _actionFromServer = 0;
+    public List<int> actionsBuffer = new List<int>();
+
+    protected override void Awake()
+    {
+        base.Awake();
+        _beahivor = GetComponent<BehaviorParameters>();
+    }
 
     void Start()
     {
-        _beahivor = GetComponent<BehaviorParameters>();
-#if UNITY_SERVER && !UNITY_EDITOR
-        //_beahivor.BehaviorType = BehaviorType.Default;
-#endif
-        SetupAgent();
+         SetupAgent();
     }
 
     public override void Initialize()
@@ -43,8 +44,8 @@ public class HallwayAgent : Agent
 
     public override void OnEpisodeBegin()
     {
-        episodeBegin?.Invoke();
         _agentRb.velocity *= 0f;
+        env.EpisodeBegin();
         _statsRecorder.Add("Goal/Correct", 0, StatAggregationMethod.Sum);
         _statsRecorder.Add("Goal/Wrong", 0, StatAggregationMethod.Sum);
     }
@@ -92,15 +93,7 @@ public class HallwayAgent : Agent
         AddReward(-1f / MaxStep);
         MoveAgent(actionBuffers.DiscreteActions);
 
-        ActionsHallwayMsg actions = new ActionsHallwayMsg
-        {
-            stepCount = Academy.Instance.StepCount,
-            episodeCount = Academy.Instance.EpisodeCount,
-            dir = discreteActionsOut[0]
-        };
-
-        string jsonActions = JsonConvert.SerializeObject(actions);
-        actionsReceived?.Invoke(jsonActions);
+        actionsBuffer.Add(discreteActionsOut[0]);
     }
 
     void OnCollisionEnter(Collision col)
@@ -111,25 +104,24 @@ public class HallwayAgent : Agent
                 (selection == 1 && col.gameObject.CompareTag("symbol_X_Goal")))
             {
                 SetReward(1f);
-                goalCompleted?.Invoke(true);
+                env.GoalCompleted(true); 
                 _statsRecorder.Add("Goal/Correct", 1, StatAggregationMethod.Sum);
             }
             else
             {
                 SetReward(-0.1f);
-                goalCompleted?.Invoke(false);
+                env.GoalCompleted(false);
                 _statsRecorder.Add("Goal/Wrong", 1, StatAggregationMethod.Sum);
             }
+            
             EndEpisode();
+           
         }
     }
 
-    public void UpdateActions(string actionsJson)
+    public void ActionFromServer(int action)
     {
-        ActionsHallwayMsg action = JsonConvert.DeserializeObject<ActionsHallwayMsg>(actionsJson);
-        
-        _actionFromServer = action.dir;  
-        Debug.Log("server: " + _actionFromServer);
+        _actionFromServer = action;
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -159,6 +151,7 @@ public class HallwayAgent : Agent
     public void LoadModel(string behaviorName, NNModel model)
     {
         _beahivor.BehaviorType = BehaviorType.HeuristicOnly;
+        Debug.Log(behaviorName);
         SetModel(behaviorName, model);
         _beahivor.BehaviorType = BehaviorType.InferenceOnly;
     }
@@ -169,8 +162,12 @@ public class HallwayAgent : Agent
         _agentRb = GetComponent<Rigidbody>();
     }
 
+    public void SetBehaviorType(BehaviorType type)
+    {
+        _beahivor.BehaviorType = type;
+    }
 
-    public void ResetPosition(Vector3 groundPos)
+    public Pose ResetPosition(Vector3 groundPos)
     {
         var agentOffset = -15f;
 
@@ -178,5 +175,7 @@ public class HallwayAgent : Agent
         1f, agentOffset + UnityEngine.Random.Range(-5f, 5f))
         + groundPos;
         transform.rotation = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
+
+        return new Pose(transform.position, transform.rotation);
     }
 }
