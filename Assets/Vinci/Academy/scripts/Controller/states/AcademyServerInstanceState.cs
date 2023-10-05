@@ -1,14 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Unity.Barracuda;
 using Unity.MLAgents;
 using UnityEngine;
 using Vinci.Academy.Environement;
 using Vinci.Core.StateMachine;
-using Vinci.Core.UI;
 
 public class AcademyServerInstanceState : StateBase
 {
@@ -32,9 +28,9 @@ public class AcademyServerInstanceState : StateBase
         config.num_of_areas = 8;
         config.agent_id = "999";
 
-        //StartTraining(config);
+        StartTraining(config);
 
-        ConnectWebSocketToTrainInstance();
+        //ConnectWebSocketToTrainInstance();
     }
 
     public override void OnExitState()
@@ -82,9 +78,12 @@ public class AcademyServerInstanceState : StateBase
             envsInstances[i].Initialize(created_agent.GetComponent<HallwayAgent>());
         }
 
-        RemoteTrainManager.instance.SendWebSocketJson("Instance: Start Training");
-
+        //mainEnv.GetAgent().episodeBegin += OnEpisodeBegin;
+      
+        mainEnv.actionsReceived += OnActionReceived;
+        mainEnv.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.Default);
         Academy.Instance.AutomaticSteppingEnabled = true;
+        RemoteTrainManager.instance.SendWebSocketJson("Instance: Start Training");
     }
 
     void ConnectWebSocketToTrainInstance()
@@ -108,9 +107,10 @@ public class AcademyServerInstanceState : StateBase
         RemoteTrainManager.instance.SendWebSocketJson(json);
     }
 
+    //Send action to unity client
     void OnActionReceived(string actionsJson)
     {
-        //Debug.Log("Action received: " + actionsJson);
+        Debug.Log("Action sent: " + actionsJson);
         RemoteTrainManager.instance.SendWebSocketJson(actionsJson);
     }
 

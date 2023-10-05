@@ -30,8 +30,13 @@ public class AcademyTrainState : StateBase
         trainView.SetTrainSetupSubViewState(true);
         trainView.SetTrainHudSubViewState(false);
 
+        RemoteTrainManager.instance.websocketOpen += OnWebSocketOpen;
+        RemoteTrainManager.instance.actionsReceived += OnReceivedAgentActions;
+        RemoteTrainManager.instance.metricsReceived += OnReceivedTrainMetrics;
+        RemoteTrainManager.instance.statusReceived += OnReceivedTrainStatus;
+        RemoteTrainManager.instance.binaryDataReceived += OnBinaryDataRecived;
+
         Academy.Instance.AutomaticSteppingEnabled = false;
-   
     }
 
     public override void OnExitState()
@@ -40,13 +45,16 @@ public class AcademyTrainState : StateBase
 
         trainView.homeButtonPressed -= OnHomeButtonPressed;
         trainView.trainButtonPressed -= OnTrainButtonPressed;
-        _controller.session.currentEnvInstance.episodeAndStepCountUpdated -= trainView.UptadeInfo;
-
+    
         RemoteTrainManager.instance.websocketOpen -= OnWebSocketOpen;
         RemoteTrainManager.instance.actionsReceived -= OnReceivedAgentActions;
         RemoteTrainManager.instance.metricsReceived -= OnReceivedTrainMetrics;
         RemoteTrainManager.instance.statusReceived -= OnReceivedTrainStatus;
         RemoteTrainManager.instance.binaryDataReceived -= OnBinaryDataRecived;
+
+        _controller.session.currentEnvInstance.episodeAndStepCountUpdated -= trainView.UptadeInfo;
+        _controller.session.currentEnvInstance.SetIsReplay(false);
+
     }
 
     public override void Tick(float deltaTime)
@@ -63,17 +71,27 @@ public class AcademyTrainState : StateBase
     {
         //TODO: Check if model is already trained or if it is trainning
 
-        PrepareEnv();
+        if(_controller.session.currentEnvInstance == null)
+        {
+            PrepareEnv();
+        } 
+
+        _controller.session.selectedAgent.AddStepsTrained(_controller.session.selectedAgent.modelConfig.behavior.steps);
+
         _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
+        _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
+        _controller.session.currentEnvInstance.SetIsReplay(true);
 
         if (!RemoteTrainManager.instance.isConnected)
         {
             MainThreadDispatcher.Instance().EnqueueAsync(ConnectToRemoteInstance);
         }
 
+        
+        trainView.UptadeInfo(0, 0);
+        trainView.UpdateMetrics(0,0);
         trainView.SetTrainSetupSubViewState(false);
         trainView.SetTrainHudSubViewState(true);
-        _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
     }
 
     void OnReceivedTrainStatus(TrainJobStatusMsg trainJobStatus)
@@ -141,11 +159,7 @@ public class AcademyTrainState : StateBase
     async void ConnectToRemoteInstance()
     {
         Debug.Log("Starting remote training Thread");
-        RemoteTrainManager.instance.websocketOpen += OnWebSocketOpen;
-        RemoteTrainManager.instance.actionsReceived += OnReceivedAgentActions;
-        RemoteTrainManager.instance.metricsReceived += OnReceivedTrainMetrics;
-        RemoteTrainManager.instance.statusReceived += OnReceivedTrainStatus;
-        RemoteTrainManager.instance.binaryDataReceived += OnBinaryDataRecived;
+
 
         PostTrainJobRequest trainJobRequest = new PostTrainJobRequest
         {
@@ -210,25 +224,23 @@ public class AcademyTrainState : StateBase
         SaveAndLoadModel(data);
 
         RemoteTrainManager.instance.CloseWebSocketConnection();
+        _controller.session.currentEnvInstance.StopReplay();
         _controller.SwitchState(new AcademyResultsState(_controller));
     }
 
     void OnReceivedTrainMetrics(MetricsMsg metrics)
     {
-        trainView.UpdateMetrics(
-            metrics.MeanReward,
-            metrics.StdOfReward
-        );
+        _controller.session.selectedAgent.AddTrainMetrics(metrics.mean_reward, metrics.mean_reward);
 
-        Debug.Log("Metrics received: " + metrics);
+        trainView.UpdateMetrics(
+            metrics.mean_reward,
+            metrics.std_reward
+        );
     }
 
     void OnReceivedAgentActions(string actionsJson)
     {
         _controller.session.currentEnvInstance.OnActionsFromServerReceived(actionsJson);
-
-        TrainInfo trainInfo = JsonUtility.FromJson<TrainInfo>(actionsJson);
-        
 
         Debug.Log("Actions received: " + actionsJson);
     }

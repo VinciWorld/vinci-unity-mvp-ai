@@ -23,10 +23,10 @@ public class EnvHallway : EnvironementBase
     HallwayAgent _agent;
 
     [Header("Replay")]
-    public bool isReplay = false;
+    private bool _isReplay = false;
     private int _episodeCount = 0;
-    private Queue<ActionsHallwayMsg> actionQueue = new Queue<ActionsHallwayMsg>();
-    public float refreshRate = 0.1f; 
+    private Stack<ActionsHallwayMsg> actionStack = new Stack<ActionsHallwayMsg>();
+    public float refreshRate = 0.02f; 
     private Coroutine replayActionsLoopCoroutine;
     private Pose _agentStartPose;
     private Pose _symbolOGoalPose;
@@ -41,6 +41,8 @@ public class EnvHallway : EnvironementBase
     public override event System.Action<Dictionary<string, string>> updateEnvResults;
     public override event System.Action<string> actionsReceived;
     public override event System.Action<int, int> episodeAndStepCountUpdated;
+
+    private bool isFirstEpisode = true;
 
     void Start()
     {
@@ -61,13 +63,28 @@ public class EnvHallway : EnvironementBase
         goalsCompletedCount = 0;
         goalsFailedCount = 0;
 
+        Debug.Log("Initialize env");
+
     }
 
     public override void EpisodeBegin()
     {
-        _episodeCount++;
 
-        if(!isReplay)
+       
+#if !UNITY_EDITOR && UNITY_SERVER
+        if(!isFirstEpisode)
+        {
+            SendEpisodeActionsToClient();
+        }
+        else
+        {
+            
+            isFirstEpisode = false;
+        }
+
+#endif
+
+        if (!_isReplay)
         {
             var blockOffset = 0f;
             _agent.selection = Random.Range(0, 2);
@@ -103,23 +120,19 @@ public class EnvHallway : EnvironementBase
                 symbolXGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
                 symbolOGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
             }
+
+            _symbolOGoalPose = new Pose(symbolOGoal.transform.position, symbolOGoal.transform.rotation);
+            _symbolXGoalPose = new Pose(symbolXGoal.transform.position, symbolXGoal.transform.rotation);
+            _symbolOPose = new Pose(symbolO.transform.position, symbolO.transform.rotation);
+            _symbolXPose = new Pose(symbolX.transform.position, symbolX.transform.rotation);
         }
 
-        _symbolOGoalPose = new Pose(symbolOGoal.transform.position, symbolOGoal.transform.rotation);
-        _symbolXGoalPose = new Pose(symbolXGoal.transform.position, symbolXGoal.transform.rotation);
-        _symbolOPose = new Pose(symbolO.transform.position, symbolO.transform.rotation);
-        _symbolXPose = new Pose(symbolX.transform.position, symbolX.transform.rotation);
-
+        _episodeCount++;
     }
 
 
     public override void GoalCompleted(bool result)
-    {
-
-#if !UNITY_EDITOR && UNITY_SERVER
-        SendEpisodeActionsToClient();
-#endif
-        
+    {        
         if (result)
         {
             goalsCompletedCount++;
@@ -166,6 +179,7 @@ public class EnvHallway : EnvironementBase
 
     public override void Reset()
     {
+        isFirstEpisode = false;
         goalsCompletedCount = 0;
         goalsFailedCount = 0;
         successRatio = 0;
@@ -208,6 +222,7 @@ public class EnvHallway : EnvironementBase
 
     //REPLAY
     //Server side code!
+#if !UNITY_EDITOR && UNITY_SERVER
     private void SendEpisodeActionsToClient()
     {
         ActionsHallwayMsg actions = new ActionsHallwayMsg
@@ -224,16 +239,18 @@ public class EnvHallway : EnvironementBase
             symbolXPose = _symbolXPose
         };
 
-        _agent.actionsBuffer.Clear();
+        
         string jsonActions = JsonConvert.SerializeObject(actions);
         actionsReceived?.Invoke(jsonActions);
+        _agent.actionsBuffer.Clear();
     }
+#endif
 
     // CLIENT SIDE
     public override void OnActionsFromServerReceived(string actionsJson)
     {
         ActionsHallwayMsg action = JsonConvert.DeserializeObject<ActionsHallwayMsg>(actionsJson);
-        actionQueue.Enqueue(action);
+        actionStack.Push(action);
 
         if (replayActionsLoopCoroutine == null)
         {
@@ -246,12 +263,18 @@ public class EnvHallway : EnvironementBase
     private IEnumerator ReplayActionsLoop()
     {
         int stepCount = 0;
-        while (actionQueue.Count > 0)
+        int totalStepCount = 0;
+        Debug.Log("Start Replay");
+
+        Time.timeScale = 20f;
+        while (actionStack.Count > 0)
         {
-            ActionsHallwayMsg action = actionQueue.Dequeue();
+            ActionsHallwayMsg action = actionStack.Pop();
 
             // Prepare env
             _agent.selection = action.selection;
+            _agent.transform.position = action.agentPose.GetPosition();
+            _agent.transform.rotation = action.agentPose.GetRotation();
             symbolO.transform.position = action.symbolOPose.GetPosition();
             symbolX.transform.position = action.symbolXPose.GetPosition();
             symbolOGoal.transform.position = action.symbolOGoalPose.GetPosition();
@@ -262,10 +285,24 @@ public class EnvHallway : EnvironementBase
                 stepCount++;
                 _agent.ActionFromServer(dir);
 
-                episodeAndStepCountUpdated?.Invoke(action.episodeCount, stepCount);
+                episodeAndStepCountUpdated?.Invoke(action.episodeCount, totalStepCount + stepCount);
                 Academy.Instance.EnvironmentStep();
                 yield return new WaitForSeconds(refreshRate);
             }
+            totalStepCount += stepCount;
+            stepCount = 0;
         }
+    }
+
+    public override void StopReplay()
+    {
+        StopCoroutine(replayActionsLoopCoroutine);
+        replayActionsLoopCoroutine = null;
+        Time.timeScale = 1f;
+    }
+
+    public override void SetIsReplay(bool isResplay)
+    {
+        _isReplay = isResplay;
     }
 }

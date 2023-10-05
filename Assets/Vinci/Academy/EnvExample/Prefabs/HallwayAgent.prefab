@@ -446,7 +446,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5039102789477670585}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.54, z: -8.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -553,6 +553,8 @@ MonoBehaviour:
   useVectorObs: 1
   selection: 0
   hallwaySettings: {fileID: 0}
+  env: {fileID: 0}
+  actionsBuffer: 
 --- !u!114 &5031199786127734051
 MonoBehaviour:
   m_ObjectHideFlags: 0
