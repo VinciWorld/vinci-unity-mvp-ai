@@ -18,8 +18,11 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
 
     public bool isConnected => _webSocket != null;
 
+    public bool isSecureConnection = false;
+
     [SerializeField]
     private string centralNode = "127.0.0.1:8000";
+    
     [SerializeField]
     private string http_prefix = "http://";
     [SerializeField]
@@ -37,6 +40,21 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
     public event Action<TrainJobStatusMsg> statusReceived;
     public event Action<PostResponseTrainJob> trainJobConfigReceived;
 
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        if(isSecureConnection)
+        {
+            http_prefix = "https://";
+            websockt_prefix = "wss://";
+        }
+        else
+        {
+            centralNode = "127.0.0.1:8000";
+        }
+    }
 
     async public Task<PostResponseTrainJob> StartRemoteTrainning(PostTrainJobRequest requestData)
     {

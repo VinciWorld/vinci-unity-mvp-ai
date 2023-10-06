@@ -102,7 +102,7 @@ public class AcademyResultsState : StateBase
 
     void OnMintModelButtonPRessed()
     {
-        Debug.Log("Mint model!");
+        BlockchainManager.instance.MintNNmodel();
     }
 
     void EvaluateModel()

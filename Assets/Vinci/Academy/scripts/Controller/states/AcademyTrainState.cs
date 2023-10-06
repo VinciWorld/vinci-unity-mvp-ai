@@ -62,9 +62,9 @@ public class AcademyTrainState : StateBase
 
     }
 
-    async void OnHomeButtonPressed()
+    void OnHomeButtonPressed()
     {
-        await SceneLoader.instance.LoadScene("IdleGame");
+        SceneLoader.instance.LoadSceneDelay("IdleGame");
     }
 
     void OnTrainButtonPressed()

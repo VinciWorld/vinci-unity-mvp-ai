@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,10 +19,10 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
 
         do
         {
-            await Task.Delay(1000);
+            await Task.Delay(100);
             _progressBar.fillAmount = scene.progress;
 
-
+            Debug.Log("Delay");
         } while (scene.progress < 0.9f);
 
         scene.allowSceneActivation = true;
@@ -29,5 +30,27 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
 
         _loaderCanvas.SetActive(false);
     }
-    
+
+    public void LoadSceneDelay(string sceneName)
+    {
+        StartCoroutine(_LoadSceneCoroutine(sceneName));
+    }
+
+    private IEnumerator _LoadSceneCoroutine(string sceneName)
+    {
+        var scene = SceneManager.LoadSceneAsync(sceneName);
+        scene.allowSceneActivation = false;
+
+        _loaderCanvas.SetActive(true);
+
+        while (scene.progress < 0.9f)
+        {
+            _progressBar.fillAmount = scene.progress;
+            yield return new WaitForSeconds(2f);
+        }
+
+        scene.allowSceneActivation = true;
+        _loaderCanvas.SetActive(false);
+    }
+
 }
