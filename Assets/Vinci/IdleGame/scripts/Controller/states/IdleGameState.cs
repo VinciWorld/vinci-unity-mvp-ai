@@ -14,7 +14,6 @@ public class IdleGameState : StateBase
 
     public override void OnEnterState()
     {
-        Debug.Log("Enter idle state");
         IdleGameMainView mainView = ViewManager.GetView<IdleGameMainView>();
         mainView.academyBtnPressed += OnAcademyBtnPressed;
         mainView.arenaBtnPressed += OnAreanButtonPressed;
@@ -42,9 +41,9 @@ public class IdleGameState : StateBase
         _controller.SwitchState(new HeadquartersState(_controller));
     }
 
-    async void OnAcademyBtnPressed()
+    void OnAcademyBtnPressed()
     {
-        await SceneLoader.instance.LoadScene("Academy");
+        SceneLoader.instance.LoadSceneDelay("Academy");
     }
 
     async void OnArenaBtnPressed()

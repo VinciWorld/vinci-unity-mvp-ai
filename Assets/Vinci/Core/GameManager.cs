@@ -1,6 +1,7 @@
 using System.IO;
 using UnityEngine;
 using Vinci.Core.Utils;
+using Unity.MLAgents;
 
 namespace Vinci.Core.Managers
 {
@@ -13,6 +14,11 @@ namespace Vinci.Core.Managers
         protected override void Awake()
         {
             base.Awake();
+            Application.runInBackground = true;
+
+            Debug.Log("Init ML agent");
+            Unity.MLAgents.Academy.Instance.AutomaticSteppingEnabled = false;
+
             LoadPlayerData();
         }
 

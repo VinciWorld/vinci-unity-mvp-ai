@@ -19,9 +19,20 @@ public class HallwayAgent : Agent
     BehaviorParameters _beahivor;
 
     private int _actionFromServer = 0;
+
+    public bool isReplay = false;
    
 
     public List<int> actionsBuffer = new List<int>();
+
+    //Replay
+    public Queue<int> actionsQueueReceived;
+
+
+    public int steps = 0;
+    private int countObservations = 0;
+    private int CountHeuristic = 0;
+
 
     protected override void Awake()
     {
@@ -44,6 +55,11 @@ public class HallwayAgent : Agent
 
     public override void OnEpisodeBegin()
     {
+        Debug.Log("actions: " + steps + " obs: " + countObservations + " heuristic: " + CountHeuristic);
+        steps = 0;
+        countObservations = 0;
+        CountHeuristic = 0;
+
         _agentRb.velocity *= 0f;
         env.EpisodeBegin();
         _statsRecorder.Add("Goal/Correct", 0, StatAggregationMethod.Sum);
@@ -52,6 +68,8 @@ public class HallwayAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
+
+        countObservations++;
         if (useVectorObs)
         {
             sensor.AddObservation(StepCount / (float)MaxStep);
@@ -80,6 +98,7 @@ public class HallwayAgent : Agent
                 break;
         }
         transform.Rotate(rotateDir, Time.deltaTime * 150f);
+
         if(hallwaySettings != null)
         {
             _agentRb.AddForce(dirToGo * hallwaySettings.agentRunSpeed, ForceMode.VelocityChange);
@@ -88,7 +107,16 @@ public class HallwayAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
+        steps++;
         var discreteActionsOut = actionBuffers.DiscreteActions;
+
+        if(isReplay)
+        {
+            if(actionsQueueReceived.Count > 0)
+            {
+                discreteActionsOut[0] = actionsQueueReceived.Dequeue();
+            }
+        }
 
         AddReward(-1f / MaxStep);
         MoveAgent(actionBuffers.DiscreteActions);
@@ -116,8 +144,10 @@ public class HallwayAgent : Agent
                 env.GoalCompleted(false);
                 _statsRecorder.Add("Goal/Wrong", 1, StatAggregationMethod.Sum);
             }
-            
-            EndEpisode();
+            if (!isReplay)
+            {
+                EndEpisode();
+            }
            
         }
     }
@@ -129,9 +159,10 @@ public class HallwayAgent : Agent
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
+        CountHeuristic++;
         var discreteActionsOut = actionsOut.DiscreteActions;
 
-        discreteActionsOut[0] = _actionFromServer;
+        //discreteActionsOut[0] = _actionFromServer;
 
         if (Input.GetKey(KeyCode.D))
         {
@@ -149,6 +180,8 @@ public class HallwayAgent : Agent
         {
             discreteActionsOut[0] = 2;
         }
+
+
     }
 
     public void LoadModel(string behaviorName, NNModel model)

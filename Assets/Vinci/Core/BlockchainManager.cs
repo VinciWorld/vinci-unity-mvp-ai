@@ -85,6 +85,22 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
         var blockHash = await Web3.Rpc.GetLatestBlockHashAsync();
         var minimumRent = await Web3.Rpc.GetMinimumBalanceForRentExemptionAsync(TokenProgram.MintAccountDataSize);
 
+        var mintNftAccounts = new MintNftAccounts();
+        mintNftAccounts.Mint = mintKey;
+        mintNftAccounts.TokenAccount = associatedTokenAccount;
+        mintNftAccounts.MintAuthority = Web3.Account.PublicKey;
+        mintNftAccounts.Metadata = metadataAccount;
+        mintNftAccounts.MasterEdition = masterEdition;
+        mintNftAccounts.Payer = Web3.Account.PublicKey;
+        mintNftAccounts.Rent = SYSVAR_RENT_PUBKEY;
+        mintNftAccounts.TokenProgram = TokenProgram.ProgramIdKey;
+        mintNftAccounts.TokenMetadataProgram = MetadataProgram.ProgramIdKey;
+        mintNftAccounts.SystemProgram = SystemProgram.ProgramIdKey;
+
+        TransactionInstruction instr = VinciAccountsProgram.MintNft(
+            mintNftAccounts, new PublicKey("7qZkw6j9o16kqGugWTj4u8Lq9YHcPAX8dgwjjd9EYrhQ"), uri, "Vinci World EA", VinciAccountProgramId
+        );
+
         var transaction = new TransactionBuilder()
             .SetRecentBlockHash(blockHash.Result.Value.Blockhash)
             .SetFeePayer(Web3.Account)
@@ -105,29 +121,19 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
                 AssociatedTokenAccountProgram.CreateAssociatedTokenAccount(
                     Web3.Account,
                     Web3.Account,
-                    mintKey.PublicKey));
+                    mintKey.PublicKey))
+            .AddInstruction(instr);
 
-        var tx = Transaction.Deserialize(transaction.Build(new List<Account> {Web3.Account, mintKey}));
+        var tx = Transaction.Deserialize(transaction.Build(new List<Account> { Web3.Account, mintKey }));
         var res = await Web3.Wallet.SignAndSendTransaction(tx);
-    
+
         VinciAccountsClient vinciAccountsClient = new VinciAccountsClient(
             Web3.Rpc,
             Web3.WsRpc,
             VinciAccountProgramId
         );
 
-        var mintNftAccounts = new MintNftAccounts();
-        mintNftAccounts.Mint = mintKey;
-        mintNftAccounts.TokenAccount = associatedTokenAccount;
-        mintNftAccounts.MintAuthority = Web3.Account.PublicKey;
-        mintNftAccounts.Metadata = metadataAccount;
-        mintNftAccounts.MasterEdition = masterEdition;
-        mintNftAccounts.Payer = Web3.Account.PublicKey;
-        mintNftAccounts.Rent = SYSVAR_RENT_PUBKEY;
-        mintNftAccounts.TokenProgram = TokenProgram.ProgramIdKey;
-        mintNftAccounts.TokenMetadataProgram = MetadataProgram.ProgramIdKey;
-        mintNftAccounts.SystemProgram = SystemProgram.ProgramIdKey;
-
+        /*
         var requestResult = await vinciAccountsClient.SendMintNftAsync(
                             mintNftAccounts,
                             new PublicKey("7qZkw6j9o16kqGugWTj4u8Lq9YHcPAX8dgwjjd9EYrhQ"),
@@ -138,7 +144,10 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
                             VinciAccountProgramId
                         );
 
-        Debug.Log(requestResult.ErrorData.Error + " " + requestResult.ServerErrorCode);
+        Debug.Log("ErrorData.Error: " + requestResult.ErrorData.Error + " ServerErrorCode:" + requestResult.ServerErrorCode + " WasSuccessful: " +
+        requestResult.WasSuccessful + " Reason: " + requestResult.Reason + " Result: " + requestResult.Result + " ErrorData.Logs: " + requestResult.ErrorData.Logs
+        );
+        */
     }
 
     public byte[] Callback(byte[] bytes, PublicKey publicKey)

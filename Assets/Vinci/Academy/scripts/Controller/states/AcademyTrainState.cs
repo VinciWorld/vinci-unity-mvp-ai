@@ -62,21 +62,22 @@ public class AcademyTrainState : StateBase
 
     }
 
-    async void OnHomeButtonPressed()
+    void OnHomeButtonPressed()
     {
-        await SceneLoader.instance.LoadScene("IdleGame");
+        SceneLoader.instance.LoadSceneDelay("IdleGame");
     }
 
-    void OnTrainButtonPressed()
+    void OnTrainButtonPressed(int steps)
     {
         //TODO: Check if model is already trained or if it is trainning
 
         if(_controller.session.currentEnvInstance == null)
         {
             PrepareEnv();
-        } 
+        }
 
-        _controller.session.selectedAgent.AddStepsTrained(_controller.session.selectedAgent.modelConfig.behavior.steps);
+        _controller.session.selectedAgent.modelConfig.behavior.steps = steps;
+        _controller.session.selectedAgent.modelConfig.AddStepsTrained(steps);
 
         _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
         _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;

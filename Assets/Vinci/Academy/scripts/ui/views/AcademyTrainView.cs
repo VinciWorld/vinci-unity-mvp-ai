@@ -31,14 +31,25 @@ public class AcademyTrainView : View
     [SerializeField]
     private TextMeshProUGUI losesCountText;
 
+    [SerializeField]
+    private TMP_InputField _stepsInputField;
+
     public event Action homeButtonPressed;
-    public event Action trainButtonPressed;
+    public event Action<int> trainButtonPressed;
 
 
     public override void Initialize()
     {
         _HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
-        _trainButton.onClick.AddListener(() => trainButtonPressed?.Invoke());
+        _trainButton.onClick.AddListener(OnTrainButtonPressed);
+    }
+
+    public void OnTrainButtonPressed()
+    {
+        int stepsToTrain = int.Parse(_stepsInputField.text);
+        trainButtonPressed?.Invoke(stepsToTrain);
+
+        Debug.Log(stepsToTrain);
     }
 
     public void SetTrainSetupSubViewState(bool state)
