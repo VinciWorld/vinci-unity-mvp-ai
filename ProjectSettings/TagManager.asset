@@ -10,12 +10,15 @@ TagManager:
   - agent
   - symbol_X
   - stone
-  - pyramid
   - block
   - goal
   - wall
   - switchOff
   - switchOn
+  - symbol_O_Goal
+  - symbol_X_Goal
+  - Enemy
+  - obstacles
   layers:
   - Default
   - TransparentFX
