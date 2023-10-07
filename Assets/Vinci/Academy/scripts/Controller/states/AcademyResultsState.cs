@@ -34,7 +34,8 @@ public class AcademyResultsState : StateBase
 
         _resultsView.UpdateTrainResults(
             _controller.session.selectedAgent.modelConfig.trainMetrics.stepsTrained,
-            _controller.session.selectedAgent.modelConfig.trainMetrics.meanReward
+            _controller.session.selectedAgent.modelConfig.trainMetrics.meanReward,
+            _controller.session.selectedAgent.modelConfig.trainMetrics.stdReward
         );
 
         currentEnvInstance = _controller.session.currentEnvInstance;

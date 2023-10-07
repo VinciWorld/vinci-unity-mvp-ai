@@ -24,6 +24,8 @@ public class AcademyTrainResultsView : View
     private TextMeshProUGUI _stepTrainedCount;
     [SerializeField]
     private TextMeshProUGUI _meanRweard;
+    [SerializeField]
+    private TextMeshProUGUI _stdRweard;
 
     [Header("Evaluate Model")]
     [SerializeField]
@@ -68,10 +70,11 @@ public class AcademyTrainResultsView : View
         popUpTestModel.SetActive(true);
     }
 
-    public void UpdateTrainResults(int stepsTrained, float meanReward)
+    public void UpdateTrainResults(int stepsTrained, float meanReward, float stdReward)
     {
         _stepTrainedCount.text = stepsTrained.ToString();
         _meanRweard.text = meanReward.ToString("F3");
+        _stdRweard.text = stdReward.ToString("F3");
     }
 
 

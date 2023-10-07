@@ -210,7 +210,6 @@ public class EnvHallway : EnvironementBase
     public override void StartEnv()
     {
         Reset();
-        Debug.Log("Enable!");
         Academy.Instance.AutomaticSteppingEnabled = true;
     }
 
@@ -260,42 +259,71 @@ public class EnvHallway : EnvironementBase
         Debug.Log("Received action from server: " + actionsJson);
     }
 
+    public Queue<int> actionsQueueReceived;
+
     private IEnumerator ReplayActionsLoop()
     {
         int stepCount = 0;
         int totalStepCount = 0;
         Debug.Log("Start Replay");
+        _agent.isReplay = true;
 
-        Time.timeScale = 20f;
-        while (actionStack.Count > 0)
+        Time.timeScale = 10;
+        while (_isReplay)
         {
-            ActionsHallwayMsg action = actionStack.Pop();
+            if (actionStack.Count > 0)
+            {
+                ActionsHallwayMsg action = actionStack.Pop();
 
-            // Prepare env
-            _agent.selection = action.selection;
-            _agent.transform.position = action.agentPose.GetPosition();
-            _agent.transform.rotation = action.agentPose.GetRotation();
-            symbolO.transform.position = action.symbolOPose.GetPosition();
-            symbolX.transform.position = action.symbolXPose.GetPosition();
-            symbolOGoal.transform.position = action.symbolOGoalPose.GetPosition();
-            symbolXGoal.transform.position = action.symbolXGoalPose.GetPosition();
+                _agent.EndEpisode();
+                // Prepare env
+                _agent.selection = action.selection;
+                _agent.transform.position = action.agentPose.GetPosition();
+                _agent.transform.rotation = action.agentPose.GetRotation();
+                symbolO.transform.position = action.symbolOPose.GetPosition();
+                symbolX.transform.position = action.symbolXPose.GetPosition();
+                symbolOGoal.transform.position = action.symbolOGoalPose.GetPosition();
+                symbolXGoal.transform.position = action.symbolXGoalPose.GetPosition();
 
+                actionsQueueReceived = new Queue<int>(action.actionsBuffer);
+                _agent.actionsQueueReceived = actionsQueueReceived;
+
+                Debug.Log("Actions received: " + actionsQueueReceived.Count);
+
+                Academy.Instance.AutomaticSteppingEnabled = true;
+                while(_agent.actionsQueueReceived.Count > 0)
+                {
+                    episodeAndStepCountUpdated?.Invoke(action.episodeCount, totalStepCount + _agent.steps);
+                    yield return new WaitForEndOfFrame();
+                }
+                Academy.Instance.AutomaticSteppingEnabled = false;
+            }
+     
+            /*
             foreach (int dir in action.actionsBuffer)
             {
                 stepCount++;
                 _agent.ActionFromServer(dir);
 
+               
+
                 episodeAndStepCountUpdated?.Invoke(action.episodeCount, totalStepCount + stepCount);
                 Academy.Instance.EnvironmentStep();
                 yield return new WaitForSeconds(refreshRate);
             }
-            totalStepCount += stepCount;
-            stepCount = 0;
+            */
+            totalStepCount += _agent.steps;
+            _agent.steps = 0;
+            yield return new WaitForEndOfFrame();
         }
+
+        Debug.Log("Leave replay");
     }
 
     public override void StopReplay()
     {
+        _isReplay = false;
+        _agent.isReplay = false;
         StopCoroutine(replayActionsLoopCoroutine);
         replayActionsLoopCoroutine = null;
         Time.timeScale = 1f;

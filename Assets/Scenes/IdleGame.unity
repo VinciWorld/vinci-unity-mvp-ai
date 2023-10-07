@@ -1029,7 +1029,7 @@ MonoBehaviour:
   rpcCluster: 1
   customRpc: 
   webSocketsRpc: 
-  autoConnectOnStartup: 1
+  autoConnectOnStartup: 0
   web3AuthWalletOptions:
     appName: Web3Auth Sample App
     logoLight: 
