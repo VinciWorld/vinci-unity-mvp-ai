@@ -14,7 +14,7 @@ public abstract class EnvironementBase : MonoBehaviour
 
     public abstract HallwayAgent GetAgent();
 
-    public abstract void Initialize(HallwayAgent agent);
+    public abstract void Initialize(GameObject agent);
     public abstract void EpisodeBegin();
     public abstract void GoalCompleted(bool result);
     public abstract void Reset();

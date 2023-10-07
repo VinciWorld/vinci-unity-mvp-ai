@@ -49,9 +49,9 @@ public class EnvHallway : EnvironementBase
         hallwaySettings = GameObject.FindObjectOfType<HallwaySettings>();
     }
 
-    public override void Initialize(HallwayAgent agent)
+    public override void Initialize(GameObject agent)
     {
-        _agent = agent;
+        _agent = agent.GetComponent<HallwayAgent>();
         _agent.env = this;
         _agent.hallwaySettings = hallwaySettings;
 
