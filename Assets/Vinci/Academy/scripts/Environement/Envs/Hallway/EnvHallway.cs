@@ -64,7 +64,6 @@ public class EnvHallway : EnvironementBase
         goalsFailedCount = 0;
 
         Debug.Log("Initialize env");
-
     }
 
     public override void EpisodeBegin()
