@@ -13,9 +13,8 @@ namespace StatSystem
     }
 
 
-    //[CreateAssetMenu(fileName = "EntityStats", menuName = "StatSystem/EntityStats", order = 0)]
-    [System.Serializable]
-    public class EntityStats
+    [CreateAssetMenu(fileName = "EntityStats", menuName = "StatSystem/EntityStats", order = 0)]
+    public class EntityStats : ScriptableObject
     {
         [SerializeField]
         [NonReorderable]
