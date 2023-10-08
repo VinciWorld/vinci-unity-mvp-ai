@@ -1,0 +1,2220 @@
+fileFormatVersion: 2
+guid: 41070f25637458d40977cae4d5ad384a
+ModelImporter:
+  serializedVersion: 21300
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: Body
+  - first:
+      1: 100002
+    second: Bone_Root
+  - first:
+      1: 100004
+    second: Head_01
+  - first:
+      1: 100006
+    second: Head_02
+  - first:
+      1: 100008
+    second: Left_Arm
+  - first:
+      1: 100010
+    second: Left_Arm_2
+  - first:
+      1: 100012
+    second: Left_Calf
+  - first:
+      1: 100014
+    second: Left_Finger_01
+  - first:
+      1: 100016
+    second: Left_Finger_02
+  - first:
+      1: 100018
+    second: Left_Foot_01
+  - first:
+      1: 100020
+    second: Left_Foot_02
+  - first:
+      1: 100022
+    second: Left_Forearm
+  - first:
+      1: 100024
+    second: Left_Leg
+  - first:
+      1: 100026
+    second: Left_Thigh
+  - first:
+      1: 100028
+    second: Neck
+  - first:
+      1: 100030
+    second: Pelvis
+  - first:
+      1: 100032
+    second: Right_Arm
+  - first:
+      1: 100034
+    second: Right_Arm_2
+  - first:
+      1: 100036
+    second: Right_Calf
+  - first:
+      1: 100038
+    second: Right_Finger_01
+  - first:
+      1: 100040
+    second: Right_Finger_02
+  - first:
+      1: 100042
+    second: Right_Foot_01
+  - first:
+      1: 100044
+    second: Right_Foot_02
+  - first:
+      1: 100046
+    second: Right_Forearm
+  - first:
+      1: 100048
+    second: Right_Leg
+  - first:
+      1: 100050
+    second: Right_Thigh
+  - first:
+      1: 100052
+    second: //RootNode
+  - first:
+      1: 100054
+    second: Spine
+  - first:
+      1: 100056
+    second: Type_A_Breast
+  - first:
+      1: 100058
+    second: Type_A_Head
+  - first:
+      1: 100060
+    second: Type_A_Left_arm
+  - first:
+      1: 100062
+    second: Type_A_Left_leg
+  - first:
+      1: 100064
+    second: Type_A_Left_shoulder
+  - first:
+      1: 100066
+    second: Type_A_Pelvis
+  - first:
+      1: 100068
+    second: Type_A_Right_arm
+  - first:
+      1: 100070
+    second: Type_A_Right_leg
+  - first:
+      1: 100072
+    second: Type_A_Right_shoulder
+  - first:
+      4: 400000
+    second: Body
+  - first:
+      4: 400002
+    second: Bone_Root
+  - first:
+      4: 400004
+    second: Head_01
+  - first:
+      4: 400006
+    second: Head_02
+  - first:
+      4: 400008
+    second: Left_Arm
+  - first:
+      4: 400010
+    second: Left_Arm_2
+  - first:
+      4: 400012
+    second: Left_Calf
+  - first:
+      4: 400014
+    second: Left_Finger_01
+  - first:
+      4: 400016
+    second: Left_Finger_02
+  - first:
+      4: 400018
+    second: Left_Foot_01
+  - first:
+      4: 400020
+    second: Left_Foot_02
+  - first:
+      4: 400022
+    second: Left_Forearm
+  - first:
+      4: 400024
+    second: Left_Leg
+  - first:
+      4: 400026
+    second: Left_Thigh
+  - first:
+      4: 400028
+    second: Neck
+  - first:
+      4: 400030
+    second: Pelvis
+  - first:
+      4: 400032
+    second: Right_Arm
+  - first:
+      4: 400034
+    second: Right_Arm_2
+  - first:
+      4: 400036
+    second: Right_Calf
+  - first:
+      4: 400038
+    second: Right_Finger_01
+  - first:
+      4: 400040
+    second: Right_Finger_02
+  - first:
+      4: 400042
+    second: Right_Foot_01
+  - first:
+      4: 400044
+    second: Right_Foot_02
+  - first:
+      4: 400046
+    second: Right_Forearm
+  - first:
+      4: 400048
+    second: Right_Leg
+  - first:
+      4: 400050
+    second: Right_Thigh
+  - first:
+      4: 400052
+    second: //RootNode
+  - first:
+      4: 400054
+    second: Spine
+  - first:
+      4: 400056
+    second: Type_A_Breast
+  - first:
+      4: 400058
+    second: Type_A_Head
+  - first:
+      4: 400060
+    second: Type_A_Left_arm
+  - first:
+      4: 400062
+    second: Type_A_Left_leg
+  - first:
+      4: 400064
+    second: Type_A_Left_shoulder
+  - first:
+      4: 400066
+    second: Type_A_Pelvis
+  - first:
+      4: 400068
+    second: Type_A_Right_arm
+  - first:
+      4: 400070
+    second: Type_A_Right_leg
+  - first:
+      4: 400072
+    second: Type_A_Right_shoulder
+  - first:
+      23: 2300000
+    second: Type_A_Breast
+  - first:
+      23: 2300002
+    second: Type_A_Head
+  - first:
+      23: 2300004
+    second: Type_A_Left_arm
+  - first:
+      23: 2300006
+    second: Type_A_Left_leg
+  - first:
+      23: 2300008
+    second: Type_A_Left_shoulder
+  - first:
+      23: 2300010
+    second: Type_A_Pelvis
+  - first:
+      23: 2300012
+    second: Type_A_Right_arm
+  - first:
+      23: 2300014
+    second: Type_A_Right_leg
+  - first:
+      23: 2300016
+    second: Type_A_Right_shoulder
+  - first:
+      33: 3300000
+    second: Type_A_Breast
+  - first:
+      33: 3300002
+    second: Type_A_Head
+  - first:
+      33: 3300004
+    second: Type_A_Left_arm
+  - first:
+      33: 3300006
+    second: Type_A_Left_leg
+  - first:
+      33: 3300008
+    second: Type_A_Left_shoulder
+  - first:
+      33: 3300010
+    second: Type_A_Pelvis
+  - first:
+      33: 3300012
+    second: Type_A_Right_arm
+  - first:
+      33: 3300014
+    second: Type_A_Right_leg
+  - first:
+      33: 3300016
+    second: Type_A_Right_shoulder
+  - first:
+      43: 4300000
+    second: Type_A_Pelvis
+  - first:
+      43: 4300002
+    second: Type_A_Left_leg
+  - first:
+      43: 4300004
+    second: Type_A_Right_leg
+  - first:
+      43: 4300006
+    second: Type_A_Breast
+  - first:
+      43: 4300008
+    second: Type_A_Left_shoulder
+  - first:
+      43: 4300010
+    second: Type_A_Left_arm
+  - first:
+      43: 4300012
+    second: Type_A_Right_shoulder
+  - first:
+      43: 4300014
+    second: Type_A_Right_arm
+  - first:
+      43: 4300016
+    second: Type_A_Head
+  - first:
+      43: 4300018
+    second: Body
+  - first:
+      74: 7400000
+    second: Shot-01
+  - first:
+      74: 7400002
+    second: Shot-02
+  - first:
+      74: 7400004
+    second: Run
+  - first:
+      74: 7400006
+    second: Walk
+  - first:
+      74: 7400008
+    second: Defense
+  - first:
+      74: 7400010
+    second: Hit
+  - first:
+      74: 7400012
+    second: Death-01
+  - first:
+      74: 7400014
+    second: Death-02
+  - first:
+      74: 7400016
+    second: Idle
+  - first:
+      74: 7400018
+    second: Shot-03
+  - first:
+      74: 7400020
+    second: Shot-04
+  - first:
+      74: 7400022
+    second: Reload-01
+  - first:
+      74: 7400024
+    second: Reload-02
+  - first:
+      74: 7400026
+    second: T Pose
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: Body
+  externalObjects: {}
+  materials:
+    materialImportMode: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: <Root Transform>
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: "\nClip 'CINEMA_4D___' has import animation warnings
+      that might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'Left_Leg' is inbetween humanoid transforms
+      and has rotation animation that will be discarded.\n\t'Left_Forearm' has translation
+      animation that will be discarded.\n\t'Right_Forearm' has translation animation
+      that will be discarded.\n"
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 3
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Shot-01
+      takeName: CINEMA_4D___
+      internalID: 0
+      firstFrame: 10
+      lastFrame: 58
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Body
+        weight: 0
+      - path: Bone_Root
+        weight: 1
+      - path: Bone_Root/Pelvis
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01/Left_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Type_A_Left_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01/Right_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Type_A_Right_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01/Left_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Type_A_Left_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Type_A_Left_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01/Head_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck/Type_A_Head
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01/Right_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Type_A_Right_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Type_A_Right_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Type_A_Breast
+        weight: 0
+      - path: Bone_Root/Pelvis/Type_A_Pelvis
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Shot-02
+      takeName: CINEMA_4D___
+      internalID: 0
+      firstFrame: 66
+      lastFrame: 88
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Body
+        weight: 0
+      - path: Bone_Root
+        weight: 1
+      - path: Bone_Root/Pelvis
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01/Left_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Type_A_Left_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01/Right_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Type_A_Right_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01/Left_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Type_A_Left_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Type_A_Left_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01/Head_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck/Type_A_Head
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01/Right_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Type_A_Right_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Type_A_Right_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Type_A_Breast
+        weight: 0
+      - path: Bone_Root/Pelvis/Type_A_Pelvis
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Run
+      takeName: CINEMA_4D___
+      internalID: 0
+      firstFrame: 100
+      lastFrame: 123
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Body
+        weight: 0
+      - path: Bone_Root
+        weight: 1
+      - path: Bone_Root/Pelvis
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01/Left_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Type_A_Left_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01/Right_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Type_A_Right_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01/Left_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Type_A_Left_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Type_A_Left_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01/Head_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck/Type_A_Head
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01/Right_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Type_A_Right_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Type_A_Right_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Type_A_Breast
+        weight: 0
+      - path: Bone_Root/Pelvis/Type_A_Pelvis
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Walk
+      takeName: CINEMA_4D___
+      internalID: 0
+      firstFrame: 136
+      lastFrame: 184
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Body
+        weight: 0
+      - path: Bone_Root
+        weight: 1
+      - path: Bone_Root/Pelvis
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01/Left_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Type_A_Left_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01/Right_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Type_A_Right_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01/Left_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Type_A_Left_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Type_A_Left_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01/Head_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck/Type_A_Head
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01/Right_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Type_A_Right_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Type_A_Right_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Type_A_Breast
+        weight: 0
+      - path: Bone_Root/Pelvis/Type_A_Pelvis
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Defense
+      takeName: CINEMA_4D___
+      internalID: 0
+      firstFrame: 198
+      lastFrame: 222
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Body
+        weight: 0
+      - path: Bone_Root
+        weight: 1
+      - path: Bone_Root/Pelvis
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01/Left_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Type_A_Left_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01/Right_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Type_A_Right_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01/Left_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Type_A_Left_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Type_A_Left_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01/Head_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck/Type_A_Head
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01/Right_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Type_A_Right_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Type_A_Right_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Type_A_Breast
+        weight: 0
+      - path: Bone_Root/Pelvis/Type_A_Pelvis
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Hit
+      takeName: CINEMA_4D___
+      internalID: 0
+      firstFrame: 234
+      lastFrame: 257
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Body
+        weight: 0
+      - path: Bone_Root
+        weight: 1
+      - path: Bone_Root/Pelvis
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01/Left_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Type_A_Left_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01/Right_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Type_A_Right_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01/Left_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Type_A_Left_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Type_A_Left_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01/Head_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck/Type_A_Head
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01/Right_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Type_A_Right_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Type_A_Right_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Type_A_Breast
+        weight: 0
+      - path: Bone_Root/Pelvis/Type_A_Pelvis
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Death-01
+      takeName: CINEMA_4D___
+      internalID: 0
+      firstFrame: 272
+      lastFrame: 371
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Body
+        weight: 0
+      - path: Bone_Root
+        weight: 1
+      - path: Bone_Root/Pelvis
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01/Left_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Type_A_Left_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01/Right_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Type_A_Right_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01/Left_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Type_A_Left_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Type_A_Left_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01/Head_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck/Type_A_Head
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01/Right_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Type_A_Right_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Type_A_Right_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Type_A_Breast
+        weight: 0
+      - path: Bone_Root/Pelvis/Type_A_Pelvis
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Death-02
+      takeName: CINEMA_4D___
+      internalID: 0
+      firstFrame: 391
+      lastFrame: 472
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Body
+        weight: 0
+      - path: Bone_Root
+        weight: 1
+      - path: Bone_Root/Pelvis
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01/Left_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Type_A_Left_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01/Right_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Type_A_Right_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01/Left_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Type_A_Left_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Type_A_Left_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01/Head_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck/Type_A_Head
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01/Right_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Type_A_Right_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Type_A_Right_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Type_A_Breast
+        weight: 0
+      - path: Bone_Root/Pelvis/Type_A_Pelvis
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Idle
+      takeName: CINEMA_4D___
+      internalID: 0
+      firstFrame: 489
+      lastFrame: 1147
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Body
+        weight: 0
+      - path: Bone_Root
+        weight: 1
+      - path: Bone_Root/Pelvis
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01/Left_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Type_A_Left_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01/Right_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Type_A_Right_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01/Left_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Type_A_Left_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Type_A_Left_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01/Head_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck/Type_A_Head
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01/Right_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Type_A_Right_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Type_A_Right_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Type_A_Breast
+        weight: 0
+      - path: Bone_Root/Pelvis/Type_A_Pelvis
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Shot-03
+      takeName: CINEMA_4D___
+      internalID: 0
+      firstFrame: 1167
+      lastFrame: 1199
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Body
+        weight: 0
+      - path: Bone_Root
+        weight: 1
+      - path: Bone_Root/Pelvis
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01/Left_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Type_A_Left_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01/Right_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Type_A_Right_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01/Left_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Type_A_Left_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Type_A_Left_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01/Head_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck/Type_A_Head
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01/Right_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Type_A_Right_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Type_A_Right_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Type_A_Breast
+        weight: 0
+      - path: Bone_Root/Pelvis/Type_A_Pelvis
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Shot-04
+      takeName: CINEMA_4D___
+      internalID: 0
+      firstFrame: 1225
+      lastFrame: 1243
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Body
+        weight: 0
+      - path: Bone_Root
+        weight: 1
+      - path: Bone_Root/Pelvis
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01/Left_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Type_A_Left_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01/Right_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Type_A_Right_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01/Left_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Type_A_Left_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Type_A_Left_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01/Head_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck/Type_A_Head
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01/Right_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Type_A_Right_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Type_A_Right_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Type_A_Breast
+        weight: 0
+      - path: Bone_Root/Pelvis/Type_A_Pelvis
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Reload-01
+      takeName: CINEMA_4D___
+      internalID: 0
+      firstFrame: 1257
+      lastFrame: 1300
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Body
+        weight: 0
+      - path: Bone_Root
+        weight: 1
+      - path: Bone_Root/Pelvis
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01/Left_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Type_A_Left_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01/Right_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Type_A_Right_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01/Left_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Type_A_Left_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Type_A_Left_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01/Head_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck/Type_A_Head
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01/Right_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Type_A_Right_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Type_A_Right_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Type_A_Breast
+        weight: 0
+      - path: Bone_Root/Pelvis/Type_A_Pelvis
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Reload-02
+      takeName: CINEMA_4D___
+      internalID: 0
+      firstFrame: 1313
+      lastFrame: 1357
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Body
+        weight: 0
+      - path: Bone_Root
+        weight: 1
+      - path: Bone_Root/Pelvis
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01/Left_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Type_A_Left_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01/Right_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Type_A_Right_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01/Left_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Type_A_Left_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Type_A_Left_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01/Head_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck/Type_A_Head
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01/Right_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Type_A_Right_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Type_A_Right_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Type_A_Breast
+        weight: 0
+      - path: Bone_Root/Pelvis/Type_A_Pelvis
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: T Pose
+      takeName: __
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Body
+        weight: 0
+      - path: Bone_Root
+        weight: 1
+      - path: Bone_Root/Pelvis
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Left_Foot_01/Left_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Left_Leg/Left_Thigh/Left_Calf/Type_A_Left_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Right_Foot_01/Right_Foot_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Right_Leg/Right_Thigh/Right_Calf/Type_A_Right_leg
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Left_Finger_01/Left_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Left_Arm_2/Left_Forearm/Type_A_Left_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Left_Arm/Type_A_Left_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Neck/Head_01/Head_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Neck/Type_A_Head
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01
+        weight: 1
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Right_Finger_01/Right_Finger_02
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Right_Arm_2/Right_Forearm/Type_A_Right_arm
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Right_Arm/Type_A_Right_shoulder
+        weight: 0
+      - path: Bone_Root/Pelvis/Spine/Type_A_Breast
+        weight: 0
+      - path: Bone_Root/Pelvis/Type_A_Pelvis
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.25
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 0
+    importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human:
+    - boneName: Pelvis
+      humanName: Hips
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Left_Thigh
+      humanName: LeftUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Right_Thigh
+      humanName: RightUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Left_Calf
+      humanName: LeftLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Right_Calf
+      humanName: RightLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Left_Foot_01
+      humanName: LeftFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Right_Foot_01
+      humanName: RightFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Spine
+      humanName: Spine
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Neck
+      humanName: Neck
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Head_01
+      humanName: Head
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Left_Arm_2
+      humanName: LeftUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Right_Arm_2
+      humanName: RightUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Left_Forearm
+      humanName: LeftLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Right_Forearm
+      humanName: RightLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Left_Finger_01
+      humanName: LeftHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Right_Finger_01
+      humanName: RightHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    skeleton:
+    - name: Robot-A(Clone)
+      parentName: 
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Body
+      parentName: 
+      position: {x: 0, y: 0.011571132, z: 0}
+      rotation: {x: -0.00000019973709, y: 0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Bone_Root
+      parentName: 
+      position: {x: -0.000004348251, y: 0.0050475607, z: 0}
+      rotation: {x: -0.00000019973709, y: 0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Pelvis
+      parentName: 
+      position: {x: 0.000009312546, y: 0.0024947429, z: -0.000108040746}
+      rotation: {x: 0.50048655, y: -0.49951306, z: 0.50048625, w: 0.49951333}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Left_Leg
+      parentName: 
+      position: {x: -2.36299e-10, y: 0.0016009733, z: 0.00082567433}
+      rotation: {x: 0.5004869, y: -0.49951273, z: 0.50048685, w: -0.49951255}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Left_Thigh
+      parentName: 
+      position: {x: 0.00016891373, y: 0.0008624609, z: 3.2186503e-10}
+      rotation: {x: -0.45822248, y: 0.5668076, z: 0.42831507, w: 0.53414184}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Left_Calf
+      parentName: 
+      position: {x: 0.0000000018119812, y: -3.8146974e-10, z: -0.0031637414}
+      rotation: {x: -0.05663107, y: -0.029100917, z: 0.0028325552, w: 0.99796695}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Type_A_Left_leg
+      parentName: 
+      position: {x: -0.00003541111, y: -0.000010363009, z: -0.0021673932}
+      rotation: {x: 0.47346944, y: -0.52715397, z: -0.4743904, w: 0.522388}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Left_Foot_01
+      parentName: 
+      position: {x: 0.0003291757, y: 0.00000076065055, z: -0.0041146553}
+      rotation: {x: -0.00008191123, y: 0.70119715, z: -0.0006837151, w: 0.7129671}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Left_Foot_02
+      parentName: 
+      position: {x: 0.00005199199, y: 0.00012430972, z: -0.0024388393}
+      rotation: {x: 0.02545341, y: -0.010653815, z: 0.00027127922, w: 0.9996192}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Right_Leg
+      parentName: 
+      position: {x: 0.0000000010852177, y: -0.001587789, z: 0.00083188666}
+      rotation: {x: 0.5004867, y: -0.49951264, z: 0.50048697, w: -0.49951276}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Right_Thigh
+      parentName: 
+      position: {x: -0.0001689139, y: 0.0008624612, z: -3.2186503e-10}
+      rotation: {x: 0.5668112, y: -0.45823434, z: -0.5341451, w: -0.42829353}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Right_Calf
+      parentName: 
+      position: {x: 8.5234625e-10, y: 9.536741e-10, z: -0.0031637375}
+      rotation: {x: 0.05663129, y: -0.029057587, z: -0.0028578744, w: 0.99796814}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Type_A_Right_leg
+      parentName: 
+      position: {x: -0.00003506569, y: 0.000010407815, z: -0.0021674093}
+      rotation: {x: 0.5271926, y: -0.47348806, z: -0.5223554, w: 0.4743647}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Right_Foot_01
+      parentName: 
+      position: {x: 0.00032917698, y: -0.0000007534026, z: -0.0041146595}
+      rotation: {x: 0.070574015, y: 0.69759476, z: 0.07237963, w: 0.7093251}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Right_Foot_02
+      parentName: 
+      position: {x: 0.000026069572, y: -0.00013219891, z: -0.00243884}
+      rotation: {x: -0.027071247, y: -0.0053411303, z: -0.00009941927, w: 0.99961925}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Type_A_Pelvis
+      parentName: 
+      position: {x: 0.000060946153, y: 0.0000039107395, z: -0.0005413093}
+      rotation: {x: 0.5004865, y: -0.4995131, z: 0.5004863, w: -0.4995133}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Spine
+      parentName: 
+      position: {x: -4.5504855e-10, y: -0.000008386779, z: -0.0021579058}
+      rotation: {x: 0.000064191125, y: -0.0024515218, z: -0.0011170532, w: 0.99999636}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Left_Arm
+      parentName: 
+      position: {x: 9.119509e-10, y: 0.0028012355, z: -0.004212854}
+      rotation: {x: 0.5002236, y: -0.49977615, z: 0.5002238, w: -0.49977627}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Type_A_Left_shoulder
+      parentName: 
+      position: {x: -0.00043429993, y: -0.00017901002, z: 0.00008103281}
+      rotation: {x: -0.002450132, y: -0.0011208013, z: -0.00058989244, w: 0.9999962}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Left_Arm_2
+      parentName: 
+      position: {x: 0.0005658217, y: 0.000011267567, z: 4.8875803e-10}
+      rotation: {x: -0.109898284, y: 0.69850034, z: -0.09596837, w: 0.70057815}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Left_Forearm
+      parentName: 
+      position: {x: -0.000000099730464, y: -0.000000109362574, z: -0.0033401381}
+      rotation: {x: 0.0012117173, y: 0.00019864117, z: 0.1455501, w: 0.98935014}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Type_A_Left_arm
+      parentName: 
+      position: {x: -0.000015821142, y: 0.000046803212, z: -0.0018715261}
+      rotation: {x: 0.004870864, y: -0.70785105, z: -0.0083111385, w: 0.706296}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Left_Finger_01
+      parentName: 
+      position: {x: 0.000000007289647, y: 0.0000053423632, z: -0.0031810729}
+      rotation: {x: 0.04525455, y: 0.0000015889035, z: 0.000011631417, w: -0.9989755}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Left_Finger_02
+      parentName: 
+      position: {x: -0.0000000022888131, y: -0.000000008010863, z: -0.0014987097}
+      rotation: {x: 0.019192362, y: 1.1202084e-16, z: -5.0731546e-17, w: 0.9998158}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Right_Arm
+      parentName: 
+      position: {x: 0.0000000015258788, y: -0.002790451, z: -0.004207847}
+      rotation: {x: 0.50022346, y: -0.499776, z: 0.500224, w: -0.4997764}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Type_A_Right_shoulder
+      parentName: 
+      position: {x: 0.0004433814, y: -0.00018660446, z: 0.00009555199}
+      rotation: {x: -0.0024503984, y: -0.0011208015, z: -0.0005898772, w: 0.9999962}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Right_Arm_2
+      parentName: 
+      position: {x: -0.0005757272, y: 0.000011464403, z: 2.1457669e-10}
+      rotation: {x: -0.6985109, y: 0.10983113, z: 0.70058686, w: -0.09590475}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Right_Forearm
+      parentName: 
+      position: {x: -0.00000010384319, y: 0.00000010662077, z: -0.0033401411}
+      rotation: {x: -0.0012113787, y: 0.00019884588, z: -0.14542821, w: 0.9893681}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Type_A_Right_arm
+      parentName: 
+      position: {x: -0.00004924344, y: -0.000029429388, z: -0.001891378}
+      rotation: {x: -0.7062735, y: 0.0040696245, z: 0.70788836, w: -0.007440533}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Right_Finger_01
+      parentName: 
+      position: {x: 0.0000000036120407, y: -0.000005335043, z: -0.0031810699}
+      rotation: {x: 0.045254543, y: -0.000001452067, z: -0.000011381573, w: 0.9989755}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Right_Finger_02
+      parentName: 
+      position: {x: -3.5166742e-10, y: -5.722047e-10, z: -0.0014987108}
+      rotation: {x: -0.019192366, y: 1.2176497e-13, z: -0.00000023723736, w: 0.9998158}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Type_A_Breast
+      parentName: 
+      position: {x: 0.000133889, y: 0.000002399143, z: -0.0034081624}
+      rotation: {x: 0.5023017, y: -0.50014466, z: 0.49873158, w: -0.49881387}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Neck
+      parentName: 
+      position: {x: 0.0000000013351438, y: 3.7616105e-10, z: -0.0047769616}
+      rotation: {x: 0.0030400185, y: 0.015972398, z: 0.0013584133, w: 0.9998669}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Type_A_Head
+      parentName: 
+      position: {x: 0.0001373042, y: -0.000020751115, z: -0.0024375892}
+      rotation: {x: -0.49510583, y: 0.49127698, z: -0.5088862, w: 0.50453144}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Head_01
+      parentName: 
+      position: {x: 1.3113019e-10, y: 3.6507863e-11, z: -0.0008019634}
+      rotation: {x: -0.0031960092, y: 1.0719194e-16, z: 1.1310021e-16, w: 0.99999493}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Head_02
+      parentName: 
+      position: {x: 3.5762784e-10, y: 1.05798224e-10, z: -0.0020385564}
+      rotation: {x: -0.008194255, y: -1.9374276e-12, z: 0.00000006188292, w: 0.99996644}
+      scale: {x: 1, y: 1, z: 1}
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 0.0025
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 3
+  humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
