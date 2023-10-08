@@ -1,20 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.AI.Navigation;
 using UnityEngine;
-
+using UnityEngine.AI;
 
 namespace Vinci.Academy.Environement
 {
 
     public class EnvManager : MonoBehaviour
     {
+        [SerializeField]
+        NavMeshSurface navMeshSurface;
 
         public EnvironementBase CreateTrainEnv(TrainEnvironmentConfig envConfig)
         {
             EnvironementBase envInstatiate = null;
 
             envInstatiate = Instantiate(envConfig.prefab, new Vector3(0, 0, 0), Quaternion.identity);
+
+            navMeshSurface.BuildNavMesh();
 
             return envInstatiate;
         }
@@ -31,6 +36,10 @@ namespace Vinci.Academy.Environement
                 envsInstatiate.Add(Instantiate(envConfig.prefab, new Vector3(xPos, 0, 0), Quaternion.identity));
                 xPos += envConfig.bounds.extents.x + spacing;
             }
+
+            navMeshSurface.BuildNavMesh();
+
+            Debug.Log("Envs created: " + numEvns);
 
             return envsInstatiate;
         }

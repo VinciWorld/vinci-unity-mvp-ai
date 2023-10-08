@@ -24,6 +24,8 @@ public class AcademyMainState : StateBase
         _controller.manager.playerData.AddAgent(_controller.academyData.availableAgents[0]);
 
         _controller.session.selectedAgent = null;
+
+        //TODO: Load available models for this model
     }
 
     public override void OnExitState()

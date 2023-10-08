@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace StatSystem
 {
-    [CreateAssetMenu(fileName = "StatsDataBase", menuName = "StatSystem/StatsDataBase", order = 0)]
+    //[CreateAssetMenu(fileName = "StatsDataBase", menuName = "StatSystem/StatsDataBase", order = 0)]
     public class StatsDataBase : MonoBehaviour
     {
         [Header("Stats")]

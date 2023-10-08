@@ -12,13 +12,13 @@ public enum MessagesID
 }
 
 
-[System.Serializable]
+[Serializable]
 public class Header
 {
     public int msg_id;
 }
 
-[System.Serializable]
+[Serializable]
 public class MetricsMsg
 {   
     public int msg_id;
@@ -38,7 +38,7 @@ public class TrainJobStatusMsg
     public TrainJobStatus status;
 }
 
-[System.Serializable]
+[Serializable]
 public class ActionsHallwayMsg
 {
     public int msg_id = (int)MessagesID.ACTIONS;
@@ -56,27 +56,51 @@ public class ActionsHallwayMsg
     public List<int> actionsBuffer;
 }
 
-[System.Serializable]
+[Serializable]
+public class ActionsRobotWaveMsg
+{
+    public int msg_id = (int)MessagesID.ACTIONS;
+
+    public int stepCount = 0;
+    public int episodeCount = 0;
+
+    public Pose agentPose;
+    public Pose symbolOGoalPose;
+    public Pose symbolXGoalPose;
+    public Pose symbolOPose;
+    public Pose symbolXPose;
+
+    public List<ActionRobotBufferMsg> actionsBuffer;
+}
+
+[Serializable]
+public class ActionRobotBufferMsg
+{
+    public int direction;
+    public int fire;
+}
+
+[Serializable]
 public class TrainInfo
 {
     public int stepCount = 0;
     public int episodeCount = 0;
 }
 
-[System.Serializable]
+[Serializable]
 public class EpisodeBeginMsg
 {
     public int msg_id = (int)MessagesID.ON_EPISODE_BEGIN;
 }
 
-[System.Serializable]
+[Serializable]
 public class TrainJobMsg
 {
     public int msg_id;
     public PostResponseTrainJob train_job;
 }
 
-[System.Serializable]
+[Serializable]
 public class Pose
 {
     public float x;

@@ -7,14 +7,14 @@ public abstract class EnvironementBase : MonoBehaviour
 {
     public abstract event Action<Dictionary<string, string>> updateEnvResults;
     public abstract event Action<string> actionsReceived;
-    public abstract event Action<int, int> episodeAndStepCountUpdated;
+    public abstract event Action<int, int, int> episodeAndStepCountUpdated;
 
     public abstract void SetIsReplay(bool isResplay);
     public abstract void StopReplay();
 
-    public abstract HallwayAgent GetAgent();
+    public abstract IAgent GetAgent();
 
-    public abstract void Initialize(HallwayAgent agent);
+    public abstract void Initialize(GameObject agent);
     public abstract void EpisodeBegin();
     public abstract void GoalCompleted(bool result);
     public abstract void Reset();

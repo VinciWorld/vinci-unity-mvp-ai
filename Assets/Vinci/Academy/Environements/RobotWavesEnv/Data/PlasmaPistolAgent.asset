@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3debd117e5746847b68fdfb9ae88784, type: 3}
+  m_Name: PlasmaPistolAgent
+  m_EditorClassIdentifier: 
+  type: 0
+  Name: Plasma Pistol
+  image: {fileID: 0}
+  description: Short Range
+  range: 20
+  startSpeed: 0
+  speed: 20
+  Damage: 50
+  attackRate: 0.2
+  shotShound: {fileID: 0}
+  pickupSound: {fileID: 0}
+  recoilForce: 0
+  MagazineSize: -1
+  weaponPrefab: {fileID: 6035097937728686833, guid: d81204a9adaa4fd40b5d66500ac793ea,
+    type: 3}
+  projectilePrefab: {fileID: 4466347431434372105, guid: ecbabf86ec83eed429e6eb49b8bb2546,
+    type: 3}

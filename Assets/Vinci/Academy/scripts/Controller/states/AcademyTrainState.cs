@@ -62,11 +62,6 @@ public class AcademyTrainState : StateBase
 
     }
 
-    void OnHomeButtonPressed()
-    {
-        SceneLoader.instance.LoadSceneDelay("IdleGame");
-    }
-
     void OnTrainButtonPressed(int steps)
     {
         //TODO: Check if model is already trained or if it is trainning
@@ -88,8 +83,7 @@ public class AcademyTrainState : StateBase
             MainThreadDispatcher.Instance().EnqueueAsync(ConnectToRemoteInstance);
         }
 
-        
-        trainView.UptadeInfo(0, 0);
+        trainView.UptadeInfo(0, 0, 0);
         trainView.UpdateMetrics(0,0);
         trainView.SetTrainSetupSubViewState(false);
         trainView.SetTrainHudSubViewState(true);
@@ -132,35 +126,15 @@ public class AcademyTrainState : StateBase
             created_env.transform
         );
 
-        created_env.GetComponent<EnvHallway>().Initialize(
-            created_agent.GetComponent<HallwayAgent>()
-        );
+        created_env.Initialize(created_agent);
 
         _controller.session.currentAgentInstance = created_agent;
         _controller.session.currentEnvInstance = created_env;
     }
 
-    public void CreateAgent()
-    {
-        EnvironementBase envSelected = _controller.session.currentEnvInstance;
-
-        GameObject created_agent = AgentFactory.instance.CreateAgent(
-            _controller.session.selectedAgent,
-            new Vector3(0, 1.54f, -8.5f), Quaternion.identity,
-            envSelected.transform
-        );
-
-        envSelected.GetComponent<EnvHallway>().Initialize(
-            created_agent.GetComponent<HallwayAgent>()
-        );
-
-        _controller.session.currentAgentInstance = created_agent;
-    }
-
     async void ConnectToRemoteInstance()
     {
-        Debug.Log("Starting remote training Thread");
-
+        Debug.Log("Connecting to remote training Server");
 
         PostTrainJobRequest trainJobRequest = new PostTrainJobRequest
         {
@@ -243,7 +217,12 @@ public class AcademyTrainState : StateBase
     {
         _controller.session.currentEnvInstance.OnActionsFromServerReceived(actionsJson);
 
-        Debug.Log("Actions received: " + actionsJson);
+        //Debug.Log("Actions received: " + actionsJson);
+    }
+
+    void OnHomeButtonPressed()
+    {
+        SceneLoader.instance.LoadSceneDelay("IdleGame");
     }
 
     void SaveAndLoadModel(Byte[] rawModel)
@@ -254,7 +233,7 @@ public class AcademyTrainState : StateBase
         string directoryPath = Path.Combine(Application.persistentDataPath, "runs", runId, "models");
         string filePath = Path.Combine(directoryPath, $"{behaviourName}.onnx");
 
-        Debug.Log("Model saved at: " + filePath);
+       
         // Ensure the directory exists
         if (!Directory.Exists(directoryPath))
         {
@@ -264,12 +243,13 @@ public class AcademyTrainState : StateBase
         // Convert and Save model to disk
         NNModel nnModel = SaveAndConvertModel(filePath, rawModel);
         nnModel.name = behaviourName;
+        Debug.Log("Model saved at: " + filePath);
 
         _controller.session.selectedAgent.SetModelAndPath(filePath, nnModel);
 
         // Load model on current agent
         _controller.session
-        .currentAgentInstance.GetComponent<HallwayAgent>()
+        .currentAgentInstance.GetComponent<IAgent>()
         .LoadModel(behaviourName, nnModel);
     }
 
@@ -296,4 +276,23 @@ public class AcademyTrainState : StateBase
 
         return asset;
     }
+
+    /*
+    public void CreateAgent()
+    {
+        EnvironementBase envSelected = _controller.session.currentEnvInstance;
+
+        GameObject created_agent = AgentFactory.instance.CreateAgent(
+            _controller.session.selectedAgent,
+            new Vector3(0, 1.54f, -8.5f), Quaternion.identity,
+            envSelected.transform
+        );
+
+        envSelected.GetComponent<EnvHallway>().Initialize(
+            created_agent.GetComponent<HallwayAgent>()
+        );
+
+        _controller.session.currentAgentInstance = created_agent;
+    }
+*/
 }
