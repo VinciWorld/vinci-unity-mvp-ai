@@ -19,10 +19,11 @@ public class EnvRobotWaves : EnvironementBase
 
     public override event Action<Dictionary<string, string>> updateEnvResults;
     public override event Action<string> actionsReceived;
-    public override event Action<int, int> episodeAndStepCountUpdated;
+    public override event Action<int, int, int> episodeAndStepCountUpdated;
 
     [Header("Replay")]
     private bool _isReplay = false;
+    private int _episodeCount = 0;
     public float refreshRate = 0.02f;
     private Coroutine replayActionsLoopCoroutine;
     private Stack<ActionsRobotWaveMsg> actionStack = new Stack<ActionsRobotWaveMsg>();
@@ -31,6 +32,8 @@ public class EnvRobotWaves : EnvironementBase
     private int goalsCompletedCount = 0;
     private int goalsFailedCount = 0;
     private float successRatio = 0f;
+
+    private bool isFirstEpisode = true;
 
     public override void Initialize(GameObject agent)
     {
@@ -73,7 +76,6 @@ public class EnvRobotWaves : EnvironementBase
             isFirstEpisode = false;
         }
 #endif
-
         if (!_isReplay)
         {
             _agent.Reset();
@@ -82,6 +84,8 @@ public class EnvRobotWaves : EnvironementBase
             _agent.transform.position = _agentSpawnPose.position;
             _agent.transform.rotation = _agentSpawnPose.rotation;
         }
+
+        _episodeCount++;
     }
 
     public override IAgent GetAgent()
@@ -135,9 +139,14 @@ public class EnvRobotWaves : EnvironementBase
 
     public override void Reset()
     {
+        _agent.Reset();
+        _waveController.ResetWaves();
+        _agent.transform.position = _agentSpawnPose.position;
+        _agent.transform.rotation = _agentSpawnPose.rotation;
         goalsCompletedCount = 0;
         goalsFailedCount = 0;
         successRatio = 0;
+        _episodeCount = 0;
     }
 
     public override void SetAgentBehavior(BehaviorType type)
@@ -148,6 +157,7 @@ public class EnvRobotWaves : EnvironementBase
     public override void StartEnv()
     {
         Reset();
+        _agent.EndEpisode();
         Academy.Instance.AutomaticSteppingEnabled = true;
     }
 
@@ -156,37 +166,17 @@ public class EnvRobotWaves : EnvironementBase
         Academy.Instance.AutomaticSteppingEnabled = false;
     }
 
-    public override void SetIsReplay(bool isResplay)
-    {
-        _isReplay = isResplay;
-    }
-
-    public override void StopReplay()
-    {
-        _isReplay = false;
-        _agent.isReplay = false;
-        StopCoroutine(replayActionsLoopCoroutine);
-        replayActionsLoopCoroutine = null;
-        Time.timeScale = 1f;
-    }
-
     //REPLAY
     //Server side code!
 #if !UNITY_EDITOR && UNITY_SERVER
     private void SendEpisodeActionsToClient()
     {
-        ActionsHallwayMsg actions = new ActionsHallwayMsg
+        ActionsRobotWaveMsg actions = new ActionsRobotWaveMsg
         {
             stepCount = Academy.Instance.StepCount,
             episodeCount = _episodeCount,
             actionsBuffer = _agent.actionsBuffer,
-
-            selection = _agent.selection,
-            agentPose = _agentStartPose,
-            symbolOGoalPose = _symbolOGoalPose,
-            symbolXGoalPose = _symbolXGoalPose,
-            symbolOPose = _symbolOPose,
-            symbolXPose = _symbolXPose
+            agentPose = new Pose(_agent.transform.position, _agent.transform.rotation)
         };
 
         
@@ -214,9 +204,9 @@ public class EnvRobotWaves : EnvironementBase
     {
         int totalStepCount = 0;
         Debug.Log("Start Replay");
-        _agent.isReplay = true;
+        _agent.SetIsReplay(true);
 
-        Time.timeScale = 10;
+        Time.timeScale = 5f;
         while (_isReplay)
         {
             if (actionStack.Count > 0)
@@ -224,8 +214,12 @@ public class EnvRobotWaves : EnvironementBase
                 ActionsRobotWaveMsg action = actionStack.Pop();
 
                 _agent.EndEpisode();
-                _agent.transform.position = action.agentPose.GetPosition();
-         
+                _agent.transform.position = _agentSpawnPose.position;
+                _agent.transform.rotation = _agentSpawnPose.rotation;
+                _waveController.ResetWaves();
+                _waveController.StartWaves();
+
+
                 actionsQueueReceived = new Queue<ActionRobotBufferMsg>(action.actionsBuffer);
                 _agent.actionsQueueReceived = actionsQueueReceived;
 
@@ -234,16 +228,34 @@ public class EnvRobotWaves : EnvironementBase
                 Academy.Instance.AutomaticSteppingEnabled = true;
                 while (_agent.actionsQueueReceived.Count > 0)
                 {
-                    episodeAndStepCountUpdated?.Invoke(action.episodeCount, totalStepCount + _agent.steps);
+                    episodeAndStepCountUpdated?.Invoke(action.episodeCount, _agent.steps, _agent.steps + totalStepCount);
                     yield return new WaitForEndOfFrame();
                 }
+                episodeAndStepCountUpdated?.Invoke(action.episodeCount, _agent.steps, _agent.steps + totalStepCount);
                 Academy.Instance.AutomaticSteppingEnabled = false;
             }
+            _waveController.ResetWaves();
+            _agent.transform.position = _agentSpawnPose.position;
+            _agent.transform.rotation = _agentSpawnPose.rotation;
 
             totalStepCount += _agent.steps;
             _agent.steps = 0;
             yield return new WaitForEndOfFrame();
         }
+    }
+
+    public override void SetIsReplay(bool isResplay)
+    {
+        _isReplay = isResplay;
+    }
+
+    public override void StopReplay()
+    {
+        _isReplay = false;
+        _agent.SetIsReplay(false);
+        StopCoroutine(replayActionsLoopCoroutine);
+        replayActionsLoopCoroutine = null;
+        Time.timeScale = 1f;
     }
 
 }

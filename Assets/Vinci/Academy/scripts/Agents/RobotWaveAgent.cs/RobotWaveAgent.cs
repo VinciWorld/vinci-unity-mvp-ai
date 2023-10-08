@@ -18,7 +18,7 @@ public class RobotWaveAgent : Agent, IAgent
 
     Rigidbody _rb;
 
-    public bool isReplay = false;
+    private bool _isReplay = false;
     public int steps = 0;
 
     public List<ActionRobotBufferMsg> actionsBuffer = new List<ActionRobotBufferMsg>();
@@ -61,6 +61,7 @@ public class RobotWaveAgent : Agent, IAgent
     {
         base.OnEpisodeBegin();
         env.EpisodeBegin();
+        steps = 0;
     }
 
 
@@ -75,7 +76,7 @@ public class RobotWaveAgent : Agent, IAgent
         steps++;
         var discreteActionsOut = actionBuffers.DiscreteActions;
 
-        if (isReplay)
+        if (_isReplay)
         {
             if (actionsQueueReceived.Count > 0)
             {
@@ -94,7 +95,14 @@ public class RobotWaveAgent : Agent, IAgent
         }
 
 #if !UNITY_EDITOR && UNITY_SERVER
-        actionsBuffer.Add(discreteActionsOut[0]);
+
+        ActionRobotBufferMsg bufferActions = new ActionRobotBufferMsg()
+        {
+            direction = discreteActionsOut[0],
+            fire = discreteActionsOut[1]
+        };
+
+        actionsBuffer.Add(bufferActions);
 #endif
 
     }
@@ -212,5 +220,10 @@ public class RobotWaveAgent : Agent, IAgent
         _beahivor.BehaviorType = BehaviorType.HeuristicOnly;
         SetModel(behaviorName, model);
         _beahivor.BehaviorType = BehaviorType.InferenceOnly;
+    }
+
+    public void SetIsReplay(bool isReplay)
+    {
+        _isReplay = isReplay;
     }
 }

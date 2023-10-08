@@ -19,6 +19,7 @@ TagManager:
   - symbol_X_Goal
   - Enemy
   - obstacles
+  - Target
   layers:
   - Default
   - TransparentFX
@@ -26,11 +27,11 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - Obstacles
+  - Wall
+  - Enemy
+  - Ground
   - 
   - 
   - 

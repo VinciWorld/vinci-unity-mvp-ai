@@ -83,7 +83,7 @@ public class AcademyTrainState : StateBase
             MainThreadDispatcher.Instance().EnqueueAsync(ConnectToRemoteInstance);
         }
 
-        trainView.UptadeInfo(0, 0);
+        trainView.UptadeInfo(0, 0, 0);
         trainView.UpdateMetrics(0,0);
         trainView.SetTrainSetupSubViewState(false);
         trainView.SetTrainHudSubViewState(true);
@@ -233,7 +233,7 @@ public class AcademyTrainState : StateBase
         string directoryPath = Path.Combine(Application.persistentDataPath, "runs", runId, "models");
         string filePath = Path.Combine(directoryPath, $"{behaviourName}.onnx");
 
-        Debug.Log("Model saved at: " + filePath);
+       
         // Ensure the directory exists
         if (!Directory.Exists(directoryPath))
         {
@@ -243,12 +243,13 @@ public class AcademyTrainState : StateBase
         // Convert and Save model to disk
         NNModel nnModel = SaveAndConvertModel(filePath, rawModel);
         nnModel.name = behaviourName;
+        Debug.Log("Model saved at: " + filePath);
 
         _controller.session.selectedAgent.SetModelAndPath(filePath, nnModel);
 
         // Load model on current agent
         _controller.session
-        .currentAgentInstance.GetComponent<HallwayAgent>()
+        .currentAgentInstance.GetComponent<IAgent>()
         .LoadModel(behaviourName, nnModel);
     }
 

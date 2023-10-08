@@ -25,12 +25,12 @@ public class AcademyServerInstanceState : StateBase
 
         EnvConfigSmall config = new EnvConfigSmall();
         config.env_id = "1";
-        config.num_of_areas = 1;
+        config.num_of_areas = 6;
         config.agent_id = "1";
 
-        StartTraining(config);
+        //StartTraining(config);
 
-        //ConnectWebSocketToTrainInstance();
+        ConnectWebSocketToTrainInstance();
     }
 
     public override void OnExitState()
@@ -61,7 +61,7 @@ public class AcademyServerInstanceState : StateBase
         }
 
         List<EnvironementBase> envsInstances = _controller.envManager.CreateMutipleTrainEnvs(
-            envConfig, trainEnvConfig.num_of_areas, 5f
+            envConfig, trainEnvConfig.num_of_areas, 100f
         );
 
        for(int i = 0; i < envsInstances.Count; i++)

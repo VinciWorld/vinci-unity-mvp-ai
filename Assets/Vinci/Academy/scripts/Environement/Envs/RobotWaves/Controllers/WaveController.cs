@@ -25,6 +25,13 @@ public class WaveController : MonoBehaviour
     public event Action completedWave;
     public event Action completedAllWaves;
 
+    private System.Random seededRandom;
+
+    void Start()
+    {
+        int seed = 1987;
+        seededRandom = new System.Random(seed);
+    }
 
     public void StartWaves()
     {
@@ -83,7 +90,7 @@ public class WaveController : MonoBehaviour
 
     public Vector3 GetRandomSpawnPoint()
     {
-        int rnd = Random.Range(0, _spawnPoints.Count);
+        int rnd = seededRandom.Next(0, _spawnPoints.Count);
         return _spawnPoints[rnd].position;
     }
 }

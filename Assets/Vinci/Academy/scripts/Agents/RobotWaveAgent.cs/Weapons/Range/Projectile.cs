@@ -71,9 +71,11 @@ public class ProjectileTopDown : MonoBehaviour
         Ray ray = new Ray(transform.position, transform.forward);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, moveDistance, colllisionMask))
+        if (Physics.Raycast(ray, out hit, moveDistance * 1.2f, colllisionMask))
         {
+            
             Targetable otherTargatable = hit.collider.gameObject.GetComponent<Targetable>();
+            Debug.Log("otherTargatable: " + otherTargatable);
             if (otherTargatable != null)
             {
                 if (otherTargatable.team != owner.team)

@@ -23,6 +23,8 @@ public class AcademyTrainView : View
     [SerializeField]
     private TextMeshProUGUI stepsCountText;
     [SerializeField]
+    private TextMeshProUGUI totalStepsCountText;
+    [SerializeField]
     private TextMeshProUGUI meanRewardText;
     [SerializeField]
     private TextMeshProUGUI stdRewardText;
@@ -69,10 +71,11 @@ public class AcademyTrainView : View
     }
 
     public void UptadeInfo(
-        int episodesCount, int stepsCount)
+        int episodesCount, int stepsCount, int totalStepsCount)
     {
         episodesCountText.text = episodesCount.ToString();
         stepsCountText.text = stepsCount.ToString();
+       // totalStepsCountText.text = "0"; //totalStepsCount.ToString();
     }
 
     public void UpdateMetrics(

@@ -20,7 +20,7 @@ public class HallwayAgent : Agent, IAgent
 
     private int _actionFromServer = 0;
 
-    public bool isReplay = false;
+    private bool _isReplay = false;
    
     public List<int> actionsBuffer = new List<int>();
 
@@ -109,7 +109,7 @@ public class HallwayAgent : Agent, IAgent
         steps++;
         var discreteActionsOut = actionBuffers.DiscreteActions;
 
-        if(isReplay)
+        if(_isReplay)
         {
             if(actionsQueueReceived.Count > 0)
             {
@@ -143,7 +143,7 @@ public class HallwayAgent : Agent, IAgent
                 env.GoalCompleted(false);
                 _statsRecorder.Add("Goal/Wrong", 1, StatAggregationMethod.Sum);
             }
-            if (!isReplay)
+            if (!_isReplay)
             {
                 EndEpisode();
             }
@@ -215,5 +215,10 @@ public class HallwayAgent : Agent, IAgent
     public void Reset()
     {
         throw new System.NotImplementedException();
+    }
+
+    public void SetIsReplay(bool isReplay)
+    {
+        _isReplay = isReplay;
     }
 }

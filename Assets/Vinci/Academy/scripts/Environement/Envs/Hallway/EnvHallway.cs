@@ -40,7 +40,7 @@ public class EnvHallway : EnvironementBase
 
     public override event System.Action<Dictionary<string, string>> updateEnvResults;
     public override event System.Action<string> actionsReceived;
-    public override event System.Action<int, int> episodeAndStepCountUpdated;
+    public override event System.Action<int, int, int> episodeAndStepCountUpdated;
 
     private bool isFirstEpisode = true;
 
@@ -265,7 +265,7 @@ public class EnvHallway : EnvironementBase
         int stepCount = 0;
         int totalStepCount = 0;
         Debug.Log("Start Replay");
-        _agent.isReplay = true;
+        _agent.SetIsReplay(true);
 
         Time.timeScale = 10;
         while (_isReplay)
@@ -292,7 +292,7 @@ public class EnvHallway : EnvironementBase
                 Academy.Instance.AutomaticSteppingEnabled = true;
                 while(_agent.actionsQueueReceived.Count > 0)
                 {
-                    episodeAndStepCountUpdated?.Invoke(action.episodeCount, totalStepCount + _agent.steps);
+                    episodeAndStepCountUpdated?.Invoke(action.episodeCount, _agent.steps, totalStepCount + _agent.steps);
                     yield return new WaitForEndOfFrame();
                 }
                 Academy.Instance.AutomaticSteppingEnabled = false;
@@ -322,7 +322,7 @@ public class EnvHallway : EnvironementBase
     public override void StopReplay()
     {
         _isReplay = false;
-        _agent.isReplay = false;
+        _agent.SetIsReplay(false);
         StopCoroutine(replayActionsLoopCoroutine);
         replayActionsLoopCoroutine = null;
         Time.timeScale = 1f;
