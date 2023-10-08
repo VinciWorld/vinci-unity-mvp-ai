@@ -7,7 +7,7 @@ using Unity.MLAgents.Policies;
 using Unity.Barracuda;
 using System.Collections.Generic;
 
-public class HallwayAgent : Agent
+public class HallwayAgent : Agent, IAgent
 {
     public bool useVectorObs = true;
     public int selection = 0;
@@ -22,7 +22,6 @@ public class HallwayAgent : Agent
 
     public bool isReplay = false;
    
-
     public List<int> actionsBuffer = new List<int>();
 
     //Replay
@@ -180,8 +179,6 @@ public class HallwayAgent : Agent
         {
             discreteActionsOut[0] = 2;
         }
-
-
     }
 
     public void LoadModel(string behaviorName, NNModel model)
@@ -213,5 +210,10 @@ public class HallwayAgent : Agent
         transform.rotation = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
 
         return new Pose(transform.position, transform.rotation);
+    }
+
+    public void Reset()
+    {
+        throw new System.NotImplementedException();
     }
 }

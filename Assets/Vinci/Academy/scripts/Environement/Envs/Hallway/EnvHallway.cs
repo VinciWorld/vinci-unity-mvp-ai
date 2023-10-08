@@ -196,7 +196,7 @@ public class EnvHallway : EnvironementBase
         return metrics;
     }
 
-    public override HallwayAgent GetAgent()
+    public override IAgent GetAgent()
     {
         return _agent;
     }

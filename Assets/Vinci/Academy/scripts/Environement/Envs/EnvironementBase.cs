@@ -12,7 +12,7 @@ public abstract class EnvironementBase : MonoBehaviour
     public abstract void SetIsReplay(bool isResplay);
     public abstract void StopReplay();
 
-    public abstract HallwayAgent GetAgent();
+    public abstract IAgent GetAgent();
 
     public abstract void Initialize(GameObject agent);
     public abstract void EpisodeBegin();

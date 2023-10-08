@@ -18,7 +18,7 @@ public class AcademyController : MonoBehaviour
     {
         manager = GameManager.instance;
 #if UNITY_EDITOR || UNITY_WEBGL
-        SwitchState(new AcademyMainState(this));
+        SwitchState(new AcademyServerInstanceState(this));
 
 #elif !UNITY_EDITOR && UNITY_SERVER
         SwitchState(new AcademyServerInstanceState(this));

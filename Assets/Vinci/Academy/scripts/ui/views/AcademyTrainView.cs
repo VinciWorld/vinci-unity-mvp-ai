@@ -46,10 +46,16 @@ public class AcademyTrainView : View
 
     public void OnTrainButtonPressed()
     {
-        int stepsToTrain = int.Parse(_stepsInputField.text);
-        trainButtonPressed?.Invoke(stepsToTrain);
-
-        Debug.Log(stepsToTrain);
+        try
+        {
+            int stepsToTrain = int.Parse(_stepsInputField.text);
+            trainButtonPressed?.Invoke(stepsToTrain);
+            Debug.Log("Steps to train: " + stepsToTrain);
+        }
+        catch(Exception e)
+        {
+            trainButtonPressed?.Invoke(10000);
+        }
     }
 
     public void SetTrainSetupSubViewState(bool state)

@@ -24,9 +24,9 @@ public class AcademyServerInstanceState : StateBase
         Academy.Instance.AutomaticSteppingEnabled = false;
 
         EnvConfigSmall config = new EnvConfigSmall();
-        config.env_id = "0001";
-        config.num_of_areas = 8;
-        config.agent_id = "999";
+        config.env_id = "1";
+        config.num_of_areas = 1;
+        config.agent_id = "1";
 
         StartTraining(config);
 
@@ -75,7 +75,7 @@ public class AcademyServerInstanceState : StateBase
 
             );
 
-            envsInstances[i].Initialize(created_agent.GetComponent<HallwayAgent>());
+            envsInstances[i].Initialize(created_agent);
         }
 
         //mainEnv.GetAgent().episodeBegin += OnEpisodeBegin;

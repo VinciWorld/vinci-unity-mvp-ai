@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Barracuda;
 using Unity.MLAgents;
@@ -9,7 +8,7 @@ using Unity.MLAgents.Sensors;
 using UnityEngine;
 using Vinci.Core.BattleFramework;
 
-public class RobotAgentController : Agent, IAgent
+public class RobotWaveAgent : Agent, IAgent
 {
 
     InputControllerBasic _input;
@@ -22,9 +21,10 @@ public class RobotAgentController : Agent, IAgent
     public bool isReplay = false;
     public int steps = 0;
 
-    public List<int> actionsBuffer = new List<int>();
+    public List<ActionRobotBufferMsg> actionsBuffer = new List<ActionRobotBufferMsg>();
+    
     //Replay
-    public Queue<int> actionsQueueReceived;
+    public Queue<ActionRobotBufferMsg> actionsQueueReceived;
 
     public float agentRunSpeed = 1.5f;
     public float rotationSpeed = 100f;
@@ -79,21 +79,19 @@ public class RobotAgentController : Agent, IAgent
         {
             if (actionsQueueReceived.Count > 0)
             {
-                discreteActionsOut[0] = actionsQueueReceived.Dequeue();
+                ActionRobotBufferMsg actionRobotBufferMsg = actionsQueueReceived.Dequeue();
+                discreteActionsOut[0] = actionRobotBufferMsg.direction;
+                discreteActionsOut[1] = actionRobotBufferMsg.fire;
             }
         }
 
         AddReward(-1f / MaxStep);
 
+        MoveAgent(actionBuffers.DiscreteActions);
         if (discreteActionsOut[1] == 1)
         {
             _robot.Shoot();
         }
-
-
-        MoveAgent(actionBuffers.DiscreteActions);
-
-
 
 #if !UNITY_EDITOR && UNITY_SERVER
         actionsBuffer.Add(discreteActionsOut[0]);

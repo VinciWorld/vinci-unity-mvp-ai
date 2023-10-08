@@ -36,6 +36,8 @@ public class WeaponController : MonoBehaviour
             Destroy(_currentWeapon.gameObject);
         }
 
+        Debug.Log("ADD WEAPON: " + _currentWeapon);
+
         _currentWeapon = Instantiate(weapon, _weaponSocket.position, Quaternion.Euler(-90f, 90f, 0));
         _currentWeapon.transform.parent = _weaponSocket;
         _weapons.Add(_currentWeapon);
