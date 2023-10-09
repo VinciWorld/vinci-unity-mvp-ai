@@ -11,7 +11,7 @@ public class PlayerData
     public string username;
 
     public AgentConfig currentAgentConfig;
-    public List<AgentConfig> agents;
+    public List<AgentConfig> agents = new List<AgentConfig>();
 
 
     //Relation between model and train env
