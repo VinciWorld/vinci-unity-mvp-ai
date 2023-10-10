@@ -29,6 +29,9 @@ public class RobotWaveAgent : Agent, IAgent
     public float agentRunSpeed = 1.5f;
     public float rotationSpeed = 100f;
 
+    public event Action<RobotWaveAgent> agentDied;
+    public event Action agentKill;
+
     protected override void Awake()
     {
         base.Awake();
@@ -55,12 +58,10 @@ public class RobotWaveAgent : Agent, IAgent
         _robot.targetable.died += OnDied;
     }
 
-
-
     public override void OnEpisodeBegin()
     {
         base.OnEpisodeBegin();
-        env.EpisodeBegin();
+        env?.EpisodeBegin();
         steps = 0;
     }
 
@@ -142,13 +143,14 @@ public class RobotWaveAgent : Agent, IAgent
     {
         Debug.Log("DIEDDDDD");
         AddReward(-1f);
+        agentDied?.Invoke(this);
         EndEpisode();
     }
 
     private void OnKilledTarget()
     {
         Debug.Log("kills ");
-
+        agentKill?.Invoke();
         AddReward(0.05f);
     }
 

@@ -114,6 +114,12 @@ public class EnemyAI : AttackerPlacable
                 _navMeshMovement.SetNavDestination(_detectionModule.target);
                 break;
             case AIState.Attack:
+                if(_detectionModule.target == null)
+                {
+                    _aistate = AIState.idle;
+                    break;
+                }
+                
                 if (Vector3.Distance(_detectionModule.target.position,
                         _detectionModule._detectionOriginPoint.position)
                     >= (AttackStopDistanceRatio * _detectionModule.AttackRange))

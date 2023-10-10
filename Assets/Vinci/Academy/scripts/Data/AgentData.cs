@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Barracuda;
 using UnityEngine;
 using Vinci.Academy.Environement;
+using Vinci.Core.Managers;
 
 [Serializable]
 public class AgentConfig
@@ -11,6 +12,9 @@ public class AgentConfig
 
     public string agentName;
     public string description;
+    public Sprite agentImage;
+
+    public int AgentPrice = 100;
 
     public List<TrainEnvironmentConfig> allowedEnvs;
 
@@ -18,6 +22,15 @@ public class AgentConfig
     
     public ModelConfig modelConfig;
 
+    public NNModel GetNNModel()
+    {
+        if(modelConfig.nnModel == null)
+        {
+            return GameManager.instance.baseNNModel;
+        }
+
+        return modelConfig.nnModel;
+    }
 
     public void AddTrainMetrics(float meanReward, float stdReward)
     {

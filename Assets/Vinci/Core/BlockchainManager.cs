@@ -166,5 +166,10 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
 
     }
 
+    public void RegisterCompetitionScore(int score)
+    {
+
+    }
+
 
 }

@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Vinci.Core.UI;
@@ -8,22 +9,53 @@ public class GameHudView : View
     [SerializeField]
     private Button _HomeButton;
 
+
+
+    public TextMeshProUGUI _currentCoins;
+    public TextMeshProUGUI _currentWave;
+    public TextMeshProUGUI _deathsText;
+    public TextMeshProUGUI _killsText;
+
+    [Header("StatsInfo")]
     [SerializeField]
-    private Button _selectAgentButton;
+    private Slider _defenseStatSlider;
+    [SerializeField]
+    private Slider _attackStatSlider;
+    [SerializeField]
+    private Slider _speedStatSlider;
 
-    public event Action homeButtonPressed;
-    public event Action retryButtonPressed;
-    public event Action registerScoreOnBlockchainPressed;
-
+    [Header("Upgrades")]
+    [SerializeField]
+    private Button _upgradeDefenseButton;
+    [SerializeField]
+    private Button _upgradeAttackButton;
+    [SerializeField]
+    private Button _upgradeSpeedButton;
+    [SerializeField]
+    public TextMeshProUGUI _upgradeDefenseCost;
+    [SerializeField]
+    public TextMeshProUGUI _upgradeAttackCost;
+    [SerializeField]
+    public TextMeshProUGUI _upgradeSpeedCost;
 
     [Header("PopUps")]
     [SerializeField]
     GameOverPopUp gameOverPopUp;
 
 
+    public event Action homeButtonPressed;
+    public event Action retryButtonPressed;
+    public event Action registerScoreOnBlockchainPressed;
+    public event Action upgradeDefenseButtonPressed;
+    public event Action upgradeAttackButtonPessed;
+    public event Action upgradeSpeedButtonPressed;
+
+
     public override void Initialize()
     {
-       // _HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
+        _upgradeDefenseButton.onClick.AddListener(() => upgradeDefenseButtonPressed?.Invoke());
+        _upgradeAttackButton.onClick.AddListener(() => upgradeSpeedButtonPressed?.Invoke());
+        _upgradeSpeedButton.onClick.AddListener(() => upgradeSpeedButtonPressed?.Invoke());
     }
 
     public void OnRetryButtonPressed()
@@ -40,27 +72,43 @@ public class GameHudView : View
 
     public void OnHomeButtonPressed()
     {
+        gameOverPopUp.Close();
+        homeButtonPressed?.Invoke();
 
+    }
+
+    public void UpdateCurrentCoins(int totalCoins)
+    {
+        _currentCoins.text = totalCoins.ToString();
     }
 
     public void UpdateWavesCount(int totalWavesCount)
     {
-
+        _currentWave.text = $"Wave {totalWavesCount}";
     }
 
     public void UpdateKills(int totalKills)
     {
-
+        _killsText.text = totalKills.ToString();
     }
 
-    public void UpdateDeaths(int totalKills)
+    public void UpdateDeaths(int totalDeaths)
     {
+        _deathsText.text = totalDeaths.ToString();
+    }
 
+    public void SetInitialUpgradesCost(int defenseStatCost, int attackStatCost, int speedStatCost)
+    {
+        _upgradeDefenseCost.text = defenseStatCost.ToString();
+        _upgradeAttackCost.text = attackStatCost.ToString();
+        _upgradeSpeedCost.text = speedStatCost.ToString();
     }
 
     public void UpdateStats(int health, int attack, int speed)
     {
-
+        _defenseStatSlider.value = health / 100;
+        _attackStatSlider.value = attack / 100;
+        _speedStatSlider.value = speed / 100;
     }
 
     public void ShowGameOver(int wavesSurvived, int totalKills, int totalDeaths, bool isHighScore, int score)
@@ -76,5 +124,8 @@ public class GameHudView : View
         Debug.Log("Not enough Coins");
     }
 
-
+    public void MaxUpgradeReached()
+    {
+        Debug.Log("Max upgrade level reach");
+    }
 }

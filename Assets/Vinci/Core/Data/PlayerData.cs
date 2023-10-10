@@ -10,6 +10,8 @@ public class PlayerData
 {
     public string username;
 
+    public int highScore = 0;
+
     public AgentConfig currentAgentConfig;
     public List<AgentConfig> agents = new List<AgentConfig>();
 

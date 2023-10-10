@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: RobotWaveStats
   m_EditorClassIdentifier: 
   statsProgression:
-  - progressionType: 1
+  - progressionType: 0
     statDefinition: {fileID: 11400000, guid: 5a7694710f5730c4cb6a077f659b4362, type: 2}
-    levels: 64000000
+    levels: 640000006e00000078000000820000008c00000096000000a0000000aa000000b4000000be000000c8000000
