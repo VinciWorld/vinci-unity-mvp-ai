@@ -58,6 +58,11 @@ public class GameHudView : View
         _upgradeSpeedButton.onClick.AddListener(() => upgradeSpeedButtonPressed?.Invoke());
     }
 
+    public void OnUpgradeDefenseClicked()
+    {
+        upgradeDefenseButtonPressed?.Invoke();
+    }
+
     public void OnRetryButtonPressed()
     {
         gameOverPopUp.Close();
@@ -74,7 +79,6 @@ public class GameHudView : View
     {
         gameOverPopUp.Close();
         homeButtonPressed?.Invoke();
-
     }
 
     public void UpdateCurrentCoins(int totalCoins)
@@ -104,19 +108,20 @@ public class GameHudView : View
         _upgradeSpeedCost.text = speedStatCost.ToString();
     }
 
-    public void UpdateStats(int health, int attack, int speed)
+    public void UpdateStats(int defense, int attack, int speed)
     {
-        _defenseStatSlider.value = health / 100;
-        _attackStatSlider.value = attack / 100;
-        _speedStatSlider.value = speed / 100;
+        _defenseStatSlider.value = defense / 50;
+        _attackStatSlider.value = attack / 50;
+        _speedStatSlider.value = speed / 50;
     }
 
     public void ShowGameOver(int wavesSurvived, int totalKills, int totalDeaths, bool isHighScore, int score)
     {
+        gameOverPopUp.gameObject.SetActive(true);
         gameOverPopUp.Open();
         gameOverPopUp.retryButtonPressed += OnRetryButtonPressed;
         gameOverPopUp.registerOnBlockchainButtonPressed += OnRegisterScoreOnBlockchainPressed;
-        gameOverPopUp.Initialize(wavesSurvived, totalKills, totalDeaths, isHighScore, score);
+        gameOverPopUp.Initialize(wavesSurvived, totalDeaths, totalKills, isHighScore, score);
     }
 
     public void ShowNotEnoughCoins()

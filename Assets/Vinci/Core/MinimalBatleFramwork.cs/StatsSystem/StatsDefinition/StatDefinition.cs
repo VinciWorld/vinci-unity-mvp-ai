@@ -18,6 +18,7 @@ namespace StatSystem
         SPEED,
         ATTACK,
         ENERGY,
+        DEFENSE,
         DAMAGE,
         RANGE,
         FIRERATEPERSECOND,

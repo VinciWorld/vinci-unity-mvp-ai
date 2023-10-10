@@ -59,18 +59,23 @@ public class ArenaGameController : MonoBehaviour
     public void Initialize()
     {
         _gameHudView = ViewManager.GetView<GameHudView>();
-        _placableEntityManager.LoadAgentsCard();
+        
         _placableEntityManager.agentDeployed += OnDeployedAgent;
 
         _waveController.completedWave += OnWaveCompleted;
         _waveController.completedAllWaves += OnAllWavesCompleted;
 
+        _gameHudView.homeButtonPressed += OnHomeButtonPressed;
         _gameHudView.retryButtonPressed += OnRetryButtonPressed;
         _gameHudView.registerScoreOnBlockchainPressed += OnRegisterOnBlockchainButtonPressed;
 
         _gameHudView.upgradeDefenseButtonPressed += UpgradeDefense;
         _gameHudView.upgradeAttackButtonPessed += UpgradeAttack;
         _gameHudView.upgradeSpeedButtonPressed += UpgradeSpeed;
+
+        Reset();
+
+        _placableEntityManager.LoadAgentsCard();
     }
 
 
@@ -78,7 +83,7 @@ public class ArenaGameController : MonoBehaviour
     void OnDeployedAgent(AgentConfig agentConfig, Vector3 position)
     {
         GameObject agent = Instantiate(
-            agentConfig.AgentPrefab, position, Quaternion.identity
+            agentConfig.AgentPrefab, new Vector3(position.x, position.y + 0.1f, position.z)  , Quaternion.identity
         );
 
         RobotWaveAgent waveAgent = agent.GetComponent<RobotWaveAgent>();
@@ -99,15 +104,6 @@ public class ArenaGameController : MonoBehaviour
 
     public void StartGame()
     {
-        _currentCoins = _startingCoins;
-
-        _gameHudView.SetInitialUpgradesCost(_defenseStatCost, _attackStatCost, _speedStatCost);
-        _gameHudView.UpdateCurrentCoins(_startingCoins);
-        _gameHudView.UpdateWavesCount(_currentWave);
-        _gameHudView.UpdateKills(_agentsKills);
-        _gameHudView.UpdateDeaths(_agentDeaths);
-        _gameHudView.UpdateStats(100, 20, 50);
-
         _waveController.StartWaves();
     }
 
@@ -118,9 +114,15 @@ public class ArenaGameController : MonoBehaviour
 
     private void OnRetryButtonPressed()
     {
-        StartGame();
+        Reset();
+        _placableEntityManager.LoadAgentsCard();
+        //StartGame();
     }
 
+    private void OnHomeButtonPressed()
+    {
+        SceneLoader.instance.LoadSceneDelay("IdleGame");
+    }
 
     public void OnAgentKill()
     {
@@ -137,10 +139,6 @@ public class ArenaGameController : MonoBehaviour
     public void OnAllWavesCompleted()
     {
         Debug.Log("All waves completed");
-
-        //_gameHudView.ShowGameOver(
-        //    _currentWave, 
-        //)
         GameOver();
     }
 
@@ -154,8 +152,9 @@ public class ArenaGameController : MonoBehaviour
         {
             GameOver();
         }
-
-        Destroy(agent.gameObject);
+        {
+            Destroy(agent.gameObject);
+        }
     }
 
     public void GameOver()
@@ -168,6 +167,8 @@ public class ArenaGameController : MonoBehaviour
             GameManager.instance.playerData.highScore = score;
             GameManager.instance.SavePlayerData();
         }
+
+        Debug.Log("Deaths: " + _agentDeaths);
 
         _gameHudView.ShowGameOver(
             _currentWave,
@@ -182,12 +183,12 @@ public class ArenaGameController : MonoBehaviour
 
     public void Reset()
     {
-        _waveController.ResetWaves();
-
-        foreach (var agemt in agentsInGame)
-        {
-            Destroy(agemt);
-        }
+        _gameHudView.SetInitialUpgradesCost(_defenseStatCost, _attackStatCost, _speedStatCost);
+        _gameHudView.UpdateCurrentCoins(_startingCoins);
+        _gameHudView.UpdateWavesCount(_currentWave);
+        _gameHudView.UpdateKills(_agentsKills);
+        _gameHudView.UpdateDeaths(_agentDeaths);
+        _gameHudView.UpdateStats(100, 20, 50);
 
         _startingCoins = 100;
         _currentCoins = 100;
@@ -197,6 +198,16 @@ public class ArenaGameController : MonoBehaviour
         _currentWave = 0;
         _agentsKills = 0;
         _agentDeaths = 0;
+
+        _waveController.ResetWaves();
+
+        foreach (var agemt in agentsInGame)
+        {
+            Destroy(agemt.gameObject);
+        }
+
+        _placableEntityManager.RemoveCards();
+
     }
 
     private void OnDisable() 
@@ -225,12 +236,12 @@ public class ArenaGameController : MonoBehaviour
             _defenseStatLevel++;
             _gameHudView.UpdateCurrentCoins(_currentCoins);
 
-            Debug.Log("UPGRADE HEALTH ");
+            Debug.Log("UPGRADE DEFENSE ");
         }
         else
         {
             _gameHudView.ShowNotEnoughCoins();
-            Debug.Log("Unable to update HEALTH");
+            Debug.Log("Unable to update DEFENSE");
         }
     }
 

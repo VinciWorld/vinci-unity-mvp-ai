@@ -41,7 +41,7 @@ public class GameOverPopUp : Popup
         deathsText.text = deaths.ToString();
         killsText.text = kills.ToString();
 
-        scoreTitleText.text = "You already have a best score. Try Again!";
+        scoreTitleText.text = "You already have a best score.\nTry Again!";
         registerOnBlockchainButton.gameObject.SetActive(false);
         if (isHighScore)
         {

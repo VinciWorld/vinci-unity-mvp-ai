@@ -18,6 +18,8 @@ public class PlacableEntityManager : MonoBehaviour
     private bool cardIsActive = false;
     private GameObject previewHolder;
 
+    private List<GameObject> agentCardsSlots = new();
+
     void Awake()
     {
         previewHolder = new GameObject("PreviewHolder");
@@ -33,6 +35,7 @@ public class PlacableEntityManager : MonoBehaviour
         {
 
             GameObject agentCard = Instantiate(agentCardPrefab, cardsParent);
+            agentCardsSlots.Add(agentCard);
 
             AgentCard card = agentCard.GetComponentInChildren<AgentCard>();
 
@@ -44,6 +47,16 @@ public class PlacableEntityManager : MonoBehaviour
             card.OnDragAction += CardDragged;
             card.OnTapReleaseAction += CardReleased;
         }
+    }
+
+    public void RemoveCards()
+    {
+        cardIsActive = false;
+        foreach (var agentCard in agentCardsSlots)
+        {
+            Destroy(agentCard);
+        }
+        cards.Clear();
     }
 
     private void CardTapped(int cardId)
