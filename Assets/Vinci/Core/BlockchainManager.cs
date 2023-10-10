@@ -7,6 +7,7 @@ using Solana.Unity.Programs;
 using Solana.Unity.Rpc.Builders;
 using Solana.Unity.Rpc.Models;
 using Solana.Unity.SDK;
+using Solana.Unity.SDK.Nft;
 using Solana.Unity.Wallet;
 using Unity.Barracuda;
 using UnityEngine;
@@ -21,9 +22,14 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
     PublicKey VinciStakeProgramId = new PublicKey("EjhezvQjSDBEQXVyJSY1EhmqsQFGEorS7XwwHmxcRNxV");
     PublicKey SYSVAR_RENT_PUBKEY = new PublicKey("SysvarRent111111111111111111111111111111111");
 
-    public void GetWalletNfts()
+    async public void GetWalletNfts()
     {
+       List<Nft> nfts = await Web3.LoadNFTs();
 
+       foreach (var nft in nfts)
+       {
+            Debug.Log(nft.metaplexData.data.metadata.name);
+       }
     }
 
     public void StakeNft()
@@ -156,15 +162,31 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
         return bytes;
     }
 
+    public void RegisterPlayer()
+    {
+
+    }
+
+    public bool RegisterPlayerOnCompetition()
+    {
+        return true;
+    }
+
+    public void GetPlayeresScores()
+    {
+
+    }
+
+    public void RegisterPlayerScore(int score)
+    {
+
+    }
+
     public void GetOpenCompetitions()
     {
 
     }
 
-    public void RegisterOnCompetition()
-    {
-
-    }
 
 
 }

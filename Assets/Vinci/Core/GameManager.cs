@@ -2,12 +2,15 @@ using System.IO;
 using UnityEngine;
 using Vinci.Core.Utils;
 using Unity.MLAgents;
+using Unity.Barracuda;
 
 namespace Vinci.Core.Managers
 {
     public class GameManager : PersistentSingleton<GameManager>
     {
         public PlayerData playerData;
+
+        public NNModel baseNNModel;
 
         private const string PlayerDataFileName = "playerData.json";
 
@@ -42,6 +45,7 @@ namespace Vinci.Core.Managers
             else
             {
                 playerData = new PlayerData(); // Initialize with default values
+
                 Debug.Log("No saved player data found, initialized with default values.");
             }
         }

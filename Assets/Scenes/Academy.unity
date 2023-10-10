@@ -3043,6 +3043,8 @@ MonoBehaviour:
     - id: 1
       agentName: Robot Wave
       description: Go with the flow
+      agentImage: {fileID: 21300000, guid: 8a284ab4c862b49079dd4143d84349c6, type: 3}
+      AgentPrice: 100
       allowedEnvs: []
       AgentPrefab: {fileID: 6504583924473299732, guid: 6c0cbfd59cd4ee342ae6012c8002f2f6,
         type: 3}
@@ -3064,6 +3066,8 @@ MonoBehaviour:
     - id: 999
       agentName: Big Eye
       description: What is a Cross?
+      agentImage: {fileID: 0}
+      AgentPrice: 100
       allowedEnvs: []
       AgentPrefab: {fileID: 5039102789477670585, guid: 20175c003f0502c4da4344f362648ed0,
         type: 3}
@@ -3108,9 +3112,11 @@ MonoBehaviour:
         m_Extent: {x: 0, y: 0, z: 0}
       prefab: {fileID: 0}
     selectedAgent:
-      id: 
+      id: 1
       agentName: 
       description: 
+      agentImage: {fileID: 0}
+      AgentPrice: 100
       allowedEnvs: []
       AgentPrefab: {fileID: 0}
       modelConfig:
@@ -3180,6 +3186,8 @@ MonoBehaviour:
       id: 
       agentName: 
       description: 
+      agentImage: {fileID: 0}
+      AgentPrice: 100
       allowedEnvs: []
       AgentPrefab: {fileID: 0}
       modelConfig:
@@ -4205,6 +4213,7 @@ MonoBehaviour:
   _trainButton: {fileID: 1462852569}
   episodesCountText: {fileID: 1565249453}
   stepsCountText: {fileID: 1052177831503832918}
+  totalStepsCountText: {fileID: 0}
   meanRewardText: {fileID: 1964632700}
   stdRewardText: {fileID: 1513654345}
   winsCountText: {fileID: 457484166}

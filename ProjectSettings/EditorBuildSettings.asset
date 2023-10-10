@@ -5,16 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/IdleGameOld.unity
-    guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 0
-    path: Assets/Samples/Solana SDK/0.1.9/Sample Wallet/Solana Wallet/Scenes/wallet_scene.unity
-    guid: 8b3834b526b1d9f4687af110b68aeda9
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/IdleGame.unity
     guid: 7e53fa8d026179a4cb88f29b9a2a3efe
   - enabled: 1
     path: Assets/Scenes/Academy.unity
     guid: 6d74fecc7b10da348ae2843adf171849
+  - enabled: 1
+    path: Assets/Scenes/Arena.unity
+    guid: 700f21a12a383d14aaff6c117a15f95a
   m_configObjects: {}

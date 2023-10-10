@@ -10,8 +10,11 @@ public class PlayerData
 {
     public string username;
 
+    public bool isPlayerRegisteredOnCompetition = false;
+    public int highScore = 0;
+
     public AgentConfig currentAgentConfig;
-    public List<AgentConfig> agents;
+    public List<AgentConfig> agents = new List<AgentConfig>();
 
 
     //Relation between model and train env

@@ -15,13 +15,16 @@ namespace StatSystem
     public enum StatType
     {
         HEALTH,
+        SPEED,
+        ATTACK,
         ENERGY,
+        DEFENSE,
         DAMAGE,
         RANGE,
         FIRERATEPERSECOND,
         ARMOR,
         COST,
-        SPEED,
+
 
         PROCESSING_POWER,
         MECHANICAL_DEXTERITY,

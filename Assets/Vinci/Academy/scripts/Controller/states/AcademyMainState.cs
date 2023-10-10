@@ -21,8 +21,12 @@ public class AcademyMainState : StateBase
         _mainView.selectAgentButtonPressed += OnSelectAgentButtonPressed;
 
         //TODO: Clone agent! This will be done in the create step!
-        _controller.manager.playerData.AddAgent(_controller.academyData.availableAgents[0]);
 
+        if(_controller.manager.playerData.agents.Count == 0)
+        {
+            _controller.manager.playerData.AddAgent(_controller.academyData.availableAgents[0]);
+        }
+        
         _controller.session.selectedAgent = null;
 
         //TODO: Load available models for this model

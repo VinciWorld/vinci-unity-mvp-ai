@@ -110,7 +110,7 @@ public class AcademyServerInstanceState : StateBase
     //Send action to unity client
     void OnActionReceived(string actionsJson)
     {
-        Debug.Log("Action sent: " + actionsJson);
+        //Debug.Log("Action sent: " + actionsJson);
         RemoteTrainManager.instance.SendWebSocketJson(actionsJson);
     }
 
