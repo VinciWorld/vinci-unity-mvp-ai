@@ -56,6 +56,8 @@ public class GameHudView : View
         _upgradeDefenseButton.onClick.AddListener(() => upgradeDefenseButtonPressed?.Invoke());
         _upgradeAttackButton.onClick.AddListener(() => upgradeSpeedButtonPressed?.Invoke());
         _upgradeSpeedButton.onClick.AddListener(() => upgradeSpeedButtonPressed?.Invoke());
+
+        gameOverPopUp.homeButtonPressed += OnHomeButtonPressed;
     }
 
     public void OnUpgradeDefenseClicked()
@@ -78,6 +80,7 @@ public class GameHudView : View
     public void OnHomeButtonPressed()
     {
         gameOverPopUp.Close();
+        
         homeButtonPressed?.Invoke();
     }
 

@@ -10,6 +10,7 @@ public class PlayerData
 {
     public string username;
 
+    public bool isPlayerRegisteredOnCompetition = false;
     public int highScore = 0;
 
     public AgentConfig currentAgentConfig;

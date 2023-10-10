@@ -4123,6 +4123,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerData:
     username: 
+    isPlayerRegisteredOnCompetition: 0
     highScore: 0
     currentAgentConfig:
       id: 

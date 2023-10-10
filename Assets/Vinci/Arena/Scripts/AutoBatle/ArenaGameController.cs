@@ -109,7 +109,7 @@ public class ArenaGameController : MonoBehaviour
 
     private void OnRegisterOnBlockchainButtonPressed()
     {
-        BlockchainManager.instance.RegisterCompetitionScore(score);
+        BlockchainManager.instance.RegisterPlayerScore(score);
     }
 
     private void OnRetryButtonPressed()
