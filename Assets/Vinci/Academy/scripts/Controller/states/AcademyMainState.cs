@@ -16,6 +16,7 @@ public class AcademyMainState : StateBase
     public override void OnEnterState()
     {
         _mainView = ViewManager.GetView<AcademyMainView>();
+        ViewManager.Show<AcademyMainView>();
 
         _mainView.homeButtonPressed += OnHomeButtonPressed;
         _mainView.selectAgentButtonPressed += OnSelectAgentButtonPressed;

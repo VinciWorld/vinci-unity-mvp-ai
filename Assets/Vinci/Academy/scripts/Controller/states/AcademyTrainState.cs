@@ -56,9 +56,12 @@ public class AcademyTrainState : StateBase
         RemoteTrainManager.instance.statusReceived -= OnReceivedTrainStatus;
         RemoteTrainManager.instance.binaryDataReceived -= OnBinaryDataRecived;
 
-        _controller.session.currentEnvInstance.episodeAndStepCountUpdated -= trainView.UptadeInfo;
-        _controller.session.currentEnvInstance.SetIsReplay(false);
 
+        if(_controller.session.currentEnvInstance)
+        {
+            _controller.session.currentEnvInstance.episodeAndStepCountUpdated -= trainView.UptadeInfo;
+            _controller.session.currentEnvInstance.SetIsReplay(false);
+        }
     }
 
     private void CheckIfModelFinishedTraining()
@@ -76,7 +79,8 @@ public class AcademyTrainState : StateBase
 
     private void OnBackButtonPressed()
     {
-        ViewManager.ShowLast();
+        //ViewManager.ShowLast();
+        _controller.SwitchState(new AcademyMainState(_controller));
     }
 
     public override void Tick(float deltaTime)

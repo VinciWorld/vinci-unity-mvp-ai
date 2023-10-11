@@ -15,6 +15,8 @@ public class AcademyTrainResultsView : View
     [SerializeField]
     private Button _HomeButton;
     [SerializeField]
+    private Button _backButton;
+    [SerializeField]
     private Button _mintModelButton;
     [SerializeField]
     private Button _trainAgainButton;
@@ -49,11 +51,13 @@ public class AcademyTrainResultsView : View
 
     public override void Initialize()
     {
-        //_HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
+        _HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
         _mintModelButton.onClick.AddListener(() => mintModelButtonPressed?.Invoke());
         _trainAgainButton.onClick.AddListener(() => trainAgainButtonPressed?.Invoke());
         _evaluateButton.onClick.AddListener(() => evaluateModelButtonPressed?.Invoke());
         _stopTestModelButton.onClick.AddListener(() => stopEvaluateModelButtonPressed?.Invoke());
+
+        _backButton.gameObject.SetActive(false);
 
         ShowResultsSubView();
     }

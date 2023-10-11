@@ -53,6 +53,11 @@ public class AcademyMainView : View
         UpdateStats(30, 40, 15);
     }
 
+    void OnEnable()
+    {
+        CheckIfAgentIsCreated();
+    }
+
     public void UpdateStats(int defense, int attack, int speed)
     {
         _defenseStatText.text = defense.ToString();
