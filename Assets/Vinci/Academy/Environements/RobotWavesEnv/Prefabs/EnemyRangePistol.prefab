@@ -80,6 +80,7 @@ GameObject:
   - component: {fileID: 1005582797667197965}
   - component: {fileID: 1941125019739509213}
   - component: {fileID: 584275271562576786}
+  - component: {fileID: 436577371256846793}
   m_Layer: 9
   m_Name: EnemyRangePistol
   m_TagString: Enemy
@@ -115,7 +116,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.4
-  m_Speed: 5
+  m_Speed: 4
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -151,7 +152,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 0
   m_IsKinematic: 1
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 2
 --- !u!136 &7590849053471966344
@@ -255,6 +256,27 @@ MonoBehaviour:
   targetsMask:
     serializedVersion: 2
     m_Bits: 64
+--- !u!65 &436577371256846793
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7710342318218608791}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.2158649, y: 0.4124609, z: 0.6655593}
+  m_Center: {x: -0.008343339, y: 0.2937695, z: 0.7403457}
 --- !u!1 &8493143293678466652
 GameObject:
   m_ObjectHideFlags: 0

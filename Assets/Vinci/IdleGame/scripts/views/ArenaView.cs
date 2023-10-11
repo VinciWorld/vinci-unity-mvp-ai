@@ -39,6 +39,8 @@ public class ArenaView : View
         _registerCompetitionButton.onClick.AddListener(() => registerCompetitionButtonPressed?.Invoke());
         _playCompetitionButton.onClick.AddListener(() => playGameButtonPressed?.Invoke());
 
+        
+
         CheckIfPlayerIsRegistered();
     }
 

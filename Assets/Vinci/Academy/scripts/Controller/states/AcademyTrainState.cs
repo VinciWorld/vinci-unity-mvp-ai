@@ -25,7 +25,9 @@ public class AcademyTrainState : StateBase
 
         ViewManager.Show<AcademyTrainView>();
         trainView.homeButtonPressed += OnHomeButtonPressed;
+        trainView.backButtonPressed += OnBackButtonPressed;
         trainView.trainButtonPressed += OnTrainButtonPressed;
+        trainView.watchTrainButtonPressed += OnWatchButtonPressed;
 
         trainView.SetTrainSetupSubViewState(true);
         trainView.SetTrainHudSubViewState(false);
@@ -44,8 +46,10 @@ public class AcademyTrainState : StateBase
         GameManager.instance.SavePlayerData();
 
         trainView.homeButtonPressed -= OnHomeButtonPressed;
+        trainView.backButtonPressed -= OnBackButtonPressed;
         trainView.trainButtonPressed -= OnTrainButtonPressed;
-    
+        trainView.watchTrainButtonPressed -= OnWatchButtonPressed;
+
         RemoteTrainManager.instance.websocketOpen -= OnWebSocketOpen;
         RemoteTrainManager.instance.actionsReceived -= OnReceivedAgentActions;
         RemoteTrainManager.instance.metricsReceived -= OnReceivedTrainMetrics;
@@ -55,6 +59,24 @@ public class AcademyTrainState : StateBase
         _controller.session.currentEnvInstance.episodeAndStepCountUpdated -= trainView.UptadeInfo;
         _controller.session.currentEnvInstance.SetIsReplay(false);
 
+    }
+
+    private void CheckIfModelFinishedTraining()
+    {
+
+    }
+
+    private void OnWatchButtonPressed()
+    {
+        trainView.SetTrainHudSubViewState(true);
+        //_controller.session.currentEnvInstance.SetIsReplay(true);
+        //_controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
+        //_controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
+    }
+
+    private void OnBackButtonPressed()
+    {
+        ViewManager.ShowLast();
     }
 
     public override void Tick(float deltaTime)
@@ -71,8 +93,7 @@ public class AcademyTrainState : StateBase
             PrepareEnv();
         }
 
-        _controller.session.selectedAgent.modelConfig.behavior.steps = steps;
-        _controller.session.selectedAgent.modelConfig.AddStepsTrained(steps);
+        _controller.session.selectedAgent.modelConfig.behavior.steps = steps * 1000;
 
         _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
         _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
@@ -166,6 +187,7 @@ public class AcademyTrainState : StateBase
                 case TrainJobStatus.RETRIEVED:
                 case TrainJobStatus.STARTING:
                 case TrainJobStatus.RUNNING:
+                    GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelTraining = true;
                     break;
                 case TrainJobStatus.SUCCEEDED:
                     break;
@@ -181,6 +203,7 @@ public class AcademyTrainState : StateBase
         {
             trainView.SetTrainSetupSubViewState(true);
             trainView.SetTrainHudSubViewState(false);
+            GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelTraining = false;
             Debug.LogError("Unable to add job to the queue: " + e.Message);
         }
     }
@@ -197,9 +220,15 @@ public class AcademyTrainState : StateBase
     void OnBinaryDataRecived(byte[] data)
     {
         SaveAndLoadModel(data);
+        _controller.session.selectedAgent.modelConfig.AddStepsTrained(
+            _controller.session.selectedAgent.modelConfig.behavior.steps
+        );
 
         RemoteTrainManager.instance.CloseWebSocketConnection();
         _controller.session.currentEnvInstance.StopReplay();
+
+        GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelTraining = false;
+
         _controller.SwitchState(new AcademyResultsState(_controller));
     }
 

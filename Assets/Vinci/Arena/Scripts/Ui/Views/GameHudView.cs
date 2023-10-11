@@ -56,8 +56,9 @@ public class GameHudView : View
         _upgradeDefenseButton.onClick.AddListener(() => upgradeDefenseButtonPressed?.Invoke());
         _upgradeAttackButton.onClick.AddListener(() => upgradeSpeedButtonPressed?.Invoke());
         _upgradeSpeedButton.onClick.AddListener(() => upgradeSpeedButtonPressed?.Invoke());
+        _HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
 
-        gameOverPopUp.homeButtonPressed += OnHomeButtonPressed;
+        gameOverPopUp.homeButtonPressed += OnHomeButtonPressedFromGameOver;
     }
 
     public void OnUpgradeDefenseClicked()
@@ -77,7 +78,7 @@ public class GameHudView : View
         registerScoreOnBlockchainPressed?.Invoke();
     }
 
-    public void OnHomeButtonPressed()
+    public void OnHomeButtonPressedFromGameOver()
     {
         gameOverPopUp.Close();
         
@@ -113,9 +114,9 @@ public class GameHudView : View
 
     public void UpdateStats(int defense, int attack, int speed)
     {
-        _defenseStatSlider.value = defense / 50;
-        _attackStatSlider.value = attack / 50;
-        _speedStatSlider.value = speed / 50;
+        _defenseStatSlider.value = defense / 100f;
+        _attackStatSlider.value = attack / 100f;
+        _speedStatSlider.value = speed / 100f;
     }
 
     public void ShowGameOver(int wavesSurvived, int totalKills, int totalDeaths, bool isHighScore, int score)

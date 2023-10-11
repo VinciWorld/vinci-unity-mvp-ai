@@ -17,10 +17,8 @@ namespace Vinci.Core.UI
 
         private readonly Stack<View> _history = new Stack<View>();
 
-        protected override void Awake()
+        protected void Start()
         {
-            base.Awake();
-
             for (int i = 0; i < instance._Views.Length; i++)
             {
                 _Views[i].Initialize();

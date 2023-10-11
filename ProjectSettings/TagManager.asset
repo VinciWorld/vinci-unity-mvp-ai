@@ -20,6 +20,7 @@ TagManager:
   - Enemy
   - obstacles
   - Target
+  - Wall
   layers:
   - Default
   - TransparentFX

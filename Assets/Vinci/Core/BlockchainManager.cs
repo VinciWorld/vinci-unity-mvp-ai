@@ -162,11 +162,6 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
         return bytes;
     }
 
-    public void RegisterPlayer()
-    {
-
-    }
-
     public bool RegisterPlayerOnCompetition()
     {
         return true;
@@ -186,7 +181,4 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
     {
 
     }
-
-
-
 }

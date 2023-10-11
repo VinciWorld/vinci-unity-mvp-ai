@@ -207,7 +207,6 @@ public class ArenaGameController : MonoBehaviour
         }
 
         _placableEntityManager.RemoveCards();
-
     }
 
     private void OnDisable() 

@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Vinci.Core.Managers;
 using Vinci.Core.UI;
 
 public class AcademyTrainView : View
@@ -15,7 +16,26 @@ public class AcademyTrainView : View
     [SerializeField]
     private Button _HomeButton;
     [SerializeField]
+    private Button _backButton;
+    [SerializeField]
     private Button _trainButton;
+    [SerializeField]
+    private Button _watchTrainButton;
+
+    [SerializeField]
+    private TMP_InputField _stepsInputField;
+    [SerializeField]
+    private TextMeshProUGUI _stepsTrained;
+    [SerializeField]
+    private TextMeshProUGUI _warningInputField;
+
+    [SerializeField]
+    private TextMeshProUGUI _defenseStatText;
+    [SerializeField]
+    private TextMeshProUGUI _attackStatText;
+    [SerializeField]
+    private TextMeshProUGUI _speedStatText;
+
 
     [Header("Train Info Sub View")]
     [SerializeField]
@@ -33,17 +53,37 @@ public class AcademyTrainView : View
     [SerializeField]
     private TextMeshProUGUI losesCountText;
 
-    [SerializeField]
-    private TMP_InputField _stepsInputField;
+
 
     public event Action homeButtonPressed;
+    public event Action backButtonPressed;
     public event Action<int> trainButtonPressed;
+    public event Action watchTrainButtonPressed;
 
 
     public override void Initialize()
     {
+        CheckIsTrainIsRunning();
+
         _HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
+        _backButton.onClick.AddListener(() => backButtonPressed?.Invoke());
         _trainButton.onClick.AddListener(OnTrainButtonPressed);
+        _watchTrainButton.onClick.AddListener(() => watchTrainButtonPressed?.Invoke());
+
+        ShowWarningInputfield("", false);
+        UpdateStepsTrained(0);
+        UpdateStats(30, 40, 15);
+    }
+
+    public void CheckIsTrainIsRunning()
+    {
+        _trainButton.gameObject.SetActive(true);
+        _watchTrainButton.gameObject.SetActive(false);
+        if (GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelTraining)
+        {
+            _trainButton.gameObject.SetActive(false);
+            _watchTrainButton.gameObject.SetActive(true);
+        }
     }
 
     public void OnTrainButtonPressed()
@@ -56,7 +96,7 @@ public class AcademyTrainView : View
         }
         catch(Exception e)
         {
-            trainButtonPressed?.Invoke(10000);
+            trainButtonPressed?.Invoke(100);
         }
     }
 
@@ -95,4 +135,21 @@ public class AcademyTrainView : View
         losesCountText.text = loses.ToString();
     }
 
+    public void UpdateStepsTrained(int stesTrained)
+    {
+        _stepsTrained.text = stesTrained.ToString();
+    }
+
+    public void ShowWarningInputfield(string message, bool show)
+    {
+        _warningInputField.text = message;
+        _warningInputField.gameObject.SetActive(show);
+    }
+
+    public void UpdateStats(int defense, int attack, int speed)
+    {
+        _defenseStatText.text = defense.ToString();
+        _attackStatText.text = attack.ToString();
+        _speedStatText.text = speed.ToString();
+    }
 }

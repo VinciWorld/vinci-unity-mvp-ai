@@ -13,6 +13,8 @@ public class PlayerData
     public bool isPlayerRegisteredOnCompetition = false;
     public int highScore = 0;
 
+    public bool modelFinishedTraining = false;
+
     public AgentConfig currentAgentConfig;
     public List<AgentConfig> agents = new List<AgentConfig>();
 

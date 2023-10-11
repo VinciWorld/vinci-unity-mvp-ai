@@ -19,14 +19,7 @@ public class AcademyMainState : StateBase
 
         _mainView.homeButtonPressed += OnHomeButtonPressed;
         _mainView.selectAgentButtonPressed += OnSelectAgentButtonPressed;
-
-        //TODO: Clone agent! This will be done in the create step!
-
-        if(_controller.manager.playerData.agents.Count == 0)
-        {
-            _controller.manager.playerData.AddAgent(_controller.academyData.availableAgents[0]);
-        }
-        
+        _mainView.createAgentButtonPressed += OnCreateAgent;
         _controller.session.selectedAgent = null;
 
         //TODO: Load available models for this model
@@ -37,6 +30,7 @@ public class AcademyMainState : StateBase
         GameManager.instance.SavePlayerData();
         _mainView.homeButtonPressed -= OnHomeButtonPressed;
         _mainView.selectAgentButtonPressed -= OnSelectAgentButtonPressed;
+        _mainView.createAgentButtonPressed -= OnCreateAgent;
     }
 
     public override void Tick(float deltaTime)
@@ -44,14 +38,36 @@ public class AcademyMainState : StateBase
 
     }
 
-    async void OnHomeButtonPressed()
+    public void OnCreateAgent()
     {
-        await SceneLoader.instance.LoadScene("IdleGame");
+        if (_controller.manager.playerData.agents.Count == 0)
+        {
+            //TODO: Clone agent! This will be done in the create step!
+            _controller.manager.playerData.AddAgent(_controller.academyData.availableAgents[0]);
+        }
+        else
+        {
+            Debug.Log("Agent already created");
+        }
+
+        _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
+        _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
+
+        GameManager.instance.SavePlayerData();
+
+        _controller.SwitchState(new AcademyTrainState(_controller));
+
+    }
+
+    void OnHomeButtonPressed()
+    {
+        GameManager.instance.SavePlayerData();
+        SceneLoader.instance.LoadSceneDelay("IdleGame");
     }
 
     void OnSelectAgentButtonPressed()
     {
-        _controller.session.selectedAgent = _controller.manager.playerData.currentAgentConfig;
+        _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
         _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
 
         _controller.SwitchState(new AcademyTrainState(_controller));

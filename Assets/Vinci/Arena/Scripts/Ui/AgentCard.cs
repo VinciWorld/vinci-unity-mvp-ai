@@ -30,7 +30,7 @@ public class AgentCard : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointe
     public void InitialiseWithData(AgentConfig agentConfig)
     {
         this.agentConfig = agentConfig;
-        portraitImage.sprite = this.agentConfig.agentImage;
+        //portraitImage.sprite = this.agentConfig.agentImage;
         priceValue.text = agentConfig.AgentPrice.ToString();
     }
 
