@@ -7,15 +7,17 @@ using UnityEngine.EventSystems;
 public class Slot : MonoBehaviour, IDropHandler
 {
     public int id = 0;
-    public event Action<int> OnDropNft;
+    public event Action<int, string> OnDropNft;
 
     public void OnDrop(PointerEventData eventData)
     {
         if (transform.childCount == 0)
         {
-            OnDropNft?.Invoke(id);
+            
             GameObject dropped = eventData.pointerDrag;
             DraggableItem draggableItem = dropped.GetComponent<DraggableItem>();
+            Debug.Log("SLOT pubkey: " + draggableItem.pubkeyNft);
+            OnDropNft?.Invoke(id, draggableItem.pubkeyNft);
             draggableItem.parentAfterDrag = transform;
         }
     }

@@ -22,13 +22,16 @@ public class HeadquartersView : View
     [SerializeField]
     List<Slot> slots;
 
-    public event Action<int> nftStakeOnSlot;
+    public Slot slot;
+
+    public event Action<int, string> nftStakeOnSlot;
 
     public override void Initialize()
     {
         _backButton.onClick.AddListener(() => ViewManager.ShowLast());
 
         _loaderPopup.gameObject.SetActive(false);
+        slot.OnDropNft += OnDropNft;
     }
 
 
@@ -59,6 +62,7 @@ public class HeadquartersView : View
                 slot.OnDropNft += OnDropNft;
                 DraggableItem item = slot.GetComponentInChildren<DraggableItem>();
                 item.image.sprite = sprite;
+                item.pubkeyNft = nft.metaplexData.data.mint;
 
             }
         }
@@ -78,10 +82,11 @@ public class HeadquartersView : View
         _loaderPopup.Close();
     }
 
-    public void OnDropNft(int id)
+    public void OnDropNft(int id, string pubkey)
     {
-        Debug.Log("DROP NFT: id: " + id);
-        nftStakeOnSlot?.Invoke(id);
+
+        Debug.Log("DROP NFT: id: " + id + " pkey: " + pubkey);
+        nftStakeOnSlot?.Invoke(id, pubkey);
     }
 
     Texture2D LoadTexture(string filePath)

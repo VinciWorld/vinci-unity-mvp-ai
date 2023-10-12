@@ -3,6 +3,7 @@ using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
 using UnityEngine;
 using UnityEngine.UI;
+using Vinci.Core.Managers;
 using Vinci.Core.UI;
 
 public class LoginView : View
@@ -43,6 +44,7 @@ public class LoginView : View
         if (account != null)
         {
             Debug.Log(account.PublicKey);
+            GameManager.instance.playerData.isLoggedIn = true;
             
             ViewManager.Show<IdleGameMainView>();
         }

@@ -13,6 +13,9 @@ public class AcademyTrainResultsView : View
     GameObject resultsSubView;
 
     [SerializeField]
+    private LoaderPopup _loaderPopup;
+
+    [SerializeField]
     private Button _HomeButton;
     [SerializeField]
     private Button _backButton;
@@ -79,6 +82,18 @@ public class AcademyTrainResultsView : View
         _stepTrainedCount.text = stepsTrained.ToString();
         _meanRweard.text = meanReward.ToString("F3");
         _stdRweard.text = stdReward.ToString("F3");
+    }
+
+    public void ShowLoaderPopup(string messange)
+    {
+        _loaderPopup.gameObject.SetActive(true);
+        _loaderPopup.SetProcessingMEssage(messange);
+        _loaderPopup.Open();
+    }
+
+    public void CloseLoaderPopup()
+    {
+        _loaderPopup.Close();
     }
 
 

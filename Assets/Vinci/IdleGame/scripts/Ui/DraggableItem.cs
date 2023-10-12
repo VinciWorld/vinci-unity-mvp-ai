@@ -5,7 +5,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
-{
+{   
+    [SerializeField]
+    public string pubkeyNft;
     public Image image;
     [HideInInspector]
     public Transform parentAfterDrag;

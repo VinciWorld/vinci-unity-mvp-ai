@@ -15,6 +15,8 @@ public class PlayerData
 
     public bool modelFinishedTraining = false;
 
+    public bool isLoggedIn;
+
     public AgentConfig currentAgentConfig;
     public List<AgentConfig> agents = new List<AgentConfig>();
 

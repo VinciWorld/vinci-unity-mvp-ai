@@ -25,10 +25,11 @@ public class HeadquartersState : StateBase
     
     }
 
-    private void OnDropNft(int obj)
+    private async void OnDropNft(int slotId, string pubkey)
     {
+        Debug.Log("nft pubkey: " + pubkey);
         mainView.ShowLoaderPopup("Staking nft");
-        //BlockchainManager.instance.StakeNft();
+        await BlockchainManager.instance.StakeNft(pubkey);
         mainView.CloseLoaderPopup();
     }
 

@@ -24,7 +24,7 @@ public class AcademyResultsState : StateBase
     public override void OnEnterState()
     {
         _resultsView = ViewManager.GetView<AcademyTrainResultsView>();
-        _resultsView.mintModelButtonPressed += OnMintModelButtonPRessed;
+        _resultsView.mintModelButtonPressed += OnMintModelButtonPressed;
         _resultsView.trainAgainButtonPressed += OnTrainAgainButtonPressed;
         _resultsView.evaluateModelButtonPressed += OnTestModelButtonPressed;
         _resultsView.stopEvaluateModelButtonPressed += OnStopTestButtonPressed;
@@ -61,7 +61,7 @@ public class AcademyResultsState : StateBase
     {
         currentEnvInstance.updateEnvResults -= OnUpdateEnvResults;
 
-        _resultsView.mintModelButtonPressed -= OnMintModelButtonPRessed;
+        _resultsView.mintModelButtonPressed -= OnMintModelButtonPressed;
         _resultsView.trainAgainButtonPressed -= OnTrainAgainButtonPressed;
         _resultsView.evaluateModelButtonPressed -= OnTestModelButtonPressed;
         _resultsView.stopEvaluateModelButtonPressed -= OnStopTestButtonPressed;
@@ -106,9 +106,12 @@ public class AcademyResultsState : StateBase
         _controller.SwitchState(new AcademyTrainState(_controller));
     }
 
-    void OnMintModelButtonPRessed()
+    async void OnMintModelButtonPressed()
     {
-        BlockchainManager.instance.MintNNmodel();
+        _resultsView.ShowLoaderPopup("Minting Trained Model");
+        await BlockchainManager.instance.MintNNmodel();
+        _resultsView.CloseLoaderPopup();
+
     }
 
     void EvaluateModel()

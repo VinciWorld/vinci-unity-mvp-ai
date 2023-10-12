@@ -197,7 +197,7 @@ public class EnvRobotWaves : EnvironementBase
             replayActionsLoopCoroutine = StartCoroutine(ReplayActionsLoop());
         }
 
-        Debug.Log("Received action from server: " + actions);
+        //Debug.Log("Received action from server: " + actions);
     }
 
     private IEnumerator ReplayActionsLoop()
@@ -206,7 +206,7 @@ public class EnvRobotWaves : EnvironementBase
         Debug.Log("Start Replay");
         _agent.SetIsReplay(true);
 
-        Time.timeScale = 5f;
+        Time.timeScale = 3f;
         while (_isReplay)
         {
             if (actionStack.Count > 0)
