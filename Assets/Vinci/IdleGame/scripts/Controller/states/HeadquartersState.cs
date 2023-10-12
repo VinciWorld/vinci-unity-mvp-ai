@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Vinci.Core.Managers;
 using Vinci.Core.StateMachine;
@@ -6,6 +7,7 @@ using Vinci.Core.UI;
 public class HeadquartersState : StateBase
 {
     IdleGameController _controller;
+    HeadquartersView mainView;
 
     public HeadquartersState(IdleGameController controller)
     {
@@ -14,10 +16,20 @@ public class HeadquartersState : StateBase
 
     public override void OnEnterState()
     {
-        HeadquartersView mainView = ViewManager.GetView<HeadquartersView>();
+        mainView = ViewManager.GetView<HeadquartersView>();
         ViewManager.Show(mainView);
 
+        mainView.nftStakeOnSlot += OnDropNft;
 
+        MainThreadDispatcher.Instance().EnqueueAsync(mainView.LoadNfts);
+    
+    }
+
+    private void OnDropNft(int obj)
+    {
+        mainView.ShowLoaderPopup("Staking nft");
+        //BlockchainManager.instance.StakeNft();
+        mainView.CloseLoaderPopup();
     }
 
     public override void OnExitState()

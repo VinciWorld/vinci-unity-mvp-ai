@@ -79,11 +79,11 @@ public class AcademyTrainView : View
     {
         _trainButton.gameObject.SetActive(true);
         _watchTrainButton.gameObject.SetActive(false);
-        if (GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelTraining)
-        {
-            _trainButton.gameObject.SetActive(false);
-            _watchTrainButton.gameObject.SetActive(true);
-        }
+       // if (GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelTraining)
+       // {
+       //     _trainButton.gameObject.SetActive(false);
+       //     _watchTrainButton.gameObject.SetActive(true);
+       // }
     }
 
     public void OnTrainButtonPressed()

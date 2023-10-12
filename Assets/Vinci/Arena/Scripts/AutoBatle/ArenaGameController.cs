@@ -105,6 +105,7 @@ public class ArenaGameController : MonoBehaviour
     public void StartGame()
     {
         _waveController.StartWaves();
+        Time.timeScale = 2;
     }
 
     private void OnRegisterOnBlockchainButtonPressed()
@@ -121,6 +122,7 @@ public class ArenaGameController : MonoBehaviour
 
     private void OnHomeButtonPressed()
     {
+        Time.timeScale = 1;
         SceneLoader.instance.LoadSceneDelay("IdleGame");
     }
 
@@ -207,6 +209,7 @@ public class ArenaGameController : MonoBehaviour
         }
 
         _placableEntityManager.RemoveCards();
+        Time.timeScale = 1;
     }
 
     private void OnDisable() 

@@ -43,7 +43,7 @@ public class LoginView : View
         if (account != null)
         {
             Debug.Log(account.PublicKey);
-            Debug.Log(account.PrivateKey);
+            
             ViewManager.Show<IdleGameMainView>();
         }
         else

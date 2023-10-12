@@ -40,6 +40,9 @@ namespace Vinci.Core.Managers
             {
                 string json = File.ReadAllText(path);
                 playerData = JsonUtility.FromJson<PlayerData>(json);
+                
+                //TODO: REMOVE !!!!
+                playerData.highScore = 0;
                 Debug.Log("Player data loaded from " + path);
             }
             else

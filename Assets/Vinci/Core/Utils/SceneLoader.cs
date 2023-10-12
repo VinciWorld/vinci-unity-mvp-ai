@@ -20,7 +20,7 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
         do
         {
             await Task.Delay(100);
-            _progressBar.fillAmount = scene.progress;
+           // _progressBar.fillAmount = scene.progress;
 
             Debug.Log("Delay");
         } while (scene.progress < 0.9f);
@@ -45,7 +45,7 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
 
         while (scene.progress < 0.9f)
         {
-            _progressBar.fillAmount = scene.progress;
+           // _progressBar.fillAmount = scene.progress;
             yield return new WaitForSeconds(2f);
         }
 

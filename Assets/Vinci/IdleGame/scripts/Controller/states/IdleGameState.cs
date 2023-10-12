@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Vinci.Core.Managers;
 using Vinci.Core.StateMachine;
@@ -6,6 +7,8 @@ using Vinci.Core.UI;
 public class IdleGameState : StateBase
 {
     IdleGameController _controller;
+
+
 
     public IdleGameState(IdleGameController controller)
     {
@@ -18,7 +21,6 @@ public class IdleGameState : StateBase
         mainView.academyBtnPressed += OnAcademyBtnPressed;
         mainView.arenaBtnPressed += OnAreanButtonPressed;
         mainView.headquartersBtnPressed += OnHeadquartersBtnPressed;
-
     }
 
     public override void OnExitState()
@@ -43,6 +45,7 @@ public class IdleGameState : StateBase
 
     void OnAcademyBtnPressed()
     {
+        Debug.Log("Academy");
         SceneLoader.instance.LoadSceneDelay("Academy");
     }
 

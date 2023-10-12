@@ -3700,7 +3700,9 @@ MonoBehaviour:
     - id: 1
       agentName: Robot Wave
       description: Go with the flow
-      agentImage: {fileID: 21300000, guid: 8a284ab4c862b49079dd4143d84349c6, type: 3}
+      agentImageFullBody: {fileID: 21300000, guid: d1e7c8097e6ec71449d28a239c9b3cd4,
+        type: 3}
+      agentImageHead: {fileID: 21300000, guid: a2a24aaf264108e42a3ce3e5c72dd47b, type: 3}
       AgentPrice: 100
       allowedEnvs: []
       AgentPrefab: {fileID: 6504583924473299732, guid: 6c0cbfd59cd4ee342ae6012c8002f2f6,
@@ -3723,7 +3725,8 @@ MonoBehaviour:
     - id: 999
       agentName: Big Eye
       description: What is a Cross?
-      agentImage: {fileID: 0}
+      agentImageFullBody: {fileID: 0}
+      agentImageHead: {fileID: 0}
       AgentPrice: 100
       allowedEnvs: []
       AgentPrefab: {fileID: 5039102789477670585, guid: 20175c003f0502c4da4344f362648ed0,
@@ -3772,7 +3775,8 @@ MonoBehaviour:
       id: 1
       agentName: 
       description: 
-      agentImage: {fileID: 0}
+      agentImageFullBody: {fileID: 0}
+      agentImageHead: {fileID: 0}
       AgentPrice: 100
       allowedEnvs: []
       AgentPrefab: {fileID: 0}
@@ -4092,7 +4096,8 @@ MonoBehaviour:
       id: 
       agentName: 
       description: 
-      agentImage: {fileID: 0}
+      agentImageFullBody: {fileID: 0}
+      agentImageHead: {fileID: 0}
       AgentPrice: 100
       allowedEnvs: []
       AgentPrefab: {fileID: 0}
@@ -4112,7 +4117,8 @@ MonoBehaviour:
           stepsTrained: 0
           totalStepsTrained: 0
     agents: []
-  baseNNModel: {fileID: 0}
+  baseNNModel: {fileID: 5022602860645237092, guid: 61881707995126849805040d9bdd3e61,
+    type: 3}
 --- !u!1 &437819740
 GameObject:
   m_ObjectHideFlags: 0

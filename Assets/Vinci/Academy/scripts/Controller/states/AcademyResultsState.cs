@@ -28,7 +28,7 @@ public class AcademyResultsState : StateBase
         _resultsView.trainAgainButtonPressed += OnTrainAgainButtonPressed;
         _resultsView.evaluateModelButtonPressed += OnTestModelButtonPressed;
         _resultsView.stopEvaluateModelButtonPressed += OnStopTestButtonPressed;
-
+        _resultsView.homeButtonPressed += OnHomeButtonPressed;
         ViewManager.Show<AcademyTrainResultsView>();
         _resultsView.ShowResultsSubView();
 
@@ -71,6 +71,11 @@ public class AcademyResultsState : StateBase
     {
         //Debug.Log("Episode: " + Academy.Instance.EpisodeCount);
         //Debug.Log("Steps: " + Academy.Instance.StepCount);
+    }
+
+    void OnHomeButtonPressed()
+    {
+        SceneLoader.instance.LoadSceneDelay("IdleGame");
     }
 
     void OnTestModelButtonPressed()
