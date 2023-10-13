@@ -54,16 +54,23 @@ public class AcademyTrainResultsView : View
 
     public override void Initialize()
     {
-        _HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
         _mintModelButton.onClick.AddListener(() => mintModelButtonPressed?.Invoke());
         _trainAgainButton.onClick.AddListener(() => trainAgainButtonPressed?.Invoke());
         _evaluateButton.onClick.AddListener(() => evaluateModelButtonPressed?.Invoke());
         _stopTestModelButton.onClick.AddListener(() => stopEvaluateModelButtonPressed?.Invoke());
-
-        _backButton.gameObject.SetActive(false);
-
-        ShowResultsSubView();
     }
+
+    public override void Show()
+    {
+        ShowResultsSubView();
+        base.Show();
+    }
+
+    public override void Hide()
+    {
+        base.Hide();
+    }
+
 
     public void ShowResultsSubView()
     {

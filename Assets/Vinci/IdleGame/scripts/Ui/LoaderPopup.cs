@@ -22,6 +22,18 @@ public class LoaderPopup : Popup
         _closeButton.onClick.AddListener(() => closeButtonPressed?.Invoke());
     }
 
+
+    public void Show(string message, string subMessage, bool closeButton = false)
+    {
+        _processingMessage.text = message;
+        _processingSubtitle.text = subMessage;
+
+        if(_closeButton)
+        {
+            _closeButton.gameObject.SetActive(false);
+        }
+    }
+
     public void SetProcessingMEssage(string processingMessage)
     {
         _processingMessage.text = processingMessage;

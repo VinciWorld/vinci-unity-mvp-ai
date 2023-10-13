@@ -19,7 +19,7 @@ namespace Vinci.Core.Managers
             base.Awake();
             Application.runInBackground = true;
 
-            Debug.Log("Init ML agent");
+            Debug.Log("Init ML");
             Unity.MLAgents.Academy.Instance.AutomaticSteppingEnabled = false;
 
             LoadPlayerData();

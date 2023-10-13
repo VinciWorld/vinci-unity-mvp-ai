@@ -1,6 +1,8 @@
 using System;
 using TMPro;
+using Unity.MLAgents;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using Vinci.Core.Managers;
 using Vinci.Core.UI;
@@ -8,7 +10,7 @@ using Vinci.Core.UI;
 public class AcademyMainView : View
 {
     [SerializeField]
-    private Button _HomeButton;
+    CategoryNavBar _categoryNavBar;
     
     [SerializeField]
     private Button _createAgent;
@@ -17,7 +19,7 @@ public class AcademyMainView : View
     private Button _selectAgent;
 
     [SerializeField]
-    private TextMeshProUGUI _agentTitle;
+    private TextMeshProUGUI _agentType;
     [SerializeField]
     private TextMeshProUGUI _agentName;
     [SerializeField]
@@ -44,18 +46,44 @@ public class AcademyMainView : View
 
     public override void Initialize()
     {
-        _HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
         _createAgent.onClick.AddListener(() => createAgentButtonPressed?.Invoke());
         _selectAgent.onClick.AddListener(() => selectAgentButtonPressed?.Invoke());
-
-        CheckIfAgentIsCreated();
-
-        UpdateStats(30, 40, 15);
     }
 
-    void OnEnable()
+    public override void Show()
     {
+        _categoryNavBar.SetTitles("Agent Setup", "Academy");
+        _categoryNavBar.homeButtonPressed += OnHomeButtonPressed;
+        _categoryNavBar.SetNavigationButtons(
+            false,
+            true
+        );
+
         CheckIfAgentIsCreated();
+        UpdateStats(30, 40, 15);
+
+        base.Show();
+    }
+
+    public override void Hide()
+    {
+        _categoryNavBar.homeButtonPressed -= OnHomeButtonPressed;
+        _categoryNavBar.RemoveListeners();
+        Debug.Log("Remove main listeners");
+        base.Hide();
+    }
+
+    public void OnHomeButtonPressed()
+    {
+        homeButtonPressed?.Invoke();
+    }
+
+
+    public void SetAgentInfo(string type, string name, string description)
+    {
+        _agentType.text = type;
+        _agentName.text = name;
+        _agentDescription.text = description;
     }
 
     public void UpdateStats(int defense, int attack, int speed)

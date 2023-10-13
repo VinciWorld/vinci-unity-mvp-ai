@@ -22,10 +22,10 @@ public class IdleGameState : StateBase
         mainView.arenaBtnPressed += OnAreanButtonPressed;
         mainView.headquartersBtnPressed += OnHeadquartersBtnPressed;
 
-        if(GameManager.instance.playerData.isLoggedIn == false)
-        {
-            ViewManager.Show<LoginView>();
-        }
+        //if(GameManager.instance.playerData.isLoggedIn == false)
+        //{
+        //    mainView.ShowLoginView();
+        //}
     }
 
     public override void OnExitState()

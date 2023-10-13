@@ -24,6 +24,7 @@ public class AcademyTrainState : StateBase
         trainView = ViewManager.GetView<AcademyTrainView>();
 
         ViewManager.Show<AcademyTrainView>();
+
         trainView.homeButtonPressed += OnHomeButtonPressed;
         trainView.backButtonPressed += OnBackButtonPressed;
         trainView.trainButtonPressed += OnTrainButtonPressed;
@@ -75,6 +76,12 @@ public class AcademyTrainState : StateBase
         //_controller.session.currentEnvInstance.SetIsReplay(true);
         //_controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
         //_controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
+    }
+
+
+    void OnHomeButtonPressed()
+    {
+        SceneLoader.instance.LoadSceneDelay("IdleGame");
     }
 
     private void OnBackButtonPressed()
@@ -251,11 +258,6 @@ public class AcademyTrainState : StateBase
         _controller.session.currentEnvInstance.OnActionsFromServerReceived(actionsJson);
 
         //Debug.Log("Actions received: " + actionsJson);
-    }
-
-    void OnHomeButtonPressed()
-    {
-        SceneLoader.instance.LoadSceneDelay("IdleGame");
     }
 
     void SaveAndLoadModel(Byte[] rawModel)

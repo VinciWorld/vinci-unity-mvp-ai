@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using Vinci.Core.Managers;
 using Vinci.Core.UI;
@@ -8,15 +9,14 @@ using Vinci.Core.UI;
 public class AcademyTrainView : View
 {
     [SerializeField]
+    CategoryNavBar _categoryNavBar;
+
+    [SerializeField]
     private GameObject trainSteupSubView;
     [SerializeField]
     private GameObject trainInfoHudView;
 
     [Header("Setup Sub View")]
-    [SerializeField]
-    private Button _HomeButton;
-    [SerializeField]
-    private Button _backButton;
     [SerializeField]
     private Button _trainButton;
     [SerializeField]
@@ -63,17 +63,48 @@ public class AcademyTrainView : View
 
     public override void Initialize()
     {
-        CheckIsTrainIsRunning();
-
-        _HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
-        _backButton.onClick.AddListener(() => backButtonPressed?.Invoke());
         _trainButton.onClick.AddListener(OnTrainButtonPressed);
         _watchTrainButton.onClick.AddListener(() => watchTrainButtonPressed?.Invoke());
-
+        UpdateStats(30, 40, 15);
         ShowWarningInputfield("", false);
         UpdateStepsTrained(0);
-        UpdateStats(30, 40, 15);
     }
+
+
+    public override void Show()
+    {
+
+        _categoryNavBar.backButtonPressed += OnBackuttonPressed;
+        _categoryNavBar.homeButtonPressed += OnHomeButtonPressed;
+        _categoryNavBar.SetTitles("Train Setup", "Academy");
+        _categoryNavBar.SetNavigationButtons(
+            true,
+            true
+        );
+
+        CheckIsTrainIsRunning();
+
+        base.Show();
+    }
+
+    public override void Hide()
+    {
+        _categoryNavBar.backButtonPressed -= OnBackuttonPressed;
+        _categoryNavBar.homeButtonPressed -= OnHomeButtonPressed;
+        _categoryNavBar.RemoveListeners();
+        base.Hide();
+    }
+
+    public void OnHomeButtonPressed()
+    {
+        homeButtonPressed?.Invoke();
+    }
+
+    public void OnBackuttonPressed()
+    {
+        backButtonPressed?.Invoke();
+    }
+
 
     public void CheckIsTrainIsRunning()
     {
