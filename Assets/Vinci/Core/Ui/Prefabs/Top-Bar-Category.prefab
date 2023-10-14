@@ -400,7 +400,6 @@ GameObject:
   - component: {fileID: 112769207434582136}
   - component: {fileID: 1694295233076161311}
   - component: {fileID: 5096861805003107335}
-  - component: {fileID: 6159212342532182281}
   m_Layer: 5
   m_Name: IconButton-Settings
   m_TagString: Untagged
@@ -480,7 +479,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6159212342532182281}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UltimateClean.PopupOpener, Assembly-CSharp
         m_MethodName: OpenPopup
         m_Mode: 1
@@ -492,20 +491,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &6159212342532182281
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1588752701315650856}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24fd4eaa17e3e44c79bf1b6d380a4944, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  popupPrefab: {fileID: 4009948470333452306, guid: 41c6f753b1b524f26b4496c1d21e4f15,
-    type: 3}
 --- !u!1 &1976147582231668075
 GameObject:
   m_ObjectHideFlags: 0

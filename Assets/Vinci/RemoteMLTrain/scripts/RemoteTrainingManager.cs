@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Text;
 using Vinci.Core.Utils;
 using Cysharp.Threading.Tasks;
+using UnityEngine.Networking;
 
 public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager> 
 {
@@ -101,42 +102,33 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         }
     }
 
-    async public Task<PostResponseTrainJob> LoginCentralNode(PostTrainJobRequest requestData)
+    async public void LoginCentralNode(UserUpdate userDataUpdate, Action<UserData, Sprite> callback)
     {   
-        string url = http_prefix + centralNode + endpointTainJobs;
+        string url = http_prefix + centralNode + endpointUserLogin;
 
-        string json = JsonConvert.SerializeObject(requestData, new JsonSerializerSettings
+        string json = JsonConvert.SerializeObject(userDataUpdate, new JsonSerializerSettings
         {
-            NullValueHandling = NullValueHandling.Ignore
+            NullValueHandling = NullValueHandling.Include // Include null values in the JSON
         });
-
-        Debug.Log(json);
 
         HTTPResponse response = await SendHTTPPostRequestAsync(url, json);
 
         if (response.StatusCode == 200)
         {
-            PostResponseTrainJob trainJobResponse = JsonConvert.DeserializeObject<PostResponseTrainJob>(response.DataAsText);
-
-            return trainJobResponse;
-        }
-        else
-        {
-            throw new Exception($"HTTP Request failed with status code {response.StatusCode}: {response.Message}");
-        }
-    }
-
-    public async Task<UserData> UnityLoginAsync(UserUpdate userUpdate)
-    {
-
-        string url = http_prefix + centralNode + endpointUserLogin;
-        HTTPResponse response = await SendHTTPPostRequestAsync(url, JsonUtility.ToJson(userUpdate));
+            UserData userDataResponse = JsonConvert.DeserializeObject<UserData>(response.DataAsText);
+            Sprite userAvatar = null;
+            try
+            {
+                Debug.Log(response.DataAsText);
+                userAvatar = await DownloadImageAsync(userDataResponse.image_url);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Unable to load user avatar: " + e.Message);
+            }
 
 
-        if (response.StatusCode == 200)
-        {
-
-            return JsonUtility.FromJson<UserData>(response.DataAsText);
+            callback?.Invoke(userDataResponse, userAvatar);
         }
         else
         {
@@ -160,7 +152,40 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         }
     }
 
+    public async Task<PostResponseTrainJob> GetTrainJobByRunID(string runId, Action<PostResponseTrainJob> callback)
+    {
+        string url = http_prefix + centralNode + endpointTainJobs + $"/{runId}";
+        HTTPResponse response = await SendHTTPGetRequestAsync(url);
 
+        if (response.StatusCode == 200)
+        {
+            return JsonUtility.FromJson<PostResponseTrainJob>(response.DataAsText);
+        }
+        else
+        {
+            throw new Exception($"HTTP Request failed with status code {response.StatusCode}: {response.Message}");
+        }
+    }
+
+    public async Task<Sprite> DownloadImageAsync(string imageUrl)
+    {
+
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(imageUrl);
+        await www.SendWebRequest();
+
+        if (www.isNetworkError || www.isHttpError)
+        {
+            Debug.LogError("Error downloading image: " + www.error);
+            return null;
+        }
+        else
+        {
+            Texture2D texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+
+            return sprite;
+        }
+    }
 
     public void ConnectWebSocketToTrainInstance()
     {
@@ -261,7 +286,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         _webSocket = null;
     }
 
-    private async Task<HTTPResponse> SendHTTPPostRequestAsync(string url, string jsonData)
+    private async Task<HTTPResponse> SendHTTPPostRequestAsync(string url, string jsonData=null)
     {
         var tcs = new TaskCompletionSource<HTTPResponse>();
 
@@ -280,7 +305,11 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
             request.AddHeader("Authorization", "Bearer " + _jwtToken);
         }
 
-        request.RawData = Encoding.UTF8.GetBytes(jsonData);
+        if(jsonData != null)
+        {
+            request.RawData = Encoding.UTF8.GetBytes(jsonData);
+        }
+
         await request.Send();
 
         return await tcs.Task;
@@ -334,9 +363,6 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         return await tcs.Task;
     }
 
-
-
-
     private void SendHTTPPostRequest(string url, string jsonData, OnRequestFinishedDelegate callback)
     {
         HTTPRequest request = new HTTPRequest(new Uri(url), HTTPMethods.Post, callback);
@@ -348,5 +374,5 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
     public void SetJwtToken(string jwtToken)
     {
         _jwtToken = jwtToken;
-    }
+    }    
 }

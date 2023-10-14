@@ -230,7 +230,8 @@ public class AcademyTrainState : StateBase
 
     void OnBinaryDataRecived(byte[] data)
     {
-        SaveAndLoadModel(data);
+        string runId = _controller.session.selectedAgent.GetModelRunID();
+        SaveAndLoadModel(data, runId, _controller.session.selectedAgent.modelConfig.behavior.behavior_name);
         _controller.session.selectedAgent.modelConfig.AddStepsTrained(
             _controller.session.selectedAgent.modelConfig.behavior.steps
         );
@@ -260,11 +261,8 @@ public class AcademyTrainState : StateBase
         //Debug.Log("Actions received: " + actionsJson);
     }
 
-    void SaveAndLoadModel(Byte[] rawModel)
+    void SaveAndLoadModel(Byte[] rawModel, string runId, string behaviourName)
     {
-        string runId = _controller.session.selectedAgent.GetModelRunID();
-
-        string behaviourName = _controller.session.selectedAgent.modelConfig.behavior.behavior_name;
         string directoryPath = Path.Combine(Application.persistentDataPath, "runs", runId, "models");
         string filePath = Path.Combine(directoryPath, $"{behaviourName}.onnx");
 

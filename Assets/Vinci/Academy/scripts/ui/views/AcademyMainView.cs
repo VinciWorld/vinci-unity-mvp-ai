@@ -10,13 +10,17 @@ using Vinci.Core.UI;
 public class AcademyMainView : View
 {
     [SerializeField]
-    CategoryNavBar _categoryNavBar;
-    
-    [SerializeField]
-    private Button _createAgent;
+    LoaderPopup _loaderPopup;
 
     [SerializeField]
+    CategoryNavBar _categoryNavBar;
+
+    [SerializeField]
+    private Button _createAgent;
+    [SerializeField]
     private Button _selectAgent;
+    [SerializeField]
+    private Button _watchTrain;
 
     [SerializeField]
     private TextMeshProUGUI _agentType;
@@ -33,6 +37,11 @@ public class AcademyMainView : View
     private TextMeshProUGUI _speedStatText;
 
     [SerializeField]
+    private TextMeshProUGUI _stepsTrainedText;
+    [SerializeField]
+    private TextMeshProUGUI _jobStatusText;
+
+    [SerializeField]
     public GameObject _agentSlide;
 
     [SerializeField]
@@ -42,12 +51,14 @@ public class AcademyMainView : View
     public event Action homeButtonPressed;
     public event Action createAgentButtonPressed;
     public event Action selectAgentButtonPressed;
+    public event Action watchTrainingButtonPressed;
 
 
     public override void Initialize()
     {
         _createAgent.onClick.AddListener(() => createAgentButtonPressed?.Invoke());
         _selectAgent.onClick.AddListener(() => selectAgentButtonPressed?.Invoke());
+        _watchTrain.onClick.AddListener(() => watchTrainingButtonPressed?.Invoke());
     }
 
     public override void Show()
@@ -69,7 +80,6 @@ public class AcademyMainView : View
     {
         _categoryNavBar.homeButtonPressed -= OnHomeButtonPressed;
         _categoryNavBar.RemoveListeners();
-        Debug.Log("Remove main listeners");
         base.Hide();
     }
 
@@ -78,6 +88,11 @@ public class AcademyMainView : View
         homeButtonPressed?.Invoke();
     }
 
+
+    public void SetButtonWatchState(bool state)
+    {
+        _watchTrain.gameObject.SetActive(state);
+    }
 
     public void SetAgentInfo(string type, string name, string description)
     {
@@ -102,5 +117,33 @@ public class AcademyMainView : View
             _createAgent.gameObject.SetActive(false);
             _selectAgent.gameObject.SetActive(true);
         }
+    }
+
+    public void ShowLoaderPopup(string messange)
+    {
+        _loaderPopup.gameObject.SetActive(true);
+        _loaderPopup.SetProcessingMEssage(messange);
+        _loaderPopup.Open();
+    }
+
+    public void UpdateLoaderMessage(string messange)
+    {
+        _loaderPopup.SetProcessingMEssage(messange);
+    }
+
+    public void CloseLoaderPopup()
+    {
+        _loaderPopup.Close();
+    }
+
+    public void SetJobStatus(string status)
+    {
+        _jobStatusText.text = "Status: " +  status;
+    }
+
+    public void SetStepsTrained(int steps)
+    {
+        int totlaSteps = steps / 1000;
+        _stepsTrainedText.text = "Steps trained: " + totlaSteps.ToString() + " k";
     }
 }

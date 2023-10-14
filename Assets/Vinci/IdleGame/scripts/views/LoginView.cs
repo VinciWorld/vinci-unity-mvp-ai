@@ -1,6 +1,7 @@
 using System;
 using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Vinci.Core.Managers;
@@ -11,16 +12,20 @@ public class LoginView : View
     [SerializeField]
     private Button _connectWallet;
 
+    [SerializeField]
+    TextMeshProUGUI plyerUsername;
+    [SerializeField]
+    Image userAvatarImage;
+
     public event Action connectWallet;
 
     public override void Initialize()
     {
-
+        GameManager.instance.playerData.isLoggedIn = false;
     }
 
     public override void Show()
     {
-
         _connectWallet.onClick.AddListener(OnConnectWalletPressed);
 
         if (Application.platform is RuntimePlatform.LinuxEditor or RuntimePlatform.WindowsEditor or RuntimePlatform.OSXEditor)
@@ -30,7 +35,12 @@ public class LoginView : View
             {
                 GameManager.instance.playerData.isLoggedIn = true;
                 Debug.LogWarning("Wallet adapter login is not yet supported in the editor");
-                ViewManager.Show<IdleGameMainView>();
+
+
+                UserUpdate userDataUpdate = new UserUpdate();
+                userDataUpdate.pubkey = "Teste unity";
+
+                RemoteTrainManager.instance.LoginCentralNode(userDataUpdate, OnUserDataReceived);
             });
 
         }
@@ -69,14 +79,30 @@ public class LoginView : View
         if (account != null)
         {
             Debug.Log(account.PublicKey);
-            //GameManager.instance.playerData.isLoggedIn = true;
+            GameManager.instance.playerData.isLoggedIn = true;
 
-            ViewManager.Show<IdleGameMainView>();
-            //gameObject.SetActive(false);
+            UserUpdate userDataUpdate = new UserUpdate();
+            userDataUpdate.pubkey = account.PublicKey;
+
+            RemoteTrainManager.instance.LoginCentralNode(userDataUpdate, OnUserDataReceived);
         }
         else
         {
             Debug.LogError("Unable to connect wallet");
         }
+    }
+
+
+    private void OnUserDataReceived(UserData userData, Sprite userAvatar)
+    {
+        GameManager.instance.UserData = userData;
+
+        plyerUsername.text = userData.username;
+        if(userAvatar != null)
+        {
+            userAvatarImage.sprite = userAvatar;
+        }
+
+        ViewManager.Show<IdleGameMainView>();
     }
 }

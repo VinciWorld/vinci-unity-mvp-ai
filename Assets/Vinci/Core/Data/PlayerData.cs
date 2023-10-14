@@ -13,8 +13,6 @@ public class PlayerData
     public bool isPlayerRegisteredOnCompetition = false;
     public int highScore = 0;
 
-    public bool modelFinishedTraining = false;
-
     public bool isLoggedIn = false;
 
     public AgentConfig currentAgentConfig;
@@ -34,6 +32,11 @@ public class PlayerData
     public AgentConfig GetAgent(int index)
     {
         return agents[index];
+    }
+
+    public AgentConfig GetAgentById(string id)
+    {
+        return agents.FirstOrDefault(agent => agent.id == id);
     }
 
     public void SetIsModelLoaded(bool isTrained)

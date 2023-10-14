@@ -8,6 +8,7 @@ namespace Vinci.Core.Managers
 {
     public class GameManager : PersistentSingleton<GameManager>
     {
+        public UserData UserData;
         public PlayerData playerData;
 
         public NNModel baseNNModel;

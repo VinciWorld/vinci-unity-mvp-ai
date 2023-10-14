@@ -15,9 +15,9 @@ public class UserData
 [System.Serializable]
 public class UserUpdate
 {
-    public string? pubkey;
-    public string? username;
-    public string? bio;
-    public string? image_url;
-    public string? player_data;
+    public string? pubkey = null;
+    public string? username = null;
+    public string? bio = null;
+    public string? image_url = null;
+    public string? player_data = null;
 }
