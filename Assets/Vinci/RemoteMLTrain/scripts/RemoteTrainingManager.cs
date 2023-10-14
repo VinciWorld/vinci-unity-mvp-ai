@@ -6,9 +6,6 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Text;
 using Vinci.Core.Utils;
-using Unity.Barracuda;
-using Unity.Barracuda.ONNX;
-using System.IO;
 using Cysharp.Threading.Tasks;
 
 public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager> 
@@ -16,9 +13,12 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
 
     private WebSocket _webSocket;
 
+    public bool isTestMode;
+    public bool isSecureConnection = false;
     public bool isConnected => _webSocket != null;
 
-    public bool isSecureConnection = false;
+    [SerializeField]
+    private string _jwtToken;
 
     [SerializeField]
     private string centralNode = "127.0.0.1:8000";
@@ -27,8 +27,10 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
     private string http_prefix = "http://";
     [SerializeField]
     private string websockt_prefix = "ws://";
-    
+
     const string endpointTainJobs = "/api/v1/train-jobs";
+    const string endpointUserLogin = "/api/v1/user/unity-login";
+    const string endpointUser = "/api/v1/user";
     const string endpointWebsoctClientStream = "/ws/v1/client-stream";
     const string endpointWebsoctServerStream = "/api/v1/train-instance-stream";
 
@@ -55,6 +57,8 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
             centralNode = "127.0.0.1:8000";
         }
     }
+
+
 
     async public Task<PostResponseTrainJob> StartRemoteTrainning(PostTrainJobRequest requestData)
     {
@@ -96,6 +100,67 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
             throw new Exception($"HTTP Request failed with status code {response.StatusCode}: {response.Message}");
         }
     }
+
+    async public Task<PostResponseTrainJob> LoginCentralNode(PostTrainJobRequest requestData)
+    {   
+        string url = http_prefix + centralNode + endpointTainJobs;
+
+        string json = JsonConvert.SerializeObject(requestData, new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore
+        });
+
+        Debug.Log(json);
+
+        HTTPResponse response = await SendHTTPPostRequestAsync(url, json);
+
+        if (response.StatusCode == 200)
+        {
+            PostResponseTrainJob trainJobResponse = JsonConvert.DeserializeObject<PostResponseTrainJob>(response.DataAsText);
+
+            return trainJobResponse;
+        }
+        else
+        {
+            throw new Exception($"HTTP Request failed with status code {response.StatusCode}: {response.Message}");
+        }
+    }
+
+    public async Task<UserData> UnityLoginAsync(UserUpdate userUpdate)
+    {
+
+        string url = http_prefix + centralNode + endpointUserLogin;
+        HTTPResponse response = await SendHTTPPostRequestAsync(url, JsonUtility.ToJson(userUpdate));
+
+
+        if (response.StatusCode == 200)
+        {
+
+            return JsonUtility.FromJson<UserData>(response.DataAsText);
+        }
+        else
+        {
+            throw new Exception($"HTTP Request failed with status code {response.StatusCode}: {response.Message}");
+        }
+    }
+
+    public async Task<UserData> SaveUserPlayerDataAsync(string user_id, string playerData)
+    {
+        string url = http_prefix + centralNode + endpointUser;
+        HTTPResponse response = await SendHTTPPatchRequestAsync(url, playerData);
+   
+        if (response.StatusCode == 200)
+        {
+
+            return JsonUtility.FromJson<UserData>(response.DataAsText);
+        }
+        else
+        {
+            throw new Exception($"HTTP Request failed with status code {response.StatusCode}: {response.Message}");
+        }
+    }
+
+
 
     public void ConnectWebSocketToTrainInstance()
     {
@@ -209,6 +274,12 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         });
 
         request.AddHeader("Content-Type", "application/json");
+
+        if (!isTestMode)
+        {
+            request.AddHeader("Authorization", "Bearer " + _jwtToken);
+        }
+
         request.RawData = Encoding.UTF8.GetBytes(jsonData);
         await request.Send();
 
@@ -227,10 +298,44 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
                 tcs.SetResult(resp);
         });
 
+        if (!isTestMode)
+        {
+            request.AddHeader("Authorization", "Bearer " + _jwtToken);
+        }
+
         await request.Send();
 
         return await tcs.Task;
     }
+
+
+    private async Task<HTTPResponse> SendHTTPPatchRequestAsync(string url, string jsonData)
+    {
+        var tcs = new TaskCompletionSource<HTTPResponse>();
+
+        HTTPRequest request = new HTTPRequest(new Uri(url), HTTPMethods.Patch, (req, resp) =>
+        {
+            if (req.Exception != null)
+                tcs.SetException(req.Exception);
+            else
+                tcs.SetResult(resp);
+        });
+
+        request.AddHeader("Content-Type", "application/json");
+
+        if (!isTestMode)
+        {
+            request.AddHeader("Authorization", "Bearer " + _jwtToken);
+        }
+
+        request.RawData = Encoding.UTF8.GetBytes(jsonData);
+        await request.Send();
+
+        return await tcs.Task;
+    }
+
+
+
 
     private void SendHTTPPostRequest(string url, string jsonData, OnRequestFinishedDelegate callback)
     {
@@ -240,5 +345,8 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         request.Send();
     }
 
-
+    public void SetJwtToken(string jwtToken)
+    {
+        _jwtToken = jwtToken;
+    }
 }
