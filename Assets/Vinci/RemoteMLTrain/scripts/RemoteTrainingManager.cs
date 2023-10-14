@@ -88,17 +88,21 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
 
     async public Task<byte[]> DownloadNNModel(string runId)
     {
-        string url = http_prefix + centralNode + endpointTainJobs + "/" + runId + "/nn-models";
+        string url = http_prefix + centralNode + endpointTainJobs + "/" + runId + "/nn-model";
 
-        HTTPResponse response = await SendHTTPGetRequestAsync(url);
+        using (UnityWebRequest request = UnityWebRequest.Get(url))
+        {
+            await request.SendWebRequest(); // Send the HTTP GET request asynchronously
 
-        if (response.StatusCode == 200)
-        {
-            return response.Data;
-        }
-        else
-        {
-            throw new Exception($"HTTP Request failed with status code {response.StatusCode}: {response.Message}");
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                return request.downloadHandler.data;
+            }
+            else
+            {
+                Debug.LogError($"HTTP Request failed with status code {request.responseCode}: {request.error}");
+                throw new Exception($"HTTP Request failed with status code {request.responseCode}: {request.error}");
+            }
         }
     }
 
@@ -151,22 +155,37 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
             throw new Exception($"HTTP Request failed with status code {response.StatusCode}: {response.Message}");
         }
     }
-
+    //string url = http_prefix + centralNode + endpointTainJobs + $"/{runId}";
     public async Task<PostResponseTrainJob> GetTrainJobByRunID(string runId, Action<PostResponseTrainJob> callback)
     {
         string url = http_prefix + centralNode + endpointTainJobs + $"/{runId}";
-        HTTPResponse response = await SendHTTPGetRequestAsync(url);
 
-        if (response.StatusCode == 200)
+        UnityWebRequest request = UnityWebRequest.Get(url);
+
+        if (!isTestMode)
         {
-            return JsonUtility.FromJson<PostResponseTrainJob>(response.DataAsText);
+            // Add the "Authorization" header with the JWT token when not in test mode
+            request.SetRequestHeader("Authorization", "Bearer " + _jwtToken);
+        }
+
+        await request.SendWebRequest(); // Send the HTTP GET request asynchronously
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            string jsonResult = request.downloadHandler.text;
+            Debug.Log(jsonResult);
+            PostResponseTrainJob trainJob = JsonConvert.DeserializeObject<PostResponseTrainJob>(jsonResult);
+
+            //callback?.Invoke(trainJob);
+
+            return trainJob;
         }
         else
         {
-            throw new Exception($"HTTP Request failed with status code {response.StatusCode}: {response.Message}");
+            Debug.LogError($"HTTP Request failed with status code {request.responseCode}: {request.error}");
+            throw new Exception($"HTTP Request failed with status code {request.responseCode}: {request.error}");
         }
     }
-
     public async Task<Sprite> DownloadImageAsync(string imageUrl)
     {
 

@@ -32,7 +32,7 @@ public class AcademyMainState : StateBase
         //TODO: Load available models for this model
 
     
-        if (_controller.manager.playerData.agents.Count > 0)
+        if (_controller.manager.playerData.agents.Count > 0 && _controller.manager.playerData.agents[0].modelConfig.isModelSubmitted)
         {
             _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
 
@@ -42,8 +42,6 @@ public class AcademyMainState : StateBase
             }
         }
     }
-
-
 
     public override void OnExitState()
     {
@@ -109,12 +107,18 @@ public class AcademyMainState : StateBase
 
         foreach (var agent in _controller.manager.playerData.agents)
         {
-           await RemoteTrainManager.instance.GetTrainJobByRunID(agent.GetModelRunID(), OnReceiveTrainJobStatus);
+            PostResponseTrainJob job = await RemoteTrainManager.instance.GetTrainJobByRunID(
+                agent.GetModelRunID(), null);
+
+            OnReceiveTrainJobStatus(job);
+
         }        
     }
 
     async private void OnReceiveTrainJobStatus(PostResponseTrainJob job)
     {
+
+        Debug.Log("Receveid train job: " + job.job_status);
 
         AgentConfig agent = GameManager.instance.playerData.GetAgentById(job.env_config.agent_id);
 
@@ -165,7 +169,7 @@ public class AcademyMainState : StateBase
                         try{
                             byte[] model = await RemoteTrainManager.instance.DownloadNNModel(agent.modelConfig.run_id);
 
-                            SaveAndLoadModel(model, agent.modelConfig.run_id, agent.modelConfig.behavior.behavior_name);
+                            SaveAndLoadModel(model, agent.modelConfig.run_id, agent.modelConfig.behavior.behavior_name, agent);
 
                             agent.modelConfig.isModelSucceeded = true;
                             
@@ -173,13 +177,11 @@ public class AcademyMainState : StateBase
                         }
                         catch(Exception e)
                         {
-                            Debug.Log("Error Unable to load model: " + e.Message);
+                            Debug.Log("Error Unable to load model: " + e.Message + " stake: " + e.StackTrace);
                         }
-
-                        _mainView.CloseLoaderPopup();
-
                     }
 
+                    _mainView.CloseLoaderPopup();
                     break;
                 }
 
@@ -188,14 +190,11 @@ public class AcademyMainState : StateBase
                 Debug.Log("status not recognised");
                 break;
         }
-
-      
     }
 
-
-
-    void SaveAndLoadModel(Byte[] rawModel, string runId, string behaviourName)
+    void SaveAndLoadModel(Byte[] rawModel, string runId, string behaviourName, AgentConfig agent)
     {
+        Debug.Log("behaviour name: " + behaviourName + " run_id: " + runId);
         string directoryPath = Path.Combine(Application.persistentDataPath, "runs", runId, "models");
         string filePath = Path.Combine(directoryPath, $"{behaviourName}.onnx");
 
@@ -211,12 +210,12 @@ public class AcademyMainState : StateBase
         nnModel.name = behaviourName;
         Debug.Log("Model saved at: " + filePath);
 
-        _controller.session.selectedAgent.SetModelAndPath(filePath, nnModel);
+        agent.SetModelAndPath(filePath, nnModel);
 
         // Load model on current agent
-        _controller.session
-        .currentAgentInstance.GetComponent<IAgent>()
-        .LoadModel(behaviourName, nnModel);
+        //_controller.session
+        //.currentAgentInstance.GetComponent<IAgent>()
+        //.LoadModel(behaviourName, nnModel);
     }
 
     NNModel SaveAndConvertModel(string filePath, byte[] rawModel)

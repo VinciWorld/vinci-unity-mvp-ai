@@ -11,6 +11,8 @@ namespace Vinci.Core.Managers
         public UserData UserData;
         public PlayerData playerData;
 
+        public bool isLoggedIn = false;
+
         public NNModel baseNNModel;
 
         private const string PlayerDataFileName = "playerData.json";
@@ -18,6 +20,7 @@ namespace Vinci.Core.Managers
         protected override void Awake()
         {
             base.Awake();
+            isLoggedIn = false;
             Application.runInBackground = true;
 
             Debug.Log("Init ML");

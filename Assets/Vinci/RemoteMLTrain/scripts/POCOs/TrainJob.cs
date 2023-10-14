@@ -1,5 +1,8 @@
 using System;
+using Newtonsoft.Json;
 
+[Serializable]
+[JsonConverter(typeof(TrainJobStatusConverter))]
 public enum TrainJobStatus
 {
     SUBMITTED,

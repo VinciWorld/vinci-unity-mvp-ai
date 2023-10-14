@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Unity.Barracuda;
 using Unity.Barracuda.ONNX;
 using Unity.MLAgents;
+using Unity.VisualScripting;
 using UnityEngine;
 using Vinci.Core.Managers;
 using Vinci.Core.StateMachine;
@@ -40,6 +41,8 @@ public class AcademyTrainState : StateBase
         RemoteTrainManager.instance.binaryDataReceived += OnBinaryDataRecived;
 
         Academy.Instance.AutomaticSteppingEnabled = false;
+
+     
     }
 
     public override void OnExitState()
@@ -63,6 +66,8 @@ public class AcademyTrainState : StateBase
             _controller.session.currentEnvInstance.episodeAndStepCountUpdated -= trainView.UptadeInfo;
             _controller.session.currentEnvInstance.SetIsReplay(false);
         }
+
+        trainView.CloseLoaderPopup();
     }
 
     private void CheckIfModelFinishedTraining()
@@ -81,6 +86,7 @@ public class AcademyTrainState : StateBase
 
     void OnHomeButtonPressed()
     {
+        OnExitState();
         SceneLoader.instance.LoadSceneDelay("IdleGame");
     }
 
@@ -119,6 +125,7 @@ public class AcademyTrainState : StateBase
         trainView.UpdateMetrics(0,0);
         trainView.SetTrainSetupSubViewState(false);
         trainView.SetTrainHudSubViewState(true);
+        trainView.ShowLoaderPopup("Connecting to remote server...");
     }
 
     void OnReceivedTrainStatus(TrainJobStatusMsg trainJobStatus)
@@ -141,7 +148,20 @@ public class AcademyTrainState : StateBase
             Debug.Log("JOB FAILED");
             _controller.SwitchState(new AcademyTrainState(_controller));
         }
+        else if (trainJobStatus.status == TrainJobStatus.RETRIEVED)
+        {
+            trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + trainJobStatus.status);
+        }
+        else if (trainJobStatus.status == TrainJobStatus.STARTING)
+        {
+            trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + trainJobStatus.status);
+        }
+        else if(trainJobStatus.status == TrainJobStatus.RUNNING)
+        {
+            trainView.CloseLoaderPopup();
+        }
 
+        
         Debug.Log("Status received: " + trainJobStatus.status);
     }
 
@@ -198,7 +218,11 @@ public class AcademyTrainState : StateBase
                 case TrainJobStatus.RETRIEVED:
                 case TrainJobStatus.STARTING:
                 case TrainJobStatus.RUNNING:
+                    GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelSubmitted = true;
                     GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelTraining = true;
+
+                    trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + response.job_status);
+
                     break;
                 case TrainJobStatus.SUCCEEDED:
                     break;
@@ -216,6 +240,7 @@ public class AcademyTrainState : StateBase
             trainView.SetTrainHudSubViewState(false);
             GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelTraining = false;
             Debug.LogError("Unable to add job to the queue: " + e.Message);
+            trainView.CloseLoaderPopup();
         }
     }
 

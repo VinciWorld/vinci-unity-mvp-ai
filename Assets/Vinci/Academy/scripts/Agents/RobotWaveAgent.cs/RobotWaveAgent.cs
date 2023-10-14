@@ -164,14 +164,14 @@ public class RobotWaveAgent : Agent, IAgent
 
     private void OnMissedTarget()
     {
-        Debug.Log("miss ");
+//        Debug.Log("miss ");
 
         AddReward(-0.05f);
     }
 
     private void OnhitTarget()
     {
-        Debug.Log("hit ");
+      //  Debug.Log("hit ");
         AddReward(0.001f);
     }
 

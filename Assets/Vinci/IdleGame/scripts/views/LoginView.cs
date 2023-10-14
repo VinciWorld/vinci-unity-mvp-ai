@@ -21,7 +21,7 @@ public class LoginView : View
 
     public override void Initialize()
     {
-        GameManager.instance.playerData.isLoggedIn = false;
+        //GameManager.instance.isLoggedIn = false;
     }
 
     public override void Show()
@@ -33,7 +33,7 @@ public class LoginView : View
             _connectWallet.onClick.RemoveListener(OnConnectWalletPressed);
             _connectWallet.onClick.AddListener(() =>
             {
-                GameManager.instance.playerData.isLoggedIn = true;
+                GameManager.instance.isLoggedIn = true;
                 Debug.LogWarning("Wallet adapter login is not yet supported in the editor");
 
 
@@ -44,9 +44,9 @@ public class LoginView : View
             });
 
         }
-        Debug.Log("Show: " + GameManager.instance.playerData.isLoggedIn);
+        Debug.Log("Show: " + GameManager.instance.isLoggedIn);
 
-        if (GameManager.instance.playerData.isLoggedIn)
+        if (GameManager.instance.isLoggedIn)
         {
             ViewManager.Show<IdleGameMainView>();
         }
@@ -79,7 +79,7 @@ public class LoginView : View
         if (account != null)
         {
             Debug.Log(account.PublicKey);
-            GameManager.instance.playerData.isLoggedIn = true;
+            GameManager.instance.isLoggedIn = true;
 
             UserUpdate userDataUpdate = new UserUpdate();
             userDataUpdate.pubkey = account.PublicKey;

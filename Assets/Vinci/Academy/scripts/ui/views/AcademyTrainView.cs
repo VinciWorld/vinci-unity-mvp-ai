@@ -9,6 +9,9 @@ using Vinci.Core.UI;
 public class AcademyTrainView : View
 {
     [SerializeField]
+    LoaderPopup _loaderPopup;
+
+    [SerializeField]
     CategoryNavBar _categoryNavBar;
 
     [SerializeField]
@@ -36,7 +39,6 @@ public class AcademyTrainView : View
     [SerializeField]
     private TextMeshProUGUI _speedStatText;
 
-
     [Header("Train Info Sub View")]
     [SerializeField]
     private TextMeshProUGUI episodesCountText;
@@ -52,7 +54,6 @@ public class AcademyTrainView : View
     private TextMeshProUGUI winsCountText;
     [SerializeField]
     private TextMeshProUGUI losesCountText;
-
 
 
     public event Action homeButtonPressed;
@@ -78,7 +79,7 @@ public class AcademyTrainView : View
         _categoryNavBar.homeButtonPressed += OnHomeButtonPressed;
         _categoryNavBar.SetTitles("Train Setup", "Academy");
         _categoryNavBar.SetNavigationButtons(
-            true,
+            false,
             true
         );
 
@@ -121,6 +122,7 @@ public class AcademyTrainView : View
     {
         try
         {
+            _categoryNavBar.SetTitles("Training", "Academy");
             int stepsToTrain = int.Parse(_stepsInputField.text);
             trainButtonPressed?.Invoke(stepsToTrain);
             Debug.Log("Steps to train: " + stepsToTrain);
@@ -146,7 +148,7 @@ public class AcademyTrainView : View
     {
         episodesCountText.text = episodesCount.ToString();
         stepsCountText.text = stepsCount.ToString();
-       // totalStepsCountText.text = "0"; //totalStepsCount.ToString();
+        totalStepsCountText.text = totalStepsCount.ToString();
     }
 
     public void UpdateMetrics(
@@ -182,5 +184,22 @@ public class AcademyTrainView : View
         _defenseStatText.text = defense.ToString();
         _attackStatText.text = attack.ToString();
         _speedStatText.text = speed.ToString();
+    }
+
+    public void ShowLoaderPopup(string messange)
+    {
+        _loaderPopup.gameObject.SetActive(true);
+        _loaderPopup.SetProcessingMEssage(messange);
+        _loaderPopup.Open();
+    }
+
+    public void UpdateLoaderMessage(string messange)
+    {
+        _loaderPopup.SetProcessingMEssage(messange);
+    }
+
+    public void CloseLoaderPopup()
+    {
+        _loaderPopup.Close();
     }
 }

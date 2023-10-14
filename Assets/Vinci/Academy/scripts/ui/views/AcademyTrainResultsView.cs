@@ -8,6 +8,9 @@ using Vinci.Core.UI;
 public class AcademyTrainResultsView : View
 {
 
+    [SerializeField]
+    CategoryNavBar _categoryNavBar;
+
     [Header("Results")]
     [SerializeField]
     GameObject resultsSubView;
@@ -62,13 +65,27 @@ public class AcademyTrainResultsView : View
 
     public override void Show()
     {
+        _categoryNavBar.SetTitles("Results", "Academy");
+        _categoryNavBar.homeButtonPressed += OnHomeButtonPressed;
+        _categoryNavBar.SetNavigationButtons(
+            false,
+            true
+        );
+
         ShowResultsSubView();
         base.Show();
     }
 
     public override void Hide()
     {
+        _categoryNavBar.homeButtonPressed -= OnHomeButtonPressed;
+        _categoryNavBar.RemoveListeners();
         base.Hide();
+    }
+
+    public void OnHomeButtonPressed()
+    {
+        homeButtonPressed?.Invoke();
     }
 
 
