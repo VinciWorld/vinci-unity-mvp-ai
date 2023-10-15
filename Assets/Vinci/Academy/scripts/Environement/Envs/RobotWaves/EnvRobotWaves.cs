@@ -56,6 +56,8 @@ public class EnvRobotWaves : EnvironementBase
 
         _waveController.completedAllWaves += OnCompletedAllWaves;
         _waveController.completedWave += OnCompletedWave;
+
+        ShowLoaderPopup("Buffering episodes...");
     }
 
     public void OnCompletedWave()
@@ -69,6 +71,8 @@ public class EnvRobotWaves : EnvironementBase
         Debug.Log("Complete all Waves");
         _agent.AddReward(1);
         _agent.EndEpisode();
+
+        GoalCompleted(true);
     }
 
 

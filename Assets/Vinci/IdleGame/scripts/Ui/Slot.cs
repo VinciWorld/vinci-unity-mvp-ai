@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class Slot : MonoBehaviour, IDropHandler
 {
     public int id = 0;
-    public event Action<int, string> OnDropNft;
+    public event Action<int, string, DraggableItem> OnDropNft;
 
     public void OnDrop(PointerEventData eventData)
     {
@@ -21,7 +21,7 @@ public class Slot : MonoBehaviour, IDropHandler
             GameObject dropped = eventData.pointerDrag;
             DraggableItem draggableItem = dropped.GetComponent<DraggableItem>();
             Debug.Log("SLOT pubkey: " + draggableItem.pubkeyNft);
-            OnDropNft?.Invoke(id, draggableItem.pubkeyNft);
+            OnDropNft?.Invoke(id, draggableItem.pubkeyNft, draggableItem);
             draggableItem.parentAfterDrag = transform;
         }
     }

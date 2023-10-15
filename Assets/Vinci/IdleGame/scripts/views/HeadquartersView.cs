@@ -32,7 +32,7 @@ public class HeadquartersView : View
 
     public Slot slot;
 
-    public event Action<int, string> nftStakeOnSlot;
+    public event Action<int, string, DraggableItem> nftStakeOnSlot;
     public event Action backButtonPressed;
 
     PublicKey stakedNftKey;
@@ -67,6 +67,9 @@ public class HeadquartersView : View
         DraggableItem itemSlot = _slot.GetComponentInChildren<DraggableItem>();
         itemSlot.image.sprite = dragItem.image.sprite;
         itemSlot.pubkeyNft = dragItem.pubkeyNft;
+        itemSlot.image.raycastTarget = true;
+
+
 
         Destroy(nftItem.gameObject);
 
@@ -112,6 +115,7 @@ public class HeadquartersView : View
                 DraggableItem item = Instantiate(draggableItemPrefab, slot.transform);
                 item.image.sprite = sprite;
                 item.pubkeyNft = nft.metaplexData.data.mint;
+                item.image.raycastTarget = false;
                 _unstakeButton.gameObject.SetActive(true);
                 continue;
             }
@@ -147,17 +151,18 @@ public class HeadquartersView : View
         _loaderPopup.Close();
     }
 
-    public void OnDropNft(int id, string pubkey)
+    public void OnDropNft(int id, string pubkey, DraggableItem item)
     {
 
         Debug.Log("DROP NFT: id: " + id + " pkey: " + pubkey);
-
         if (isStaked) return;
 
-        nftStakeOnSlot?.Invoke(id, pubkey);
+        nftStakeOnSlot?.Invoke(id, pubkey, item);
 
+        item.image.raycastTarget = false;
         _unstakeButton.gameObject.SetActive(true);
     }
+
 
     Texture2D LoadTexture(string filePath)
     {

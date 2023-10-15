@@ -44,13 +44,14 @@ public class HeadquartersState : StateBase
         _controller.SwitchState(new IdleGameState(_controller));
     }
 
-    private async void OnDropNft(int slotId, string pubkey)
+    private async void OnDropNft(int slotId, string pubkey, DraggableItem itme)
     {
         Debug.Log("nft pubkey: " + pubkey);
         mainView.ShowLoaderPopup("Staking nft");
         await BlockchainManager.instance.StakeNft(pubkey);
-        //await Task.Delay(200);
+        //await Task.Delay(100);
         mainView.CloseLoaderPopup();
+        itme.image.raycastTarget = false;
     }
 
     async void OnAcademyBtnPressed()

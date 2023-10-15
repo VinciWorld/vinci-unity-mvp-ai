@@ -153,6 +153,8 @@ public class RobotWaveAgent : Agent, IAgent
         AddReward(-1f);
         agentDied?.Invoke(this);
         EndEpisode();
+
+        env.GoalCompleted(false);
     }
 
     private void OnKilledTarget()

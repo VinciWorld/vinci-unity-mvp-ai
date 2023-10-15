@@ -75,6 +75,7 @@ public class AcademyResultsState : StateBase
 
     void OnHomeButtonPressed()
     {
+        OnExitState();
         SceneLoader.instance.LoadSceneDelay("IdleGame");
     }
 
@@ -85,6 +86,7 @@ public class AcademyResultsState : StateBase
 
     void OnStopTestButtonPressed()
     {
+        Time.timeScale = 1;
         currentEnvInstance.StopEnv();
 
         GameManager.instance.playerData.AddOrUpdateEvaluationResults(
@@ -121,6 +123,7 @@ public class AcademyResultsState : StateBase
 
     void EvaluateModel()
     {
+        Time.timeScale = 5;
         _resultsView.UpdateEvaluationMetrics(currentEnvInstance.GetEvaluationMetricResults());
         _resultsView.ShowTestModelMetrics();
 

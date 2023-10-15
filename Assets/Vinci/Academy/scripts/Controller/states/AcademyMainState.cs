@@ -91,7 +91,7 @@ public class AcademyMainState : StateBase
 
     private void OnWatchTrainButtonPressed()
     {
-        _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
+        _controller.session.selectedAgent = _controller.academyData.availableAgents[0];
         _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
 
         _controller.SwitchState(new AcademyTrainState(_controller));
@@ -100,7 +100,8 @@ public class AcademyMainState : StateBase
     void OnSelectAgentButtonPressed()
     {
         Debug.Log("_controller.session.selectedAgent: " + _controller.session.selectedAgent);
-        _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
+        _controller.session.selectedAgent = _controller.academyData.availableAgents[0];
+        Debug.Log("_controller.session.selectedAgent: after " + _controller.session.selectedAgent);
         _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
 
         _controller.SwitchState(new AcademyTrainState(_controller));
