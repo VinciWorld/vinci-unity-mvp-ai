@@ -19,12 +19,10 @@ public class LoginView : View
 
     public event Action connectWallet;
 
-    public override void Initialize()
-    {
-        //GameManager.instance.isLoggedIn = false;
-    }
+    public event Action walletConnected;
+    public event Action loggedIn;
 
-    public override void Show()
+    public override void Initialize()
     {
         _connectWallet.onClick.AddListener(OnConnectWalletPressed);
 
@@ -45,21 +43,23 @@ public class LoginView : View
 
         }
         Debug.Log("Show: " + GameManager.instance.isLoggedIn);
+    }
 
+    public override void Show()
+    {
         if (GameManager.instance.isLoggedIn)
         {
-            ViewManager.Show<IdleGameMainView>();
+            loggedIn?.Invoke();
         }
         else
         {
             base.Show();
         }
-
     }
 
     public override void Hide()
     {
-        _connectWallet.onClick.RemoveAllListeners();
+        //_connectWallet.onClick.RemoveAllListeners();
 
         base.Hide();
     }
@@ -92,9 +92,9 @@ public class LoginView : View
         }
     }
 
-
     private void OnUserDataReceived(UserData userData, Sprite userAvatar)
     {
+        Debug.Log("Received data from central node!");
         GameManager.instance.UserData = userData;
 
         plyerUsername.text = userData.username;
@@ -103,6 +103,6 @@ public class LoginView : View
             userAvatarImage.sprite = userAvatar;
         }
 
-        ViewManager.Show<IdleGameMainView>();
+        walletConnected?.Invoke();
     }
 }

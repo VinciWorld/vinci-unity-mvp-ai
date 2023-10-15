@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using Vinci.Core.Utils;
 
-public class ReactBridge : MonoBehaviour
+public class ReactBridge : PersistentSingleton<ReactBridge>
 {
 
     //[DllImport("__Internal")]
@@ -16,6 +17,8 @@ public class ReactBridge : MonoBehaviour
     {
         receivedUserJwt?.Invoke(token);
         Debug.Log(token);
+
+        RemoteTrainManager.instance.SetJwtToken(token);
     }
 
     public void SendGameOver()

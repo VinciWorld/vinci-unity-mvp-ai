@@ -7,7 +7,7 @@ using Vinci.Core.UI;
 public class IdleGameState : StateBase
 {
     IdleGameController _controller;
-
+    IdleGameMainView mainView;
 
 
     public IdleGameState(IdleGameController controller)
@@ -17,7 +17,9 @@ public class IdleGameState : StateBase
 
     public override void OnEnterState()
     {
-        IdleGameMainView mainView = ViewManager.GetView<IdleGameMainView>();
+        Debug.Log("Enter Idgle Game state");
+        mainView = ViewManager.GetView<IdleGameMainView>();
+        ViewManager.Show(mainView);
         mainView.academyBtnPressed += OnAcademyBtnPressed;
         mainView.arenaBtnPressed += OnAreanButtonPressed;
         mainView.headquartersBtnPressed += OnHeadquartersBtnPressed;
@@ -30,7 +32,9 @@ public class IdleGameState : StateBase
 
     public override void OnExitState()
     {
-
+        mainView.academyBtnPressed -= OnAcademyBtnPressed;
+        mainView.arenaBtnPressed -= OnAreanButtonPressed;
+        mainView.headquartersBtnPressed -= OnHeadquartersBtnPressed;
     }
 
     public override void Tick(float deltaTime)

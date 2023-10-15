@@ -21,11 +21,7 @@ using VinciAccounts.Program;
 using VinciStake.Program;
 
 public class BlockchainManager : PersistentSingleton<BlockchainManager>
-{
-    [SerializeField]
-    TextMeshProUGUI pubkey;
-    [SerializeField]
-    TextMeshProUGUI solanaBalance;
+{    
 
     PublicKey VinciAccountProgramId = new PublicKey("38N2x62nEqdgRf67kaemiBNFijKMdnqb3XyCa4asw2fQ");
     PublicKey VinciStakeProgramId = new PublicKey("EjhezvQjSDBEQXVyJSY1EhmqsQFGEorS7XwwHmxcRNxV");
@@ -33,24 +29,25 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
 
     private void Start()
     {
-
-    }
-
-    private void OnEnable()
-    {
         Web3.OnLogin += OnLogin;
         Web3.OnBalanceChange += OneBalanceChange;
     }
 
+    private void OnEnable()
+    {
+       
+     
+    }
+
     private void OnDisable()
     {
-        Web3.OnLogin -= OnLogin;
-        Web3.OnBalanceChange -= OneBalanceChange;
+        //Web3.OnLogin -= OnLogin;
+        //Web3.OnBalanceChange -= OneBalanceChange;
     }
 
     private void OnLogin(Account account)
     {
-        pubkey.text = account.PublicKey;
+       // pubkey.text = account.PublicKey;
     }
 /*
     private void OnWalletInstance()
@@ -63,7 +60,7 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
 */
     private void OneBalanceChange(double sol)
     {
-        solanaBalance.text = sol.ToString();
+        //solanaBalance.text = sol.ToString();
     }
 
     async public Task<List<Nft>> GetWalletNfts()
@@ -317,9 +314,40 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
         return bytes;
     }
 
-    public bool RegisterPlayerOnCompetition()
+    async public Task<string> RegisterPlayerOnCompetition()
     {
-        return true;
+        ulong score = 0;
+        PublicKey userAccount;
+        byte bump;
+        var blockHash = await Web3.Rpc.GetLatestBlockHashAsync();
+
+        PublicKey.TryFindProgramAddress(
+            new[]
+            {
+                Encoding.UTF8.GetBytes("VinciWorldAccount1"),
+                Web3.Account.PublicKey.KeyBytes,
+            },
+            VinciAccountProgramId, out userAccount, out bump
+        );
+
+        var setScoreAccounts = new SetScoreAccounts();
+        setScoreAccounts.BaseAccount = userAccount;
+        setScoreAccounts.Owner = Web3.Account.PublicKey;
+
+
+        TransactionInstruction instr = VinciAccountsProgram.SetScore(
+            setScoreAccounts, score, VinciAccountProgramId
+        );
+
+        var transaction = new TransactionBuilder()
+            .SetRecentBlockHash(blockHash.Result.Value.Blockhash)
+            .SetFeePayer(Web3.Account)
+            .AddInstruction(instr);
+
+        var tx = Transaction.Deserialize(transaction.Build(new List<Account> { Web3.Account }));
+        var res = await Web3.Wallet.SignAndSendTransaction(tx, true);
+
+        return res.Result;
     }
 
     public void GetPlayeresScores()

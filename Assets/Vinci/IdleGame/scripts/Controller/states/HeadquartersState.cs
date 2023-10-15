@@ -20,9 +20,27 @@ public class HeadquartersState : StateBase
         ViewManager.Show(mainView);
 
         mainView.nftStakeOnSlot += OnDropNft;
+        mainView.backButtonPressed += OnBackButtonPressed;
 
         MainThreadDispatcher.Instance().EnqueueAsync(mainView.LoadNfts);
     
+    }
+
+    public override void OnExitState()
+    {
+        mainView.nftStakeOnSlot -= OnDropNft;
+        mainView.backButtonPressed -= OnBackButtonPressed;
+    }
+
+
+    public override void Tick(float deltaTime)
+    {
+
+    }
+
+    private void OnBackButtonPressed()
+    {
+        _controller.SwitchState(new IdleGameState(_controller));
     }
 
     private async void OnDropNft(int slotId, string pubkey)
@@ -33,23 +51,15 @@ public class HeadquartersState : StateBase
         mainView.CloseLoaderPopup();
     }
 
-    public override void OnExitState()
-    {
-
-    }
-
-    public override void Tick(float deltaTime)
-    {
-
-    }
-
     async void OnAcademyBtnPressed()
     {
+        OnExitState();
         await SceneLoader.instance.LoadScene("Academy");
     }
 
     async void OnArenaBtnPressed()
     {
+        OnExitState();
         await SceneLoader.instance.LoadScene("Arena");
     }
 }

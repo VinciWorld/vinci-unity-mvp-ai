@@ -1,4 +1,5 @@
 
+using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Vinci.Core.Managers;
@@ -22,13 +23,18 @@ public class ArenaState : StateBase
 
         arenaView.registerCompetitionButtonPressed += OnRegisterOnCompetionButtonPressed;
         arenaView.playGameButtonPressed += OnPlayTournamentButtonPressed;
+        arenaView.backButtonPressed += OnBackButtonPressed;
 
         PopulatePlayersScores();
     }
 
+
+
     public override void OnExitState()
     {
-
+        arenaView.registerCompetitionButtonPressed -= OnRegisterOnCompetionButtonPressed;
+        arenaView.playGameButtonPressed -= OnPlayTournamentButtonPressed;
+        arenaView.backButtonPressed -= OnBackButtonPressed;
     }
 
     public override void Tick(float deltaTime)
@@ -36,18 +42,22 @@ public class ArenaState : StateBase
 
     }
 
-    public void OnRegisterOnCompetionButtonPressed()
+    private void OnBackButtonPressed()
     {
-        bool result = BlockchainManager.instance.RegisterPlayerOnCompetition();
+        _controller.SwitchState(new IdleGameState(_controller));
+    }
 
-        if(result)
-        {
-            arenaView.ShowButtonPlayer();
-        }
+    async public void OnRegisterOnCompetionButtonPressed()
+    {
+        Debug.Log("Start REGISTER SCORE!");
+        await BlockchainManager.instance.RegisterPlayerOnCompetition();
+        Debug.Log("END REGISTER SCORE!");
+        arenaView.ShowButtonPlayer();
     }
 
     public void OnPlayTournamentButtonPressed()
     {
+        OnExitState();
         SceneLoader.instance.LoadSceneDelay("Arena");
     }
 

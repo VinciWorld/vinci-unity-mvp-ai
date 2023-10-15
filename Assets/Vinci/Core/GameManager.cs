@@ -3,6 +3,8 @@ using UnityEngine;
 using Vinci.Core.Utils;
 using Unity.MLAgents;
 using Unity.Barracuda;
+using Solana.Unity.SDK;
+using System;
 
 namespace Vinci.Core.Managers
 {
@@ -12,6 +14,8 @@ namespace Vinci.Core.Managers
         public PlayerData playerData;
 
         public bool isLoggedIn = false;
+
+        public double solanaBalance;    
 
         public NNModel baseNNModel;
 
@@ -27,6 +31,14 @@ namespace Vinci.Core.Managers
             Unity.MLAgents.Academy.Instance.AutomaticSteppingEnabled = false;
 
             LoadPlayerData();
+
+            Web3.OnBalanceChange += OneBalanceChange;
+            UserData = new UserData();
+        }
+
+        private void OneBalanceChange(double sol)
+        {
+            solanaBalance = sol;
         }
 
         public void SavePlayerData()

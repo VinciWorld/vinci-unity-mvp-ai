@@ -16,7 +16,7 @@ public class IdleGameController : MonoBehaviour
         _manager = GameManager.instance;
 
 
-        SwitchState(new IdleGameState(this));
+        SwitchState(new LoginState(this));
     }
 
     private void Update()

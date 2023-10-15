@@ -26,8 +26,8 @@ public class IdleGameMainView : View
         _arenaButton.onClick.AddListener(() => arenaBtnPressed?.Invoke());
     }
 
-    public void ShowLoginView()
+    public override void Show()
     {
-        loginView.gameObject.SetActive(true);
+        base.Show();
     }
 }

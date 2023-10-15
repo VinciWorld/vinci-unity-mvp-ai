@@ -25,10 +25,11 @@ public class HeadquartersView : View
     public Slot slot;
 
     public event Action<int, string> nftStakeOnSlot;
+    public event Action backButtonPressed;
 
     public override void Initialize()
     {
-        _backButton.onClick.AddListener(() => ViewManager.ShowLast());
+        _backButton.onClick.AddListener(() => backButtonPressed?.Invoke());
 
         _loaderPopup.gameObject.SetActive(false);
         slot.OnDropNft += OnDropNft;

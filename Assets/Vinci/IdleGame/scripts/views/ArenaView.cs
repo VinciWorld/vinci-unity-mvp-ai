@@ -31,11 +31,12 @@ public class ArenaView : View
 
     public event Action registerCompetitionButtonPressed;
     public event Action playGameButtonPressed;
+    public event Action backButtonPressed;
 
 
     public override void Initialize()
     {
-        _backButton.onClick.AddListener(() => ViewManager.ShowLast());
+        _backButton.onClick.AddListener(() => backButtonPressed.Invoke());
         _registerCompetitionButton.onClick.AddListener(() => registerCompetitionButtonPressed?.Invoke());
         _playCompetitionButton.onClick.AddListener(() => playGameButtonPressed?.Invoke());
 
