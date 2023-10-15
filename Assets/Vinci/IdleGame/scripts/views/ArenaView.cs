@@ -40,7 +40,10 @@ public class ArenaView : View
         _registerCompetitionButton.onClick.AddListener(() => registerCompetitionButtonPressed?.Invoke());
         _playCompetitionButton.onClick.AddListener(() => playGameButtonPressed?.Invoke());
 
-        
+
+    }
+
+    private void OnEnable() {
 
         CheckIfPlayerIsRegistered();
     }
@@ -53,9 +56,19 @@ public class ArenaView : View
 
     public void PopulatePlayersScores(string name, int score, Sprite image=null)
     {
+        RemoveAllChildObjects(_competitionsPlayersScoresRoot.transform);
+
         GameObject scoreListItemObj = Instantiate(_competitionPlayerScorePrefab, _competitionsPlayersScoresRoot.transform);
         ScoreListItem scoreListItem = scoreListItemObj.GetComponent<ScoreListItem>();
         scoreListItem.SetData(image, name, score);
+    }
+
+    void RemoveAllChildObjects(Transform parentTransform)
+    {
+        foreach (Transform child in parentTransform)
+        {
+            Destroy(child.gameObject);
+        }
     }
 
     public void CheckIfPlayerIsRegistered()

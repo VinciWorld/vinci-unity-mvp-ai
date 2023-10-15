@@ -13,6 +13,8 @@ public class MainTopBar : MonoBehaviour
     TextMeshProUGUI pubkey;
     [SerializeField]
     TextMeshProUGUI solanaBalance;
+    [SerializeField]
+    TextMeshProUGUI stepsAvailable;
 
     void OnEnable()
     {
@@ -22,7 +24,7 @@ public class MainTopBar : MonoBehaviour
         if(GameManager.instance != null)
         {
             pubkey.text = GameManager.instance.UserData.pubkey;
-            solanaBalance.text = GameManager.instance.solanaBalance.ToString();
+            solanaBalance.text = GameManager.instance.solanaBalance.ToString("f5");
         }
 
     }

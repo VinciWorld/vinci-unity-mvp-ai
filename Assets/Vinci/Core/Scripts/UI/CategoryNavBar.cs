@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 using UnityEngine.Events;
+using Vinci.Core.Managers;
 
 
 
@@ -26,6 +27,22 @@ public class CategoryNavBar : MonoBehaviour
 
     public event Action backButtonPressed;
     public event Action homeButtonPressed;
+
+    void OnEnable()
+    {
+        GameManager.instance.playerData.stepsAvailableChange += OnStepsAvailableChange;
+        _stepsAvailableAmount.text = GameManager.instance.playerData.availableSteps.ToString();
+    }
+
+    private void OnDisable() 
+    {
+        GameManager.instance.playerData.stepsAvailableChange -= OnStepsAvailableChange;
+    }
+
+    void OnStepsAvailableChange(int steps)
+    {
+        _stepsAvailableAmount.text = steps.ToString();
+    }
 
     public void SetTitles(string mainTitle, string categoryLabel)
     {

@@ -108,8 +108,13 @@ public class AcademyResultsState : StateBase
 
     async void OnMintModelButtonPressed()
     {
-        _resultsView.ShowLoaderPopup("Minting Trained Model");
-        await BlockchainManager.instance.MintNNmodel();
+        _resultsView.ShowLoaderPopup("Uploading trained Model to Arweave...");
+
+        string uri = await RemoteTrainManager.instance.SaveOnArweaveModelFromS3(_controller.session.selectedAgent.modelConfig.run_id);
+        Debug.Log("uri: " + uri);
+        _resultsView.UpdatePopupMessange("Minting model...");
+
+        await BlockchainManager.instance.MintNNmodel(uri);
         _resultsView.CloseLoaderPopup();
 
     }

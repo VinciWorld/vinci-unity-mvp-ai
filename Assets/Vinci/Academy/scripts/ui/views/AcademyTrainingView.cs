@@ -20,8 +20,21 @@ public class AcademyTrainingView : View
 
     public override void Initialize()
     {
+
+    }
+
+    public override void Show()
+    {
         _HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
         _trainButton.onClick.AddListener(OnTrainButtonPressed);
+        base.Show();
+    }
+
+    public override void Hide()
+    {
+        _trainButton.onClick.RemoveAllListeners();
+        _HomeButton.onClick.RemoveAllListeners();
+        base.Hide();
     }
 
     public void OnTrainButtonPressed()

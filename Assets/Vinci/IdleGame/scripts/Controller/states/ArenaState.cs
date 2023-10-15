@@ -49,9 +49,7 @@ public class ArenaState : StateBase
 
     async public void OnRegisterOnCompetionButtonPressed()
     {
-        Debug.Log("Start REGISTER SCORE!");
         await BlockchainManager.instance.RegisterPlayerOnCompetition();
-        Debug.Log("END REGISTER SCORE!");
         arenaView.ShowButtonPlayer();
     }
 
@@ -61,11 +59,14 @@ public class ArenaState : StateBase
         SceneLoader.instance.LoadSceneDelay("Arena");
     }
 
-    public void PopulatePlayersScores()
+    async public void PopulatePlayersScores()
     {
-        BlockchainManager.instance.GetPlayeresScores();
+        int score = await BlockchainManager.instance.GetPlayeresScores();
 
-        arenaView.PopulatePlayersScores("costa", 2000);
+        arenaView.PopulatePlayersScores(
+            GameManager.instance.UserData.username,
+            score
+        );
     }
 
 

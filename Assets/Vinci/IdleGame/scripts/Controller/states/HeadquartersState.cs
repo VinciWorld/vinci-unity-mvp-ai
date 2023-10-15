@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using Vinci.Core.Managers;
 using Vinci.Core.StateMachine;
@@ -14,7 +15,7 @@ public class HeadquartersState : StateBase
         _controller = controller;
     }
 
-    public override void OnEnterState()
+    async public override void OnEnterState()
     {
         mainView = ViewManager.GetView<HeadquartersView>();
         ViewManager.Show(mainView);
@@ -22,8 +23,8 @@ public class HeadquartersState : StateBase
         mainView.nftStakeOnSlot += OnDropNft;
         mainView.backButtonPressed += OnBackButtonPressed;
 
-        MainThreadDispatcher.Instance().EnqueueAsync(mainView.LoadNfts);
-    
+        await mainView.LoadNfts();
+
     }
 
     public override void OnExitState()
@@ -48,6 +49,7 @@ public class HeadquartersState : StateBase
         Debug.Log("nft pubkey: " + pubkey);
         mainView.ShowLoaderPopup("Staking nft");
         await BlockchainManager.instance.StakeNft(pubkey);
+        //await Task.Delay(200);
         mainView.CloseLoaderPopup();
     }
 

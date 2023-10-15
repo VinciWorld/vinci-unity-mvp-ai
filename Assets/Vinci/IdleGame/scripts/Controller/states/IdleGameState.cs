@@ -44,7 +44,20 @@ public class IdleGameState : StateBase
 
     void OnAreanButtonPressed()
     {
-        _controller.SwitchState(new ArenaState(_controller));
+        if(GameManager.instance.playerData.agents.Count == 0)
+        {
+            mainView.ShowLoaderPopup("Info",
+                "Visit the Academy to train and initialize your model.",
+                true
+            );
+
+        }
+        else
+        {
+            _controller.SwitchState(new ArenaState(_controller));
+        }
+
+
     }
 
     void OnHeadquartersBtnPressed()

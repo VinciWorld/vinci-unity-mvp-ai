@@ -115,6 +115,11 @@ public class AcademyTrainResultsView : View
         _loaderPopup.Open();
     }
 
+    public void UpdatePopupMessange(string message)
+    {
+        _loaderPopup.SetProcessingMEssage(message);
+    }
+
     public void CloseLoaderPopup()
     {
         _loaderPopup.Close();

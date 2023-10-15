@@ -124,7 +124,20 @@ public class AcademyTrainView : View
         {
             _categoryNavBar.SetTitles("Training", "Academy");
             int stepsToTrain = int.Parse(_stepsInputField.text);
-            trainButtonPressed?.Invoke(stepsToTrain);
+
+            if(stepsToTrain < 10 )
+            {
+                ShowWarningInputfield("Ensure value is above 10k", true);
+            }
+            else if(stepsToTrain > 100)
+            {
+                ShowWarningInputfield("Ensure value is bellow 100k", true);
+            }
+            else
+            {
+                trainButtonPressed?.Invoke(stepsToTrain);
+            }
+
             Debug.Log("Steps to train: " + stepsToTrain);
         }
         catch(Exception e)

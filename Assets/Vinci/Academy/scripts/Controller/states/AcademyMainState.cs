@@ -23,15 +23,19 @@ public class AcademyMainState : StateBase
         _mainView = ViewManager.GetView<AcademyMainView>();
         ViewManager.Show<AcademyMainView>();
 
+        _controller.session = new AcademySession();
+
         _mainView.homeButtonPressed += OnHomeButtonPressed;
         _mainView.selectAgentButtonPressed += OnSelectAgentButtonPressed;
         _mainView.createAgentButtonPressed += OnCreateAgent;
         _mainView.watchTrainingButtonPressed += OnWatchTrainButtonPressed;
         _controller.session.selectedAgent = null;
+        _controller.session.currentAgentInstance = null;
+        _controller.session.currentEnvInstance = null;
 
         //TODO: Load available models for this model
 
-    
+
         if (_controller.manager.playerData.agents.Count > 0 && _controller.manager.playerData.agents[0].modelConfig.isModelSubmitted)
         {
             _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
@@ -80,6 +84,7 @@ public class AcademyMainState : StateBase
 
     void OnHomeButtonPressed()
     {
+        OnExitState();
         GameManager.instance.SavePlayerData();
         SceneLoader.instance.LoadSceneDelay("IdleGame");
     }
@@ -94,7 +99,7 @@ public class AcademyMainState : StateBase
 
     void OnSelectAgentButtonPressed()
     {
-        //Debug.Log("_controller.session.selectedAgent: " + _controller.session.selectedAgent);
+        Debug.Log("_controller.session.selectedAgent: " + _controller.session.selectedAgent);
         _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
         _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
 
@@ -111,7 +116,6 @@ public class AcademyMainState : StateBase
                 agent.GetModelRunID(), null);
 
             OnReceiveTrainJobStatus(job);
-
         }        
     }
 

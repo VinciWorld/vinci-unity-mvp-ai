@@ -4,7 +4,7 @@ using Ricimi;
 using TMPro;
 using System;
 
-public class LoaderPopup : Popup
+public class PopUpInfo : Popup
 {
     [SerializeField]
     public TextMeshProUGUI _processingMessage;
@@ -15,8 +15,6 @@ public class LoaderPopup : Popup
     private Button _closeButton;
 
     public event Action closeButtonPressed;
-
-
 
     private void OnEnable() {
         _closeButton.onClick.AddListener(OnClose);
@@ -36,7 +34,7 @@ public class LoaderPopup : Popup
 
         if(_closeButton)
         {
-            _closeButton.gameObject.SetActive(false);
+            _closeButton.gameObject.SetActive(true);
         }
     }
 

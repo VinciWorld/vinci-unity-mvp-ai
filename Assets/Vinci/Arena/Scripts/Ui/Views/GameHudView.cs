@@ -9,7 +9,8 @@ public class GameHudView : View
     [SerializeField]
     private Button _HomeButton;
 
-
+    [SerializeField]
+    private PopUpInfo _popupInfo;
 
     public TextMeshProUGUI _currentCoins;
     public TextMeshProUGUI _currentWave;
@@ -59,6 +60,12 @@ public class GameHudView : View
         _HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
 
         gameOverPopUp.homeButtonPressed += OnHomeButtonPressedFromGameOver;
+
+        _popupInfo.Show(
+            "Info",
+            "The previously trained model was saved on Arweave. This current model is for demonstration only. \nDrag the agent below to the battlefield.",
+            true
+        );
     }
 
     public void OnUpgradeDefenseClicked()

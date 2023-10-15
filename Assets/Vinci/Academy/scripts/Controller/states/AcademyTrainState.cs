@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Unity.Barracuda;
 using Unity.Barracuda.ONNX;
@@ -22,6 +23,7 @@ public class AcademyTrainState : StateBase
 
     public override void OnEnterState()
     {
+        Debug.Log("On Enter State!");
         trainView = ViewManager.GetView<AcademyTrainView>();
 
         ViewManager.Show<AcademyTrainView>();
@@ -47,6 +49,7 @@ public class AcademyTrainState : StateBase
 
     public override void OnExitState()
     {
+        Debug.Log("OnExitState");
         GameManager.instance.SavePlayerData();
 
         trainView.homeButtonPressed -= OnHomeButtonPressed;
@@ -101,31 +104,42 @@ public class AcademyTrainState : StateBase
 
     }
 
-    void OnTrainButtonPressed(int steps)
+    async void OnTrainButtonPressed(int steps)
     {
         //TODO: Check if model is already trained or if it is trainning
-
-        if(_controller.session.currentEnvInstance == null)
+        Debug.Log("OnTrainButtonPressed 1");
+        if (_controller.session.currentEnvInstance == null)
         {
             PrepareEnv();
         }
-
+        Debug.Log("OnTrainButtonPressed 2");
         _controller.session.selectedAgent.modelConfig.behavior.steps = steps * 1000;
 
+        Debug.Log("OnTrainButtonPressed 3");
+        GameManager.instance.playerData.SubtractStepsAvailable(_controller.session.selectedAgent.modelConfig.behavior.steps);
+
+        Debug.Log("OnTrainButtonPressed 4");
         _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
         _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
         _controller.session.currentEnvInstance.SetIsReplay(true);
 
+
         if (!RemoteTrainManager.instance.isConnected)
         {
-            MainThreadDispatcher.Instance().EnqueueAsync(ConnectToRemoteInstance);
+            //MainThreadDispatcher.Instance().EnqueueAsync(ConnectToRemoteInstance);
         }
 
+        Debug.Log("OnTrainButtonPressed 5");
         trainView.UptadeInfo(0, 0, 0);
         trainView.UpdateMetrics(0,0);
         trainView.SetTrainSetupSubViewState(false);
         trainView.SetTrainHudSubViewState(true);
         trainView.ShowLoaderPopup("Connecting to remote server...");
+
+        if (!RemoteTrainManager.instance.isConnected)
+        {
+            await ConnectToRemoteInstance();
+        }
     }
 
     void OnReceivedTrainStatus(TrainJobStatusMsg trainJobStatus)
@@ -167,24 +181,26 @@ public class AcademyTrainState : StateBase
 
     public void PrepareEnv()
     {
+        Debug.Log("PrepareEnv 1");
         EnvironementBase created_env = _controller.envManager.CreateTrainEnv(
             _controller.session.selectedTrainEnv
         );
 
-
+        Debug.Log("PrepareEnv 2");
         GameObject created_agent = AgentFactory.instance.CreateAgent(
             _controller.session.selectedAgent,
             new Vector3(0, 1.54f, -8.5f), Quaternion.identity,
             created_env.transform
         );
 
+        Debug.Log("PrepareEnv 3");
         created_env.Initialize(created_agent);
 
         _controller.session.currentAgentInstance = created_agent;
         _controller.session.currentEnvInstance = created_env;
     }
 
-    async void ConnectToRemoteInstance()
+    async Task ConnectToRemoteInstance()
     {
         Debug.Log("Connecting to remote training Server");
 

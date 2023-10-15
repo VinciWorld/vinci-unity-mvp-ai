@@ -6,6 +6,9 @@ using Vinci.Core.UI;
 public class IdleGameMainView : View
 {
     [SerializeField]
+    PopUpInfo popUpInfo;
+
+    [SerializeField]
     private Button _headquartersButton;
     [SerializeField]
     private Button _academyButton;
@@ -29,5 +32,17 @@ public class IdleGameMainView : View
     public override void Show()
     {
         base.Show();
+    }
+
+    public void ShowLoaderPopup(string title, string message, bool isCloseButtonOn)
+    {
+        popUpInfo.gameObject.SetActive(true);
+        popUpInfo.Show(title, message, isCloseButtonOn);
+        popUpInfo.Open();
+    }
+
+    public void CloseLoaderPopup()
+    {
+        popUpInfo.Close();
     }
 }

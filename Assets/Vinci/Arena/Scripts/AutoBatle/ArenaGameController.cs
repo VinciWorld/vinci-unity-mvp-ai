@@ -16,7 +16,7 @@ public class ArenaGameController : MonoBehaviour
     private List<RobotWaveAgent> agentsInGame = new List<RobotWaveAgent>();
 
     private int _startingCoins = 100;
-    private int _currentCoins = 100;
+    public int currentCoins = 100;
     private int _currentWave = 0;
 
     private int _agentsKills = 0;
@@ -30,10 +30,13 @@ public class ArenaGameController : MonoBehaviour
     private const int _speedStatCost = 150;
     private int _speedStatLevel = 0;
 
+
+    private bool isGameStarted;
     private int score;
 
     private const int POINTS_PER_WAVE = 1000;
-    private const int POINTS_PER_KIL = 125;
+    private const int POINTS_PER_KILL = 125;
+    private const int COINS_PER_KILL = 10;
 
 
     void Awake()
@@ -45,6 +48,7 @@ public class ArenaGameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _placableEntityManager.Init(this);
         Initialize();
 
         
@@ -97,13 +101,21 @@ public class ArenaGameController : MonoBehaviour
 
         waveAgent.SetBehaviorType(Unity.MLAgents.Policies.BehaviorType.InferenceOnly);
 
-        Academy.Instance.AutomaticSteppingEnabled = true;
 
-        StartGame();
+        currentCoins -= 100;
+        _gameHudView.UpdateCurrentCoins(currentCoins);
+
+        if(!isGameStarted)
+        {
+            Academy.Instance.AutomaticSteppingEnabled = true;
+
+            StartGame();
+        }
     }
 
     public void StartGame()
     {
+        isGameStarted = true;
         _waveController.StartWaves();
         Time.timeScale = 2;
     }
@@ -129,6 +141,8 @@ public class ArenaGameController : MonoBehaviour
     public void OnAgentKill()
     {
         _agentsKills++;
+        currentCoins += COINS_PER_KILL;
+        _gameHudView.UpdateCurrentCoins(currentCoins);
         _gameHudView.UpdateKills(_agentsKills);
     }
 
@@ -154,6 +168,7 @@ public class ArenaGameController : MonoBehaviour
         {
             GameOver();
         }
+        else
         {
             Destroy(agent.gameObject);
         }
@@ -161,7 +176,7 @@ public class ArenaGameController : MonoBehaviour
 
     public void GameOver()
     {
-        score = _currentWave * POINTS_PER_WAVE + _agentsKills * POINTS_PER_KIL;
+        score = _currentWave * POINTS_PER_WAVE + _agentsKills * POINTS_PER_KILL;
         bool isHighScore = false;
         if(score > GameManager.instance.playerData.highScore)
         {
@@ -170,7 +185,7 @@ public class ArenaGameController : MonoBehaviour
             GameManager.instance.SavePlayerData();
         }
 
-        Debug.Log("Deaths: " + _agentDeaths);
+        //Debug.Log("Deaths: " + _agentDeaths);
 
         _gameHudView.ShowGameOver(
             _currentWave,
@@ -185,6 +200,7 @@ public class ArenaGameController : MonoBehaviour
 
     public void Reset()
     {
+        isGameStarted = false;
         _gameHudView.SetInitialUpgradesCost(_defenseStatCost, _attackStatCost, _speedStatCost);
         _gameHudView.UpdateCurrentCoins(_startingCoins);
         _gameHudView.UpdateWavesCount(_currentWave);
@@ -193,7 +209,7 @@ public class ArenaGameController : MonoBehaviour
         _gameHudView.UpdateStats(100, 20, 50);
 
         _startingCoins = 100;
-        _currentCoins = 100;
+        currentCoins = 100;
         _defenseStatLevel = 0;
         _attackStatLevel = 0;
         _speedStatLevel = 0;
@@ -204,8 +220,11 @@ public class ArenaGameController : MonoBehaviour
         _waveController.ResetWaves();
 
         foreach (var agemt in agentsInGame)
-        {
-            Destroy(agemt.gameObject);
+        {   
+            if(agemt!= null)
+            {
+                Destroy(agemt.gameObject);
+            }
         }
 
         _placableEntityManager.RemoveCards();
@@ -232,11 +251,11 @@ public class ArenaGameController : MonoBehaviour
             return;
         }
 
-        if (_currentCoins >= _defenseStatCost)
+        if (currentCoins >= _defenseStatCost)
         {
-            _currentCoins -= _defenseStatCost;
+            currentCoins -= _defenseStatCost;
             _defenseStatLevel++;
-            _gameHudView.UpdateCurrentCoins(_currentCoins);
+            _gameHudView.UpdateCurrentCoins(currentCoins);
 
             Debug.Log("UPGRADE DEFENSE ");
         }
@@ -255,11 +274,11 @@ public class ArenaGameController : MonoBehaviour
             return;
         }
 
-        if (_currentCoins >= _attackStatCost)
+        if (currentCoins >= _attackStatCost)
         {
-            _currentCoins -= _attackStatCost;
+            currentCoins -= _attackStatCost;
             _attackStatLevel++;
-            _gameHudView.UpdateCurrentCoins(_currentCoins);
+            _gameHudView.UpdateCurrentCoins(currentCoins);
             Debug.Log("UPGRADE SPEED");
         }
         else
@@ -277,11 +296,11 @@ public class ArenaGameController : MonoBehaviour
             return;
         }
 
-        if (_currentCoins >= _speedStatCost)
+        if (currentCoins >= _speedStatCost)
         {
-            _currentCoins -= _speedStatCost;
+            currentCoins -= _speedStatCost;
             _speedStatLevel++;
-            _gameHudView.UpdateCurrentCoins(_currentCoins);
+            _gameHudView.UpdateCurrentCoins(currentCoins);
             Debug.Log("UPGRADE ATTACK");
         }
         else

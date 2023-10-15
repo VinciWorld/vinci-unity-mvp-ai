@@ -13,13 +13,21 @@ public class PlayerData
     public bool isPlayerRegisteredOnCompetition = false;
     public int highScore = 0;
 
+    private int dailyStepsIncrease = 100000;
+    public int availableSteps = 0;
+
+    public string _lastUpdatedDay = "2000-01-01";
+
+    public event Action<int> stepsAvailableChange;
+
+
     public AgentConfig currentAgentConfig;
     public List<AgentConfig> agents = new List<AgentConfig>();
 
 
     //Relation between model and train env
     public Dictionary<string, TrainEnvironmentConfig> modelTrainingEnv = new Dictionary<string, TrainEnvironmentConfig>();
-
+    
 
     public void AddAgent(AgentConfig newAgent)
     {
@@ -70,5 +78,27 @@ public class PlayerData
     public Dictionary<string, string> GetEvaluationResultsByKey(string envId)
     {
         return currentAgentConfig.GetEvaluationResultsByKey(envId);
+    }
+
+    public void SubtractStepsAvailable(int steps)
+    {
+        availableSteps -= steps;
+        stepsAvailableChange?.Invoke(availableSteps);
+    }
+
+    public void CheckAndIncreaseDailySteps()
+    {
+        DateTime today = DateTime.Now.Date;
+
+        DateTime lastUpdatedDay = DateTime.Parse(_lastUpdatedDay);
+
+        if (today > lastUpdatedDay)
+        {
+            availableSteps += dailyStepsIncrease;
+
+            stepsAvailableChange?.Invoke(availableSteps);
+
+            _lastUpdatedDay = today.ToString("yyyy-MM-dd");
+        }
     }
 }

@@ -140,6 +140,31 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         }
     }
 
+    async public Task<string> SaveOnArweaveModelFromS3(string run_id)
+    {
+        string url = http_prefix + "92dwrpewod.execute-api.eu-central-1.amazonaws.com/dev/blockchain/mutateArweaveUpload";
+        RunIdArweave runIdArweve = new RunIdArweave();
+        runIdArweve.runId = run_id;
+        PostArweave postRunIdArweave = new PostArweave();
+        postRunIdArweave.json = runIdArweve;
+
+        string json = JsonConvert.SerializeObject(postRunIdArweave);
+
+        HTTPResponse response = await SendHTTPPostRequestAsync(url, json, true);
+
+        if (response.StatusCode == 200)
+        {
+            ResultUriArweave resultUriArweave = JsonConvert.DeserializeObject<ResultUriArweave>(response.DataAsText);
+            Debug.Log("response.DataAsText" + response.DataAsText);
+
+            return resultUriArweave.result.data.json;
+        }
+        else
+        {
+            throw new Exception($"HTTP Request failed with status code {response.StatusCode}: {response.Message}");
+        }
+    }
+
     public async Task<UserData> SaveUserPlayerDataAsync(string user_id, string playerData)
     {
         string url = http_prefix + centralNode + endpointUser;
@@ -296,7 +321,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
     {
         //TODO: retry websocket connection
         _webSocket = null;
-        Debug.Log("WebSocket is now Closed!");
+        Debug.Log("****WebSocket is now Closed!");
     }
 
     private void OnWebSocketError(WebSocket ws, string error)
@@ -305,7 +330,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         _webSocket = null;
     }
 
-    private async Task<HTTPResponse> SendHTTPPostRequestAsync(string url, string jsonData=null)
+    private async Task<HTTPResponse> SendHTTPPostRequestAsync(string url, string jsonData=null, bool isAws=false)
     {
         var tcs = new TaskCompletionSource<HTTPResponse>();
 
@@ -321,8 +346,17 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
 
         if (!isTestMode)
         {
-            request.AddHeader("Authorization", "Bearer " + _jwtToken);
+            if(isAws)
+            {
+                request.AddHeader("X-Amz-Security-Token", _jwtToken);
+            }
+            else
+            {
+                request.AddHeader("Authorization", "Bearer " + _jwtToken);
+            }
         }
+
+        Debug.Log("JWT: " + _jwtToken);
 
         if(jsonData != null)
         {

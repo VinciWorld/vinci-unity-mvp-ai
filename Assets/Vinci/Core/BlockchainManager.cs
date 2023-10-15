@@ -17,8 +17,11 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using Vinci.Core.Utils;
 using VinciAccounts;
+using VinciAccounts.Accounts;
 using VinciAccounts.Program;
+using VinciStake.Accounts;
 using VinciStake.Program;
+using VinciStake.Types;
 
 public class BlockchainManager : PersistentSingleton<BlockchainManager>
 {    
@@ -79,6 +82,34 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
         return nfts;
     }
 
+    async public Task<PublicKey> GetStakeEntries()
+    {
+        PublicKey userAccount;
+        byte bump;
+        var blockHash = await Web3.Rpc.GetLatestBlockHashAsync();
+
+        PublicKey.TryFindProgramAddress(
+            new[]
+            {
+                Encoding.UTF8.GetBytes("VinciStakeEntry"),
+                Web3.Account.PublicKey.KeyBytes,
+            },
+            VinciStakeProgramId, out userAccount, out bump
+        );
+
+        var res = await Web3.Rpc.GetAccountInfoAsync(userAccount);
+        if (!res.WasSuccessful)
+        {
+            Debug.Log("GetPlayeresScores: " + res.Result.Value);
+            return null;
+
+        }
+
+        var resultingAccount = StakeEntry.Deserialize(Convert.FromBase64String(res.Result.Value.Data[0]));
+
+        return resultingAccount.OriginalMintSecondsStruct[0].Mint;
+    }
+
     async public Task<string> StakeNft(string mintPubkey)
     {
         var nftKey = new PublicKey(mintPubkey);
@@ -135,19 +166,17 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
             .AddInstruction(instr);
 
         var tx = Transaction.Deserialize(transaction.Build(new List<Account> { Web3.Account }));
-        var res = await Web3.Wallet.SignAndSendTransaction(tx, true);
+        var res = await Web3.Wallet.SignAndSendTransaction(tx, true, Solana.Unity.Rpc.Types.Commitment.Finalized);
 
         return res.Result;
     }
 
-    async public void UnStakeNft(string mintPubkey)
+    async public Task<string> UnStakeNft(string mintPubkey)
     {
         var nftKey = new PublicKey(mintPubkey);
         var masterEdition = PDALookup.FindMasterEditionPDA(nftKey);
         var metadataAccount = PDALookup.FindMetadataPDA(nftKey);
         var blockHash = await Web3.Rpc.GetLatestBlockHashAsync();
-
-
 
         PublicKey stakePool;
         PublicKey userStakeEntry;
@@ -195,8 +224,9 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
             .AddInstruction(instr);
 
         var tx = Transaction.Deserialize(transaction.Build(new List<Account> { Web3.Account }));
-        var res = await Web3.Wallet.SignAndSendTransaction(tx, true);
+        var res = await Web3.Wallet.SignAndSendTransaction(tx, true, Solana.Unity.Rpc.Types.Commitment.Finalized);
 
+        return res.Result;
     }
 
     public void CallMintModel()
@@ -204,9 +234,26 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
         //MainThreadDispatcher.Instance().EnqueueAsync(MintNNmodel);
     }
 
-    async public Task<string> MintNNmodel()
+    public PublicKey GetCreator()
     {
-        string uri = "https://arweave.net/Pe4erqz3MZoywHqntUGZoKIoH0k9QUykVDFVMjpJ08s";
+        PublicKey mintAuth;
+        byte bump;
+
+        PublicKey.TryFindProgramAddress(
+            new[]
+            {
+                Encoding.UTF8.GetBytes("authority"),
+            },
+            VinciAccountProgramId, out mintAuth, out bump
+        );
+        Debug.Log("mintauth: " + mintAuth);
+
+        return mintAuth;
+    }
+
+    async public Task<string> MintNNmodel(string uri)
+    {
+        //string uri = "https://arweave.net/Pe4erqz3MZoywHqntUGZoKIoH0k9QUykVDFVMjpJ08s";
         var mintKey = new Account();
 
         var masterEdition = PDALookup.FindMasterEditionPDA(mintKey.PublicKey);
@@ -350,9 +397,35 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
         return res.Result;
     }
 
-    public void GetPlayeresScores()
+    async public Task<int> GetPlayeresScores()
     {
+        PublicKey userAccount;
+        byte bump;
+        var blockHash = await Web3.Rpc.GetLatestBlockHashAsync();
 
+        PublicKey.TryFindProgramAddress(
+            new[]
+            {
+                Encoding.UTF8.GetBytes("VinciWorldAccount1"),
+                Web3.Account.PublicKey.KeyBytes,
+            },
+            VinciAccountProgramId, out userAccount, out bump
+        );
+
+        var res = await Web3.Rpc.GetAccountInfoAsync(userAccount);
+        if (!res.WasSuccessful)
+        {
+            Debug.Log("GetPlayeresScores: " + res.Result.Value);
+            return 0;
+
+        }
+     
+
+        var resultingAccount = BaseAccount.Deserialize(Convert.FromBase64String(res.Result.Value.Data[0]));
+
+        return (int)resultingAccount.Score;
+
+        //VinciAccountsClient vinciClient = new VinciAccountsClient( )
     }
 
     async public void RegisterPlayerScore(int score)

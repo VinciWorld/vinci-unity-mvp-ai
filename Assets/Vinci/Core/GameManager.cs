@@ -19,7 +19,11 @@ namespace Vinci.Core.Managers
 
         public NNModel baseNNModel;
 
+        public string version = "v0.0.1";
+
+ 
         private const string PlayerDataFileName = "playerData.json";
+
 
         protected override void Awake()
         {
@@ -27,13 +31,19 @@ namespace Vinci.Core.Managers
             isLoggedIn = false;
             Application.runInBackground = true;
 
-            Debug.Log("Init ML");
+            Debug.Log("Init ML "+ version);
             Unity.MLAgents.Academy.Instance.AutomaticSteppingEnabled = false;
 
             LoadPlayerData();
 
             Web3.OnBalanceChange += OneBalanceChange;
             UserData = new UserData();
+        }
+
+        void Start()
+        {
+            playerData.CheckAndIncreaseDailySteps();
+            SavePlayerData();
         }
 
         private void OneBalanceChange(double sol)
