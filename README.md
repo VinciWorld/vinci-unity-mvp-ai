@@ -56,7 +56,7 @@ Our commitment to enhancement remains unwavering:
      ```
    - Navigate to the folder containing the WebGL build:  
      ```
-     cd build/webgl
+     cd webgl/vinci-ai
      ```
 
 2. **Set Up a Simple HTTP Server**:
