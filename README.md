@@ -39,10 +39,55 @@ Our commitment to enhancement remains unwavering:
 - Inclusion of more Unity-centric features.
 - Refinements to improve the gameplay.
 
+
 ### Getting Started <a name="getting-started"></a>
 
-- Check the specified directory for the Windows desktop build for your testing needs.
-- For thorough testing, make sure to have both the central and train nodes set up.
+#### Prerequisites <a name="prerequisites"></a>
+- Make sure your browser supports WebGL.
+- Ensure you have `git` installed for cloning the repository (if accessing it for the first time).
+- A simple HTTP server (like `http-server` for Node.js) to serve the WebGL build.
+
+#### Launching a Pre-existing WebGL Build
+
+1. **Clone and Navigate**:
+   - If you haven't already, clone the repository:  
+     ```
+     git clone https://github.com/VinciWorld/vinci-train-node.git
+     ```
+   - Navigate to the folder containing the WebGL build:  
+     ```
+     cd build/webgl
+     ```
+
+2. **Set Up a Simple HTTP Server**:
+   - Using Node.js `http-server` (you can use other servers based on your preference):
+     - Install it globally if you haven’t:  
+       ```
+       npm install -g http-server
+       ```
+     - Start the server in the directory containing the WebGL build:  
+       ```
+       http-server .
+       ```
+
+3. **Access the Build**:
+   - The server will display URLs you can use to access the content. Typically it's:
+     ```
+     http://localhost:8080
+     ```
+   - Open your preferred WebGL-compatible browser and navigate to the URL.
+
+4. **Interact with the WebGL Content**:
+   - Once the build loads, you can interact with the WebGL application as intended.
+
+5. **Termination**:
+   - Once done, you can terminate the HTTP server by pressing `Ctrl + C` in the terminal.
+
+To train the model, the following components need to be installed:
+
+- **Central Node**: [vinci-central-node](https://github.com/VinciWorld/vinci-central-node)
+- **Train Node**: [vinci-train-node](https://github.com/VinciWorld/vinci-train-node)
+
 
 ### Intellectual Property Notice <a name="ip-notice"></a>
 We utilize third-party assets for certain game elements. Owing to Unity Asset Store licensing agreements, these cannot be hosted on our GitHub repository.
