@@ -40,7 +40,6 @@ Our commitment to enhancement remains unwavering:
 - Refinements to improve the gameplay.
 
 ### Getting Started <a name="getting-started"></a>
-Dive right in:
 
 - Check the specified directory for the Windows desktop build for your testing needs.
 - For thorough testing, make sure to have both the central and train nodes set up.
