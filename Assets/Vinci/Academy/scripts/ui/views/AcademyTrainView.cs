@@ -126,7 +126,7 @@ public class AcademyTrainView : View
             int stepsToTrain = int.Parse(_stepsInputField.text);
 
 
-            if(stepsToTrain > GameManager.instance.playerData.availableSteps)
+            if(stepsToTrain * 1000 > GameManager.instance.playerData.availableSteps)
             {
                 ShowWarningInputfield("You don't have avaiable steps", true);
             }

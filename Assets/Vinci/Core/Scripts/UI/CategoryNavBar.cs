@@ -31,7 +31,7 @@ public class CategoryNavBar : MonoBehaviour
     void OnEnable()
     {
         GameManager.instance.playerData.stepsAvailableChange += OnStepsAvailableChange;
-        _stepsAvailableAmount.text = GameManager.instance.playerData.availableSteps.ToString();
+        _stepsAvailableAmount.text = (GameManager.instance.playerData.availableSteps / 1000).ToString();
     }
 
     private void OnDisable() 
@@ -41,7 +41,7 @@ public class CategoryNavBar : MonoBehaviour
 
     void OnStepsAvailableChange(int steps)
     {
-        _stepsAvailableAmount.text = steps.ToString();
+        _stepsAvailableAmount.text = (steps / 1000).ToString();
     }
 
     public void SetTitles(string mainTitle, string categoryLabel)
