@@ -35,7 +35,7 @@ public class HeadquartersView : View
     public event Action<int, string, DraggableItem> nftStakeOnSlot;
     public event Action backButtonPressed;
 
-    PublicKey stakedNftKey;
+    PublicKey stakedNftKey; //new PublicKey("G7zPrFKAEHkGPqKUhLSV4L95XECviMFgJbr3DT38BkWk");
 
     private bool isStaked = false;
 
@@ -51,6 +51,9 @@ public class HeadquartersView : View
     async public void OnUnstakeNft()
     {
         try{
+
+            stakedNftKey = await BlockchainManager.instance.GetStakeEntries();
+
             RemoveAllChildObjects(nftSlotRoot.transform);
             ShowLoaderPopup("Unstaking nft");
             string results = await BlockchainManager.instance.UnStakeNft(stakedNftKey);
@@ -84,7 +87,9 @@ public class HeadquartersView : View
 
     async public Task LoadNfts()
     {
-        stakedNftKey =  await BlockchainManager.instance.GetStakeEntries();
+
+        stakedNftKey = await BlockchainManager.instance.GetStakeEntries();
+        
 
         int id = 0;
         ShowLoaderPopup("Loading Nfts");
@@ -111,9 +116,12 @@ public class HeadquartersView : View
                 && nft.metaplexData.data.metadata.name != "Vinci Guardian"
             ) continue;
 
+            //stakedNftKey = new PublicKey(nft.metaplexData.data.mint);
             iNftFile<Texture2D> texture = nft.metaplexData.nftImage;
             if (stakedNftKey == nft.metaplexData.data.mint)
             {
+
+                Debug.Log("nft.metaplexData.data.mint:" + nft.metaplexData.data.mint);
                 isStaked = true;
                 Sprite sprite = TextureToSprite(texture.file);
                 DraggableItem item = Instantiate(draggableItemPrefab, slot.transform);
