@@ -125,7 +125,12 @@ public class AcademyTrainView : View
             _categoryNavBar.SetTitles("Training", "Academy");
             int stepsToTrain = int.Parse(_stepsInputField.text);
 
-            if(stepsToTrain < 10 )
+
+            if(stepsToTrain > GameManager.instance.playerData.availableSteps)
+            {
+                ShowWarningInputfield("You don't have avaiable steps", true);
+            }
+            else if(stepsToTrain < 10 )
             {
                 ShowWarningInputfield("Ensure value is above 10k", true);
             }
