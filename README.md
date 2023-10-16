@@ -11,6 +11,12 @@
 
 ---
 
+### Architecture overview
+
+![image](https://github.com/VinciWorld/vinci-unity-mvp-ai/assets/8352477/efcb99e5-4563-4081-a6b4-162bf6126169)
+
+
+
 ### Introduction <a name="introduction"></a>
 Experience a unique autobattle game that combines the strengths of the Solana blockchain with remote machine learning training, creating an innovative gaming platform.
 
