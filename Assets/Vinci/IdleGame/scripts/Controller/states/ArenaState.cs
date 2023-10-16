@@ -50,6 +50,7 @@ public class ArenaState : StateBase
     async public void OnRegisterOnCompetionButtonPressed()
     {
         await BlockchainManager.instance.RegisterPlayerOnCompetition();
+        GameManager.instance.playerData.isPlayerRegisteredOnCompetition = true;
         arenaView.ShowButtonPlayer();
     }
 
