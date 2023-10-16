@@ -29,6 +29,8 @@ namespace VinciAccounts
             public static string ACCOUNT_DISCRIMINATOR_B58 => "3jehgKVjiZr";
             public ulong TotalAmount { get; set; }
 
+            public ulong Score { get; set; }
+
             public PublicKey Owner { get; set; }
 
             public byte Bump { get; set; }
@@ -49,6 +51,8 @@ namespace VinciAccounts
 
                 BaseAccount result = new BaseAccount();
                 result.TotalAmount = _data.GetU64(offset);
+                offset += 8;
+                result.Score = _data.GetU64(offset);
                 offset += 8;
                 result.Owner = _data.GetPubKey(offset);
                 offset += 32;
@@ -280,6 +284,12 @@ namespace VinciAccounts
             return await SignAndSendTransaction(instr, feePayer, signingCallback);
         }
 
+        public async Task<RequestResult<string>> SendSetScoreAsync(SetScoreAccounts accounts, ulong score, PublicKey feePayer, Func<byte[], PublicKey, byte[]> signingCallback, PublicKey programId)
+        {
+            Solana.Unity.Rpc.Models.TransactionInstruction instr = Program.VinciAccountsProgram.SetScore(accounts, score, programId);
+            return await SignAndSendTransaction(instr, feePayer, signingCallback);
+        }
+
         public async Task<RequestResult<string>> SendRemoveAmmountAsync(RemoveAmmountAccounts accounts, ulong ammount, PublicKey feePayer, Func<byte[], PublicKey, byte[]> signingCallback, PublicKey programId)
         {
             Solana.Unity.Rpc.Models.TransactionInstruction instr = Program.VinciAccountsProgram.RemoveAmmount(accounts, ammount, programId);
@@ -304,15 +314,21 @@ namespace VinciAccounts
             return await SignAndSendTransaction(instr, feePayer, signingCallback);
         }
 
-        public async Task<RequestResult<string>> SendMintNftAsync(MintNftAccounts accounts, PublicKey creatorKey, string uri, string title, PublicKey feePayer, Func<byte[], PublicKey, byte[]> signingCallback, PublicKey programId)
+        public async Task<RequestResult<string>> SendMintNftAsync(MintNftAccounts accounts, string uri, string title, PublicKey feePayer, Func<byte[], PublicKey, byte[]> signingCallback, PublicKey programId)
         {
-            Solana.Unity.Rpc.Models.TransactionInstruction instr = Program.VinciAccountsProgram.MintNft(accounts, creatorKey, uri, title, programId);
+            Solana.Unity.Rpc.Models.TransactionInstruction instr = Program.VinciAccountsProgram.MintNft(accounts, uri, title, programId);
             return await SignAndSendTransaction(instr, feePayer, signingCallback);
         }
 
         public async Task<RequestResult<string>> SendSeasonRewardsAsync(SeasonRewardsAccounts accounts, PublicKey feePayer, Func<byte[], PublicKey, byte[]> signingCallback, PublicKey programId)
         {
             Solana.Unity.Rpc.Models.TransactionInstruction instr = Program.VinciAccountsProgram.SeasonRewards(accounts, programId);
+            return await SignAndSendTransaction(instr, feePayer, signingCallback);
+        }
+
+        public async Task<RequestResult<string>> SendUpdateMetadataAsync(UpdateMetadataAccounts accounts, string uri, PublicKey feePayer, Func<byte[], PublicKey, byte[]> signingCallback, PublicKey programId)
+        {
+            Solana.Unity.Rpc.Models.TransactionInstruction instr = Program.VinciAccountsProgram.UpdateMetadata(accounts, uri, programId);
             return await SignAndSendTransaction(instr, feePayer, signingCallback);
         }
 
@@ -381,6 +397,13 @@ namespace VinciAccounts
             public PublicKey Owner { get; set; }
         }
 
+        public class SetScoreAccounts
+        {
+            public PublicKey BaseAccount { get; set; }
+
+            public PublicKey Owner { get; set; }
+        }
+
         public class RemoveAmmountAccounts
         {
             public PublicKey BaseAccount { get; set; }
@@ -441,6 +464,17 @@ namespace VinciAccounts
             public PublicKey Owner { get; set; }
 
             public PublicKey QuizProgram { get; set; }
+        }
+
+        public class UpdateMetadataAccounts
+        {
+            public PublicKey Metadata { get; set; }
+
+            public PublicKey Authority { get; set; }
+
+            public PublicKey Payer { get; set; }
+
+            public PublicKey TokenMetadataProgram { get; set; }
         }
 
         public class CloseAccountAccounts
@@ -523,10 +557,25 @@ namespace VinciAccounts
                 return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};
             }
 
+            public static Solana.Unity.Rpc.Models.TransactionInstruction SetScore(SetScoreAccounts accounts, ulong score, PublicKey programId)
+            {
+                List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
+                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.BaseAccount, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Owner, false)};
+                byte[] _data = new byte[1200];
+                int offset = 0;
+                _data.WriteU64(6271472283707615194UL, offset);
+                offset += 8;
+                _data.WriteU64(score, offset);
+                offset += 8;
+                byte[] resultData = new byte[offset];
+                Array.Copy(_data, resultData, offset);
+                return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};
+            }
+
             public static Solana.Unity.Rpc.Models.TransactionInstruction RemoveAmmount(RemoveAmmountAccounts accounts, ulong ammount, PublicKey programId)
             {
                 List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
-                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.BaseAccount, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Owner, true)};
+                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.BaseAccount, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Owner, false)};
                 byte[] _data = new byte[1200];
                 int offset = 0;
                 _data.WriteU64(2015887454945968588UL, offset);
@@ -581,16 +630,14 @@ namespace VinciAccounts
                 return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};
             }
 
-            public static Solana.Unity.Rpc.Models.TransactionInstruction MintNft(MintNftAccounts accounts, PublicKey creatorKey, string uri, string title, PublicKey programId)
+            public static Solana.Unity.Rpc.Models.TransactionInstruction MintNft(MintNftAccounts accounts, string uri, string title, PublicKey programId)
             {
                 List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
-                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Mint, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.TokenAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.MintAuthority, true), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Metadata, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.MasterEdition, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Payer, true), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Rent, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.TokenProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.TokenMetadataProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false)};
+                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Mint, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.TokenAccount, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.MintAuthority, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Metadata, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.MasterEdition, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Payer, true), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Rent, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.TokenProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.TokenMetadataProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false)};
                 byte[] _data = new byte[1200];
                 int offset = 0;
                 _data.WriteU64(18096548587977980371UL, offset);
                 offset += 8;
-                _data.WritePubKey(creatorKey, offset);
-                offset += 32;
                 offset += _data.WriteBorshString(uri, offset);
                 offset += _data.WriteBorshString(title, offset);
                 byte[] resultData = new byte[offset];
@@ -606,6 +653,20 @@ namespace VinciAccounts
                 int offset = 0;
                 _data.WriteU64(11472877556975683937UL, offset);
                 offset += 8;
+                byte[] resultData = new byte[offset];
+                Array.Copy(_data, resultData, offset);
+                return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};
+            }
+
+            public static Solana.Unity.Rpc.Models.TransactionInstruction UpdateMetadata(UpdateMetadataAccounts accounts, string uri, PublicKey programId)
+            {
+                List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
+                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Metadata, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Authority, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Payer, true), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.TokenMetadataProgram, false)};
+                byte[] _data = new byte[1200];
+                int offset = 0;
+                _data.WriteU64(13466130543345907370UL, offset);
+                offset += 8;
+                offset += _data.WriteBorshString(uri, offset);
                 byte[] resultData = new byte[offset];
                 Array.Copy(_data, resultData, offset);
                 return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};

@@ -17,6 +17,9 @@ public class EnvRobotWaves : EnvironementBase
     Transform _agentSpawnPose;
     public Transform AgentSpawnPose => _agentSpawnPose;
 
+    [SerializeField]
+    LoaderPopup _loaderPopup;
+
     public override event Action<Dictionary<string, string>> updateEnvResults;
     public override event Action<string> actionsReceived;
     public override event Action<int, int, int> episodeAndStepCountUpdated;
@@ -33,10 +36,14 @@ public class EnvRobotWaves : EnvironementBase
     private int goalsFailedCount = 0;
     private float successRatio = 0f;
 
+    int totalStepCount = 0;
+
     private bool isFirstEpisode = true;
 
     public override void Initialize(GameObject agent)
     {
+
+       // _loaderPopup = GameObject.Find("PopupLoader").GetComponent<LoaderPopup>();
         _agent = agent.GetComponent<RobotWaveAgent>();
         _agent.env = this;
 
@@ -45,9 +52,12 @@ public class EnvRobotWaves : EnvironementBase
         goalsCompletedCount = 0;
         goalsFailedCount = 0;
         successRatio = 0;
+        totalStepCount = 0;
 
         _waveController.completedAllWaves += OnCompletedAllWaves;
         _waveController.completedWave += OnCompletedWave;
+
+        ShowLoaderPopup("Buffering episodes...");
     }
 
     public void OnCompletedWave()
@@ -61,6 +71,8 @@ public class EnvRobotWaves : EnvironementBase
         Debug.Log("Complete all Waves");
         _agent.AddReward(1);
         _agent.EndEpisode();
+
+        GoalCompleted(true);
     }
 
 
@@ -197,18 +209,21 @@ public class EnvRobotWaves : EnvironementBase
             replayActionsLoopCoroutine = StartCoroutine(ReplayActionsLoop());
         }
 
-        Debug.Log("Received action from server: " + actions);
+        //Debug.Log("Received action from server: " + actions);
     }
-
+    bool isPopupUp;
     private IEnumerator ReplayActionsLoop()
     {
-        int totalStepCount = 0;
+ 
         Debug.Log("Start Replay");
         _agent.SetIsReplay(true);
 
-        Time.timeScale = 5f;
+
+        UpdateLoaderMessage("Buffering train episode...");
+        Time.timeScale = 2f;
         while (_isReplay)
         {
+
             if (actionStack.Count > 0)
             {
                 ActionsRobotWaveMsg action = actionStack.Pop();
@@ -226,6 +241,8 @@ public class EnvRobotWaves : EnvironementBase
                 Debug.Log("Actions received: " + actionsQueueReceived.Count);
 
                 Academy.Instance.AutomaticSteppingEnabled = true;
+
+                CloseLoaderPopup();
                 while (_agent.actionsQueueReceived.Count > 0)
                 {
                     episodeAndStepCountUpdated?.Invoke(action.episodeCount, _agent.steps, _agent.steps + totalStepCount);
@@ -233,13 +250,15 @@ public class EnvRobotWaves : EnvironementBase
                 }
                 episodeAndStepCountUpdated?.Invoke(action.episodeCount, _agent.steps, _agent.steps + totalStepCount);
                 Academy.Instance.AutomaticSteppingEnabled = false;
-            }
-            _waveController.ResetWaves();
-            _agent.transform.position = _agentSpawnPose.position;
-            _agent.transform.rotation = _agentSpawnPose.rotation;
 
-            totalStepCount += _agent.steps;
-            _agent.steps = 0;
+                _waveController.ResetWaves();
+                _agent.transform.position = _agentSpawnPose.position;
+                _agent.transform.rotation = _agentSpawnPose.rotation;
+
+                totalStepCount += _agent.steps;
+                _agent.steps = 0;
+            }
+
             yield return new WaitForEndOfFrame();
         }
     }
@@ -256,6 +275,23 @@ public class EnvRobotWaves : EnvironementBase
         StopCoroutine(replayActionsLoopCoroutine);
         replayActionsLoopCoroutine = null;
         Time.timeScale = 1f;
+    }
+
+    public void ShowLoaderPopup(string messange)
+    {
+        _loaderPopup.gameObject.SetActive(true);
+        _loaderPopup.SetProcessingMEssage(messange);
+        _loaderPopup.Open();
+    }
+
+    public void UpdateLoaderMessage(string messange)
+    {
+        _loaderPopup.SetProcessingMEssage(messange);
+    }
+
+    public void CloseLoaderPopup()
+    {
+        _loaderPopup.Close();
     }
 
 }

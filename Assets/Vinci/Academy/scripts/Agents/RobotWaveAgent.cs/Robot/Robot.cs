@@ -40,7 +40,7 @@ public class Robot : PlaceableEntity
 
     private void OnDied(DamageableObject obj, float damage, Vector3 hitPoint)
     {
-        Debug.Log("DIED ROBOT");
+        //Debug.Log("DIED ROBOT");
     }
 
     // Update is called once per frame

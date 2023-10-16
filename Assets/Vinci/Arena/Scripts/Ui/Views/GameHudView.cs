@@ -9,7 +9,8 @@ public class GameHudView : View
     [SerializeField]
     private Button _HomeButton;
 
-
+    [SerializeField]
+    private PopUpInfo _popupInfo;
 
     public TextMeshProUGUI _currentCoins;
     public TextMeshProUGUI _currentWave;
@@ -56,8 +57,15 @@ public class GameHudView : View
         _upgradeDefenseButton.onClick.AddListener(() => upgradeDefenseButtonPressed?.Invoke());
         _upgradeAttackButton.onClick.AddListener(() => upgradeSpeedButtonPressed?.Invoke());
         _upgradeSpeedButton.onClick.AddListener(() => upgradeSpeedButtonPressed?.Invoke());
+        _HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
 
-        gameOverPopUp.homeButtonPressed += OnHomeButtonPressed;
+        gameOverPopUp.homeButtonPressed += OnHomeButtonPressedFromGameOver;
+
+        _popupInfo.Show(
+            "Info",
+            "The previously trained model was saved on Arweave. This current model is for demonstration only. \nDrag the agent below to the battlefield.",
+            true
+        );
     }
 
     public void OnUpgradeDefenseClicked()
@@ -77,7 +85,7 @@ public class GameHudView : View
         registerScoreOnBlockchainPressed?.Invoke();
     }
 
-    public void OnHomeButtonPressed()
+    public void OnHomeButtonPressedFromGameOver()
     {
         gameOverPopUp.Close();
         
@@ -113,9 +121,9 @@ public class GameHudView : View
 
     public void UpdateStats(int defense, int attack, int speed)
     {
-        _defenseStatSlider.value = defense / 50;
-        _attackStatSlider.value = attack / 50;
-        _speedStatSlider.value = speed / 50;
+        _defenseStatSlider.value = defense / 100f;
+        _attackStatSlider.value = attack / 100f;
+        _speedStatSlider.value = speed / 100f;
     }
 
     public void ShowGameOver(int wavesSurvived, int totalKills, int totalDeaths, bool isHighScore, int score)

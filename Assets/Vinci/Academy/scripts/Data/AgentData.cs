@@ -12,7 +12,8 @@ public class AgentConfig
 
     public string agentName;
     public string description;
-    public Sprite agentImage;
+    public Sprite agentImageFullBody;
+    public Sprite agentImageHead;
 
     public int AgentPrice = 100;
 
@@ -24,12 +25,12 @@ public class AgentConfig
 
     public NNModel GetNNModel()
     {
-        if(modelConfig.nnModel == null)
-        {
+        //if(modelConfig.nnModel == null)
+        //{
             return GameManager.instance.baseNNModel;
-        }
+        //}
 
-        return modelConfig.nnModel;
+        //return modelConfig.nnModel;
     }
 
     public void AddTrainMetrics(float meanReward, float stdReward)

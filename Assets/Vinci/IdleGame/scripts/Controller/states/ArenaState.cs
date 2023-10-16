@@ -1,4 +1,5 @@
 
+using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Vinci.Core.Managers;
@@ -22,13 +23,18 @@ public class ArenaState : StateBase
 
         arenaView.registerCompetitionButtonPressed += OnRegisterOnCompetionButtonPressed;
         arenaView.playGameButtonPressed += OnPlayTournamentButtonPressed;
+        arenaView.backButtonPressed += OnBackButtonPressed;
 
         PopulatePlayersScores();
     }
 
+
+
     public override void OnExitState()
     {
-
+        arenaView.registerCompetitionButtonPressed -= OnRegisterOnCompetionButtonPressed;
+        arenaView.playGameButtonPressed -= OnPlayTournamentButtonPressed;
+        arenaView.backButtonPressed -= OnBackButtonPressed;
     }
 
     public override void Tick(float deltaTime)
@@ -36,26 +42,32 @@ public class ArenaState : StateBase
 
     }
 
-    public void OnRegisterOnCompetionButtonPressed()
+    private void OnBackButtonPressed()
     {
-        bool result = BlockchainManager.instance.RegisterPlayerOnCompetition();
+        _controller.SwitchState(new IdleGameState(_controller));
+    }
 
-        if(result)
-        {
-            arenaView.ShowButtonPlayer();
-        }
+    async public void OnRegisterOnCompetionButtonPressed()
+    {
+        await BlockchainManager.instance.RegisterPlayerOnCompetition();
+        GameManager.instance.playerData.isPlayerRegisteredOnCompetition = true;
+        arenaView.ShowButtonPlayer();
     }
 
     public void OnPlayTournamentButtonPressed()
     {
+        OnExitState();
         SceneLoader.instance.LoadSceneDelay("Arena");
     }
 
-    public void PopulatePlayersScores()
+    async public void PopulatePlayersScores()
     {
-        BlockchainManager.instance.GetPlayeresScores();
+        int score = await BlockchainManager.instance.GetPlayeresScores();
 
-        arenaView.PopulatePlayersScores("costa", 2000);
+        arenaView.PopulatePlayersScores(
+            GameManager.instance.UserData.username,
+            score
+        );
     }
 
 

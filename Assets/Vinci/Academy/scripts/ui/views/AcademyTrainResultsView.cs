@@ -8,12 +8,20 @@ using Vinci.Core.UI;
 public class AcademyTrainResultsView : View
 {
 
+    [SerializeField]
+    CategoryNavBar _categoryNavBar;
+
     [Header("Results")]
     [SerializeField]
     GameObject resultsSubView;
 
     [SerializeField]
+    private LoaderPopup _loaderPopup;
+
+    [SerializeField]
     private Button _HomeButton;
+    [SerializeField]
+    private Button _backButton;
     [SerializeField]
     private Button _mintModelButton;
     [SerializeField]
@@ -49,14 +57,37 @@ public class AcademyTrainResultsView : View
 
     public override void Initialize()
     {
-        //_HomeButton.onClick.AddListener(() => homeButtonPressed?.Invoke());
         _mintModelButton.onClick.AddListener(() => mintModelButtonPressed?.Invoke());
         _trainAgainButton.onClick.AddListener(() => trainAgainButtonPressed?.Invoke());
         _evaluateButton.onClick.AddListener(() => evaluateModelButtonPressed?.Invoke());
         _stopTestModelButton.onClick.AddListener(() => stopEvaluateModelButtonPressed?.Invoke());
+    }
+
+    public override void Show()
+    {
+        _categoryNavBar.SetTitles("Results", "Academy");
+        _categoryNavBar.homeButtonPressed += OnHomeButtonPressed;
+        _categoryNavBar.SetNavigationButtons(
+            false,
+            true
+        );
 
         ShowResultsSubView();
+        base.Show();
     }
+
+    public override void Hide()
+    {
+        _categoryNavBar.homeButtonPressed -= OnHomeButtonPressed;
+        _categoryNavBar.RemoveListeners();
+        base.Hide();
+    }
+
+    public void OnHomeButtonPressed()
+    {
+        homeButtonPressed?.Invoke();
+    }
+
 
     public void ShowResultsSubView()
     {
@@ -75,6 +106,23 @@ public class AcademyTrainResultsView : View
         _stepTrainedCount.text = stepsTrained.ToString();
         _meanRweard.text = meanReward.ToString("F3");
         _stdRweard.text = stdReward.ToString("F3");
+    }
+
+    public void ShowLoaderPopup(string messange)
+    {
+        _loaderPopup.gameObject.SetActive(true);
+        _loaderPopup.SetProcessingMEssage(messange);
+        _loaderPopup.Open();
+    }
+
+    public void UpdatePopupMessange(string message)
+    {
+        _loaderPopup.SetProcessingMEssage(message);
+    }
+
+    public void CloseLoaderPopup()
+    {
+        _loaderPopup.Close();
     }
 
 

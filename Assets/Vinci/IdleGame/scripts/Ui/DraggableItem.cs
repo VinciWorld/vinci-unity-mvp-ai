@@ -5,7 +5,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
-{
+{   
+    [SerializeField]
+    public string pubkeyNft;
     public Image image;
     [HideInInspector]
     public Transform parentAfterDrag;
@@ -25,7 +27,8 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        transform.SetParent(parentAfterDrag);
         image.raycastTarget = true;
+        transform.SetParent(parentAfterDrag);
+        
     }
 }

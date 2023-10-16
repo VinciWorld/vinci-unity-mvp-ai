@@ -6,19 +6,20 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Text;
 using Vinci.Core.Utils;
-using Unity.Barracuda;
-using Unity.Barracuda.ONNX;
-using System.IO;
 using Cysharp.Threading.Tasks;
+using UnityEngine.Networking;
 
 public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager> 
 {
 
     private WebSocket _webSocket;
 
+    public bool isTestMode;
+    public bool isSecureConnection = false;
     public bool isConnected => _webSocket != null;
 
-    public bool isSecureConnection = false;
+    [SerializeField]
+    private string _jwtToken;
 
     [SerializeField]
     private string centralNode = "127.0.0.1:8000";
@@ -27,8 +28,10 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
     private string http_prefix = "http://";
     [SerializeField]
     private string websockt_prefix = "ws://";
-    
+
     const string endpointTainJobs = "/api/v1/train-jobs";
+    const string endpointUserLogin = "/api/v1/user/unity-login";
+    const string endpointUser = "/api/v1/user";
     const string endpointWebsoctClientStream = "/ws/v1/client-stream";
     const string endpointWebsoctServerStream = "/api/v1/train-instance-stream";
 
@@ -55,6 +58,8 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
             centralNode = "127.0.0.1:8000";
         }
     }
+
+
 
     async public Task<PostResponseTrainJob> StartRemoteTrainning(PostTrainJobRequest requestData)
     {
@@ -83,17 +88,146 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
 
     async public Task<byte[]> DownloadNNModel(string runId)
     {
-        string url = http_prefix + centralNode + endpointTainJobs + "/" + runId + "/nn-models";
+        string url = http_prefix + centralNode + endpointTainJobs + "/" + runId + "/nn-model";
 
-        HTTPResponse response = await SendHTTPGetRequestAsync(url);
+        using (UnityWebRequest request = UnityWebRequest.Get(url))
+        {
+            await request.SendWebRequest(); // Send the HTTP GET request asynchronously
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                return request.downloadHandler.data;
+            }
+            else
+            {
+                Debug.LogError($"HTTP Request failed with status code {request.responseCode}: {request.error}");
+                throw new Exception($"HTTP Request failed with status code {request.responseCode}: {request.error}");
+            }
+        }
+    }
+
+    async public void LoginCentralNode(UserUpdate userDataUpdate, Action<UserData, Sprite> callback)
+    {   
+        string url = http_prefix + centralNode + endpointUserLogin;
+
+        string json = JsonConvert.SerializeObject(userDataUpdate, new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Include // Include null values in the JSON
+        });
+
+        HTTPResponse response = await SendHTTPPostRequestAsync(url, json);
 
         if (response.StatusCode == 200)
         {
-            return response.Data;
+            UserData userDataResponse = JsonConvert.DeserializeObject<UserData>(response.DataAsText);
+            Sprite userAvatar = null;
+            try
+            {
+                Debug.Log(response.DataAsText);
+                userAvatar = await DownloadImageAsync(userDataResponse.image_url);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Unable to load user avatar: " + e.Message);
+            }
+
+
+            callback?.Invoke(userDataResponse, userAvatar);
         }
         else
         {
             throw new Exception($"HTTP Request failed with status code {response.StatusCode}: {response.Message}");
+        }
+    }
+
+    async public Task<string> SaveOnArweaveModelFromS3(string run_id)
+    {
+        string url = http_prefix + "92dwrpewod.execute-api.eu-central-1.amazonaws.com/dev/blockchain/mutateArweaveUpload";
+        RunIdArweave runIdArweve = new RunIdArweave();
+        runIdArweve.runId = run_id;
+        PostArweave postRunIdArweave = new PostArweave();
+        postRunIdArweave.json = runIdArweve;
+
+        string json = JsonConvert.SerializeObject(postRunIdArweave);
+
+        HTTPResponse response = await SendHTTPPostRequestAsync(url, json, true);
+
+        if (response.StatusCode == 200)
+        {
+            ResultUriArweave resultUriArweave = JsonConvert.DeserializeObject<ResultUriArweave>(response.DataAsText);
+            Debug.Log("response.DataAsText" + response.DataAsText);
+
+            return resultUriArweave.result.data.json;
+        }
+        else
+        {
+            throw new Exception($"HTTP Request failed with status code {response.StatusCode}: {response.Message}");
+        }
+    }
+
+    public async Task<UserData> SaveUserPlayerDataAsync(string user_id, string playerData)
+    {
+        string url = http_prefix + centralNode + endpointUser;
+        HTTPResponse response = await SendHTTPPatchRequestAsync(url, playerData);
+   
+        if (response.StatusCode == 200)
+        {
+
+            return JsonUtility.FromJson<UserData>(response.DataAsText);
+        }
+        else
+        {
+            throw new Exception($"HTTP Request failed with status code {response.StatusCode}: {response.Message}");
+        }
+    }
+    //string url = http_prefix + centralNode + endpointTainJobs + $"/{runId}";
+    public async Task<PostResponseTrainJob> GetTrainJobByRunID(string runId, Action<PostResponseTrainJob> callback)
+    {
+        string url = http_prefix + centralNode + endpointTainJobs + $"/{runId}";
+
+        UnityWebRequest request = UnityWebRequest.Get(url);
+
+        if (!isTestMode)
+        {
+            // Add the "Authorization" header with the JWT token when not in test mode
+            request.SetRequestHeader("Authorization", "Bearer " + _jwtToken);
+        }
+
+        await request.SendWebRequest(); // Send the HTTP GET request asynchronously
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            string jsonResult = request.downloadHandler.text;
+            Debug.Log(jsonResult);
+            PostResponseTrainJob trainJob = JsonConvert.DeserializeObject<PostResponseTrainJob>(jsonResult);
+
+            //callback?.Invoke(trainJob);
+
+            return trainJob;
+        }
+        else
+        {
+            Debug.LogError($"HTTP Request failed with status code {request.responseCode}: {request.error}");
+            throw new Exception($"HTTP Request failed with status code {request.responseCode}: {request.error}");
+        }
+    }
+    public async Task<Sprite> DownloadImageAsync(string imageUrl)
+    {
+
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(imageUrl);
+        await www.SendWebRequest();
+
+        if (www.isNetworkError || www.isHttpError)
+        {
+            Debug.LogError("Error downloading image: " + www.error);
+            return null;
+        }
+        else
+        {
+            Texture2D texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+
+            return sprite;
         }
     }
 
@@ -187,7 +321,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
     {
         //TODO: retry websocket connection
         _webSocket = null;
-        Debug.Log("WebSocket is now Closed!");
+        Debug.Log("****WebSocket is now Closed!");
     }
 
     private void OnWebSocketError(WebSocket ws, string error)
@@ -196,7 +330,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         _webSocket = null;
     }
 
-    private async Task<HTTPResponse> SendHTTPPostRequestAsync(string url, string jsonData)
+    private async Task<HTTPResponse> SendHTTPPostRequestAsync(string url, string jsonData=null, bool isAws=false)
     {
         var tcs = new TaskCompletionSource<HTTPResponse>();
 
@@ -209,7 +343,26 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         });
 
         request.AddHeader("Content-Type", "application/json");
-        request.RawData = Encoding.UTF8.GetBytes(jsonData);
+
+        if (!isTestMode)
+        {
+            if(isAws)
+            {
+                request.AddHeader("X-Amz-Security-Token", _jwtToken);
+            }
+            else
+            {
+                request.AddHeader("Authorization", "Bearer " + _jwtToken);
+            }
+        }
+
+        Debug.Log("JWT: " + _jwtToken);
+
+        if(jsonData != null)
+        {
+            request.RawData = Encoding.UTF8.GetBytes(jsonData);
+        }
+
         await request.Send();
 
         return await tcs.Task;
@@ -227,6 +380,37 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
                 tcs.SetResult(resp);
         });
 
+        if (!isTestMode)
+        {
+            request.AddHeader("Authorization", "Bearer " + _jwtToken);
+        }
+
+        await request.Send();
+
+        return await tcs.Task;
+    }
+
+
+    private async Task<HTTPResponse> SendHTTPPatchRequestAsync(string url, string jsonData)
+    {
+        var tcs = new TaskCompletionSource<HTTPResponse>();
+
+        HTTPRequest request = new HTTPRequest(new Uri(url), HTTPMethods.Patch, (req, resp) =>
+        {
+            if (req.Exception != null)
+                tcs.SetException(req.Exception);
+            else
+                tcs.SetResult(resp);
+        });
+
+        request.AddHeader("Content-Type", "application/json");
+
+        if (!isTestMode)
+        {
+            request.AddHeader("Authorization", "Bearer " + _jwtToken);
+        }
+
+        request.RawData = Encoding.UTF8.GetBytes(jsonData);
         await request.Send();
 
         return await tcs.Task;
@@ -240,5 +424,8 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         request.Send();
     }
 
-
+    public void SetJwtToken(string jwtToken)
+    {
+        _jwtToken = jwtToken;
+    }    
 }

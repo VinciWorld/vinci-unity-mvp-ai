@@ -13,6 +13,10 @@ public class PlacableEntityManager : MonoBehaviour
 
     public RectTransform cardsParent;
 
+    public GameObject agentPrefab;
+
+    ArenaGameController _arena;
+
     public List<AgentCard> cards = new List<AgentCard>();
 
     private bool cardIsActive = false;
@@ -23,6 +27,11 @@ public class PlacableEntityManager : MonoBehaviour
     void Awake()
     {
         previewHolder = new GameObject("PreviewHolder");
+    }
+
+    public void Init(ArenaGameController arena)
+    {
+        _arena = arena;
     }
 
     public void LoadAgentsCard()
@@ -61,12 +70,15 @@ public class PlacableEntityManager : MonoBehaviour
 
     private void CardTapped(int cardId)
     {
+        if (!CheckCardPrice()) return;
+        
         cards[cardId].GetComponent<RectTransform>().SetAsLastSibling();
         //forbiddenAreaRenderer.enabled = true;
     }
 
     private void CardDragged(int cardId, Vector2 dragAmount)
     {
+        if (!CheckCardPrice()) return;
         cards[cardId].transform.Translate(dragAmount);
 
         RaycastHit hit;
@@ -84,7 +96,7 @@ public class PlacableEntityManager : MonoBehaviour
                 cards[cardId].ChangeActiveState(true);
 
                 AgentConfig agentConfig = cards[cardId].agentConfig;
-                GameObject.Instantiate(agentConfig.AgentPrefab, hit.point, Quaternion.identity, previewHolder.transform);
+                GameObject.Instantiate(agentPrefab, hit.point, Quaternion.identity, previewHolder.transform);
             }
             else
             {
@@ -105,6 +117,7 @@ public class PlacableEntityManager : MonoBehaviour
 
     private void CardReleased(int cardId)
     {
+        if (!CheckCardPrice()) return;
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -131,5 +144,15 @@ public class PlacableEntityManager : MonoBehaviour
         {
             Destroy(previewHolder.transform.GetChild(i).gameObject);
         }
+    }
+
+    public bool CheckCardPrice()
+    {
+        if(_arena.currentCoins >= 100)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

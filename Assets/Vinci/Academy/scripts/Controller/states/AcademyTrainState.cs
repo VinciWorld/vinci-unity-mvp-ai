@@ -1,9 +1,11 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Unity.Barracuda;
 using Unity.Barracuda.ONNX;
 using Unity.MLAgents;
+using Unity.VisualScripting;
 using UnityEngine;
 using Vinci.Core.Managers;
 using Vinci.Core.StateMachine;
@@ -21,11 +23,15 @@ public class AcademyTrainState : StateBase
 
     public override void OnEnterState()
     {
+        Debug.Log("On Enter State!");
         trainView = ViewManager.GetView<AcademyTrainView>();
 
         ViewManager.Show<AcademyTrainView>();
+
         trainView.homeButtonPressed += OnHomeButtonPressed;
+        trainView.backButtonPressed += OnBackButtonPressed;
         trainView.trainButtonPressed += OnTrainButtonPressed;
+        trainView.watchTrainButtonPressed += OnWatchButtonPressed;
 
         trainView.SetTrainSetupSubViewState(true);
         trainView.SetTrainHudSubViewState(false);
@@ -37,24 +43,60 @@ public class AcademyTrainState : StateBase
         RemoteTrainManager.instance.binaryDataReceived += OnBinaryDataRecived;
 
         Academy.Instance.AutomaticSteppingEnabled = false;
+
+     
     }
 
     public override void OnExitState()
     {
+        Debug.Log("OnExitState");
         GameManager.instance.SavePlayerData();
 
         trainView.homeButtonPressed -= OnHomeButtonPressed;
+        trainView.backButtonPressed -= OnBackButtonPressed;
         trainView.trainButtonPressed -= OnTrainButtonPressed;
-    
+        trainView.watchTrainButtonPressed -= OnWatchButtonPressed;
+
         RemoteTrainManager.instance.websocketOpen -= OnWebSocketOpen;
         RemoteTrainManager.instance.actionsReceived -= OnReceivedAgentActions;
         RemoteTrainManager.instance.metricsReceived -= OnReceivedTrainMetrics;
         RemoteTrainManager.instance.statusReceived -= OnReceivedTrainStatus;
         RemoteTrainManager.instance.binaryDataReceived -= OnBinaryDataRecived;
 
-        _controller.session.currentEnvInstance.episodeAndStepCountUpdated -= trainView.UptadeInfo;
-        _controller.session.currentEnvInstance.SetIsReplay(false);
 
+        if(_controller.session.currentEnvInstance)
+        {
+            _controller.session.currentEnvInstance.episodeAndStepCountUpdated -= trainView.UptadeInfo;
+            _controller.session.currentEnvInstance.SetIsReplay(false);
+        }
+
+        trainView.CloseLoaderPopup();
+    }
+
+    private void CheckIfModelFinishedTraining()
+    {
+
+    }
+
+    private void OnWatchButtonPressed()
+    {
+        trainView.SetTrainHudSubViewState(true);
+        //_controller.session.currentEnvInstance.SetIsReplay(true);
+        //_controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
+        //_controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
+    }
+
+
+    void OnHomeButtonPressed()
+    {
+        OnExitState();
+        SceneLoader.instance.LoadSceneDelay("IdleGame");
+    }
+
+    private void OnBackButtonPressed()
+    {
+        //ViewManager.ShowLast();
+        _controller.SwitchState(new AcademyMainState(_controller));
     }
 
     public override void Tick(float deltaTime)
@@ -62,31 +104,38 @@ public class AcademyTrainState : StateBase
 
     }
 
-    void OnTrainButtonPressed(int steps)
+    async void OnTrainButtonPressed(int steps)
     {
         //TODO: Check if model is already trained or if it is trainning
-
-        if(_controller.session.currentEnvInstance == null)
+        if (_controller.session.currentEnvInstance == null)
         {
             PrepareEnv();
         }
+        _controller.session.selectedAgent.modelConfig.behavior.steps = steps * 1000;
 
-        _controller.session.selectedAgent.modelConfig.behavior.steps = steps;
-        _controller.session.selectedAgent.modelConfig.AddStepsTrained(steps);
+        GameManager.instance.playerData.SubtractStepsAvailable(_controller.session.selectedAgent.modelConfig.behavior.steps);
 
         _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
         _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
         _controller.session.currentEnvInstance.SetIsReplay(true);
 
+
         if (!RemoteTrainManager.instance.isConnected)
         {
-            MainThreadDispatcher.Instance().EnqueueAsync(ConnectToRemoteInstance);
+            //MainThreadDispatcher.Instance().EnqueueAsync(ConnectToRemoteInstance);
         }
 
+        Debug.Log("OnTrainButtonPressed 5");
         trainView.UptadeInfo(0, 0, 0);
         trainView.UpdateMetrics(0,0);
         trainView.SetTrainSetupSubViewState(false);
         trainView.SetTrainHudSubViewState(true);
+        trainView.ShowLoaderPopup("Connecting to remote server...");
+
+        if (!RemoteTrainManager.instance.isConnected)
+        {
+            await ConnectToRemoteInstance();
+        }
     }
 
     void OnReceivedTrainStatus(TrainJobStatusMsg trainJobStatus)
@@ -109,7 +158,20 @@ public class AcademyTrainState : StateBase
             Debug.Log("JOB FAILED");
             _controller.SwitchState(new AcademyTrainState(_controller));
         }
+        else if (trainJobStatus.status == TrainJobStatus.RETRIEVED)
+        {
+            trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + trainJobStatus.status);
+        }
+        else if (trainJobStatus.status == TrainJobStatus.STARTING)
+        {
+            trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + trainJobStatus.status);
+        }
+        else if(trainJobStatus.status == TrainJobStatus.RUNNING)
+        {
+            trainView.CloseLoaderPopup();
+        }
 
+        
         Debug.Log("Status received: " + trainJobStatus.status);
     }
 
@@ -118,7 +180,6 @@ public class AcademyTrainState : StateBase
         EnvironementBase created_env = _controller.envManager.CreateTrainEnv(
             _controller.session.selectedTrainEnv
         );
-
 
         GameObject created_agent = AgentFactory.instance.CreateAgent(
             _controller.session.selectedAgent,
@@ -132,7 +193,7 @@ public class AcademyTrainState : StateBase
         _controller.session.currentEnvInstance = created_env;
     }
 
-    async void ConnectToRemoteInstance()
+    async Task ConnectToRemoteInstance()
     {
         Debug.Log("Connecting to remote training Server");
 
@@ -166,6 +227,11 @@ public class AcademyTrainState : StateBase
                 case TrainJobStatus.RETRIEVED:
                 case TrainJobStatus.STARTING:
                 case TrainJobStatus.RUNNING:
+                    GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelSubmitted = true;
+                    GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelTraining = true;
+
+                    trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + response.job_status);
+
                     break;
                 case TrainJobStatus.SUCCEEDED:
                     break;
@@ -181,7 +247,9 @@ public class AcademyTrainState : StateBase
         {
             trainView.SetTrainSetupSubViewState(true);
             trainView.SetTrainHudSubViewState(false);
+            GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelTraining = false;
             Debug.LogError("Unable to add job to the queue: " + e.Message);
+            trainView.CloseLoaderPopup();
         }
     }
 
@@ -196,10 +264,17 @@ public class AcademyTrainState : StateBase
 
     void OnBinaryDataRecived(byte[] data)
     {
-        SaveAndLoadModel(data);
+        string runId = _controller.session.selectedAgent.GetModelRunID();
+        SaveAndLoadModel(data, runId, _controller.session.selectedAgent.modelConfig.behavior.behavior_name);
+        _controller.session.selectedAgent.modelConfig.AddStepsTrained(
+            _controller.session.selectedAgent.modelConfig.behavior.steps
+        );
 
         RemoteTrainManager.instance.CloseWebSocketConnection();
         _controller.session.currentEnvInstance.StopReplay();
+
+        GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelTraining = false;
+
         _controller.SwitchState(new AcademyResultsState(_controller));
     }
 
@@ -220,16 +295,8 @@ public class AcademyTrainState : StateBase
         //Debug.Log("Actions received: " + actionsJson);
     }
 
-    void OnHomeButtonPressed()
+    void SaveAndLoadModel(Byte[] rawModel, string runId, string behaviourName)
     {
-        SceneLoader.instance.LoadSceneDelay("IdleGame");
-    }
-
-    void SaveAndLoadModel(Byte[] rawModel)
-    {
-        string runId = _controller.session.selectedAgent.GetModelRunID();
-
-        string behaviourName = _controller.session.selectedAgent.modelConfig.behavior.behavior_name;
         string directoryPath = Path.Combine(Application.persistentDataPath, "runs", runId, "models");
         string filePath = Path.Combine(directoryPath, $"{behaviourName}.onnx");
 

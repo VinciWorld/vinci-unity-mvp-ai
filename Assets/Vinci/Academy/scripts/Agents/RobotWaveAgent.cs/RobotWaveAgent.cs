@@ -112,7 +112,7 @@ public class RobotWaveAgent : Agent, IAgent
     {
         var discreteActionsOut = actionsOut.DiscreteActions;
 
-        if (Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.E))
         {
             discreteActionsOut[0] = 3;
         }
@@ -120,13 +120,21 @@ public class RobotWaveAgent : Agent, IAgent
         {
             discreteActionsOut[0] = 1;
         }
-        else if (Input.GetKey(KeyCode.A))
+        else if (Input.GetKey(KeyCode.Q))
         {
             discreteActionsOut[0] = 4;
         }
         else if (Input.GetKey(KeyCode.S))
         {
             discreteActionsOut[0] = 2;
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            discreteActionsOut[0] = 5;
+        }
+        else if (Input.GetKey(KeyCode.A))
+        {
+            discreteActionsOut[0] = 6;
         }
 
         if (Input.GetMouseButton(1))
@@ -141,29 +149,35 @@ public class RobotWaveAgent : Agent, IAgent
 
     private void OnDied(DamageableObject @object, float arg2, Vector3 vector)
     {
-        Debug.Log("DIEDDDDD");
+        //Debug.Log("DIEDDDDD");
         AddReward(-1f);
         agentDied?.Invoke(this);
         EndEpisode();
+
+        if(env != null)
+        {
+            env.GoalCompleted(false);
+        }
+
     }
 
     private void OnKilledTarget()
     {
-        Debug.Log("kills ");
+        //Debug.Log("kills ");
         agentKill?.Invoke();
-        AddReward(0.05f);
+        AddReward(0.08f);
     }
 
     private void OnMissedTarget()
     {
-        Debug.Log("miss ");
+//        Debug.Log("miss ");
 
         AddReward(-0.05f);
     }
 
     private void OnhitTarget()
     {
-        Debug.Log("hit ");
+      //  Debug.Log("hit ");
         AddReward(0.001f);
     }
 
@@ -199,6 +213,12 @@ public class RobotWaveAgent : Agent, IAgent
                 break;
             case 4:
                 rotateDir = transform.up * -1f;
+                break;
+            case 5:
+                dirToGo = transform.right * 1f;
+                break;
+            case 6:
+                dirToGo = transform.right * -1;
                 break;
         }
         transform.Rotate(rotateDir, Time.deltaTime * rotationSpeed);

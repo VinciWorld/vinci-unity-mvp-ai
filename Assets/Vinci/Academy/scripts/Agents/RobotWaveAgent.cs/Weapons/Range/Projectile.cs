@@ -75,7 +75,7 @@ public class ProjectileTopDown : MonoBehaviour
         {
             
             Targetable otherTargatable = hit.collider.gameObject.GetComponent<Targetable>();
-            Debug.Log("otherTargatable: " + otherTargatable);
+            //Debug.Log("otherTargatable: " + otherTargatable);
             if (otherTargatable != null)
             {
                 if (otherTargatable.team != owner.team)

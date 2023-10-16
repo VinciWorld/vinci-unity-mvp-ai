@@ -24,11 +24,11 @@ public class AcademyResultsState : StateBase
     public override void OnEnterState()
     {
         _resultsView = ViewManager.GetView<AcademyTrainResultsView>();
-        _resultsView.mintModelButtonPressed += OnMintModelButtonPRessed;
+        _resultsView.mintModelButtonPressed += OnMintModelButtonPressed;
         _resultsView.trainAgainButtonPressed += OnTrainAgainButtonPressed;
         _resultsView.evaluateModelButtonPressed += OnTestModelButtonPressed;
         _resultsView.stopEvaluateModelButtonPressed += OnStopTestButtonPressed;
-
+        _resultsView.homeButtonPressed += OnHomeButtonPressed;
         ViewManager.Show<AcademyTrainResultsView>();
         _resultsView.ShowResultsSubView();
 
@@ -61,7 +61,7 @@ public class AcademyResultsState : StateBase
     {
         currentEnvInstance.updateEnvResults -= OnUpdateEnvResults;
 
-        _resultsView.mintModelButtonPressed -= OnMintModelButtonPRessed;
+        _resultsView.mintModelButtonPressed -= OnMintModelButtonPressed;
         _resultsView.trainAgainButtonPressed -= OnTrainAgainButtonPressed;
         _resultsView.evaluateModelButtonPressed -= OnTestModelButtonPressed;
         _resultsView.stopEvaluateModelButtonPressed -= OnStopTestButtonPressed;
@@ -73,6 +73,12 @@ public class AcademyResultsState : StateBase
         //Debug.Log("Steps: " + Academy.Instance.StepCount);
     }
 
+    void OnHomeButtonPressed()
+    {
+        OnExitState();
+        SceneLoader.instance.LoadSceneDelay("IdleGame");
+    }
+
     void OnTestModelButtonPressed()
     {
         EvaluateModel();
@@ -80,6 +86,7 @@ public class AcademyResultsState : StateBase
 
     void OnStopTestButtonPressed()
     {
+        Time.timeScale = 1;
         currentEnvInstance.StopEnv();
 
         GameManager.instance.playerData.AddOrUpdateEvaluationResults(
@@ -101,13 +108,22 @@ public class AcademyResultsState : StateBase
         _controller.SwitchState(new AcademyTrainState(_controller));
     }
 
-    void OnMintModelButtonPRessed()
+    async void OnMintModelButtonPressed()
     {
-        BlockchainManager.instance.MintNNmodel();
+        _resultsView.ShowLoaderPopup("Uploading trained Model to Arweave...");
+
+        string uri = await RemoteTrainManager.instance.SaveOnArweaveModelFromS3(_controller.session.selectedAgent.modelConfig.run_id);
+        Debug.Log("uri: " + uri);
+        _resultsView.UpdatePopupMessange("Minting model...");
+
+        await BlockchainManager.instance.MintNNmodel(uri);
+        _resultsView.CloseLoaderPopup();
+
     }
 
     void EvaluateModel()
     {
+        Time.timeScale = 3;
         _resultsView.UpdateEvaluationMetrics(currentEnvInstance.GetEvaluationMetricResults());
         _resultsView.ShowTestModelMetrics();
 

@@ -1,5 +1,8 @@
 using System;
+using Newtonsoft.Json;
 
+[Serializable]
+[JsonConverter(typeof(TrainJobStatusConverter))]
 public enum TrainJobStatus
 {
     SUBMITTED,
@@ -56,6 +59,38 @@ public class RunId
     public string run_id { get; set; }
 }
 
+[Serializable]
+public class PostArweave
+{
+    public RunIdArweave json;
+}
+
+[Serializable]
+public class RunIdArweave
+{
+    public string runId { get; set; }
+}
+
+
+[Serializable]
+public class DataResult
+{
+    public string json;
+}
+
+
+[Serializable]
+public class DataArweave
+{
+    public DataResult data;
+}
+
+[Serializable]
+public class ResultUriArweave
+{
+    public DataArweave result;
+}
+
 
 #nullable enable
 
@@ -67,5 +102,6 @@ public class PostTrainJobRequest
     public EnvConfigSmall? env_config;
     public BehaviorConfigSmall? nn_model_config;
 }
+
 
 
