@@ -3385,6 +3385,7 @@ MonoBehaviour:
   solanaBalance: 0
   baseNNModel: {fileID: 5022602860645237092, guid: 61881707995126849805040d9bdd3e61,
     type: 3}
+  version: v0.0.1
 --- !u!1001 &449309668
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12787,6 +12788,8 @@ MonoBehaviour:
     type: 3}
   forbiddenAreaRenderer: {fileID: 0}
   cardsParent: {fileID: 2071056472}
+  agentPrefab: {fileID: 6504583924473299732, guid: 6c0cbfd59cd4ee342ae6012c8002f2f6,
+    type: 3}
   cards: []
 --- !u!114 &1760863467
 MonoBehaviour:
@@ -12801,6 +12804,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentCoins: 100
+  agentPrefab: {fileID: 6504583924473299732, guid: 6c0cbfd59cd4ee342ae6012c8002f2f6,
+    type: 3}
 --- !u!114 &1760863468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12833,6 +12838,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: af3830c8387f80a4bbbe4102aae66205, type: 2}
   - {fileID: 11400000, guid: 62169fa04de783e4ea958320e0ed02b7, type: 2}
   - {fileID: 11400000, guid: c1c0ab4c56dabeb4f911f87d05409094, type: 2}
+  - {fileID: 11400000, guid: e17e0e805cee99c4e8bceebd50aaf05c, type: 2}
+  - {fileID: 11400000, guid: e17e0e805cee99c4e8bceebd50aaf05c, type: 2}
+  - {fileID: 11400000, guid: e17e0e805cee99c4e8bceebd50aaf05c, type: 2}
   _enemyManager: {fileID: 1760863469}
 --- !u!114 &1760863469
 MonoBehaviour:

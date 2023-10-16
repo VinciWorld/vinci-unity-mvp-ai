@@ -38,6 +38,8 @@ public class ArenaGameController : MonoBehaviour
     private const int POINTS_PER_KILL = 125;
     private const int COINS_PER_KILL = 10;
 
+    public GameObject agentPrefab;
+
 
     void Awake()
      {
@@ -87,7 +89,7 @@ public class ArenaGameController : MonoBehaviour
     void OnDeployedAgent(AgentConfig agentConfig, Vector3 position)
     {
         GameObject agent = Instantiate(
-            agentConfig.AgentPrefab, new Vector3(position.x, position.y + 0.1f, position.z)  , Quaternion.identity
+            agentPrefab, new Vector3(position.x, position.y + 0.1f, position.z)  , Quaternion.identity
         );
 
         RobotWaveAgent waveAgent = agent.GetComponent<RobotWaveAgent>();

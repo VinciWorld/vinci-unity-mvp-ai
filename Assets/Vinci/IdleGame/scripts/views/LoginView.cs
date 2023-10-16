@@ -42,7 +42,7 @@ public class LoginView : View
             });
 
         }
-        Debug.Log("Show: " + GameManager.instance.isLoggedIn);
+        //Debug.Log("Show: " + GameManager.instance.isLoggedIn);
     }
 
     public override void Show()
@@ -66,7 +66,6 @@ public class LoginView : View
 
     async void OnConnectWalletPressed()
     {
-        Debug.Log("Cooonect");
         connectWallet?.Invoke();
 
         if (Web3.Instance == null) return;

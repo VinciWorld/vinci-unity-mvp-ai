@@ -123,7 +123,7 @@ public class AcademyResultsState : StateBase
 
     void EvaluateModel()
     {
-        Time.timeScale = 5;
+        Time.timeScale = 3;
         _resultsView.UpdateEvaluationMetrics(currentEnvInstance.GetEvaluationMetricResults());
         _resultsView.ShowTestModelMetrics();
 

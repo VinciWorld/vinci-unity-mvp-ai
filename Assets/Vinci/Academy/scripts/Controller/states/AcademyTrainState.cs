@@ -107,18 +107,14 @@ public class AcademyTrainState : StateBase
     async void OnTrainButtonPressed(int steps)
     {
         //TODO: Check if model is already trained or if it is trainning
-        Debug.Log("OnTrainButtonPressed 1");
         if (_controller.session.currentEnvInstance == null)
         {
             PrepareEnv();
         }
-        Debug.Log("OnTrainButtonPressed 2");
         _controller.session.selectedAgent.modelConfig.behavior.steps = steps * 1000;
 
-        Debug.Log("OnTrainButtonPressed 3");
         GameManager.instance.playerData.SubtractStepsAvailable(_controller.session.selectedAgent.modelConfig.behavior.steps);
 
-        Debug.Log("OnTrainButtonPressed 4");
         _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
         _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
         _controller.session.currentEnvInstance.SetIsReplay(true);
@@ -181,19 +177,16 @@ public class AcademyTrainState : StateBase
 
     public void PrepareEnv()
     {
-        Debug.Log("PrepareEnv 1");
         EnvironementBase created_env = _controller.envManager.CreateTrainEnv(
             _controller.session.selectedTrainEnv
         );
 
-        Debug.Log("PrepareEnv 2");
         GameObject created_agent = AgentFactory.instance.CreateAgent(
             _controller.session.selectedAgent,
             new Vector3(0, 1.54f, -8.5f), Quaternion.identity,
             created_env.transform
         );
 
-        Debug.Log("PrepareEnv 3");
         created_env.Initialize(created_agent);
 
         _controller.session.currentAgentInstance = created_agent;

@@ -46,12 +46,20 @@ public class HeadquartersState : StateBase
 
     private async void OnDropNft(int slotId, string pubkey, DraggableItem itme)
     {
-        Debug.Log("nft pubkey: " + pubkey);
-        mainView.ShowLoaderPopup("Staking nft");
-        await BlockchainManager.instance.StakeNft(pubkey);
-        //await Task.Delay(100);
-        mainView.CloseLoaderPopup();
-        itme.image.raycastTarget = false;
+        try
+        {
+            Debug.Log("nft pubkey: " + pubkey);
+            mainView.ShowLoaderPopup("Staking nft");
+            await BlockchainManager.instance.StakeNft(pubkey);
+            mainView.CloseLoaderPopup();
+            itme.image.raycastTarget = false;
+
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Unable to unstake nft: " + e.Message);
+            mainView.CloseLoaderPopup();
+        }
     }
 
     async void OnAcademyBtnPressed()

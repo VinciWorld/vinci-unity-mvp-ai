@@ -50,32 +50,36 @@ public class HeadquartersView : View
 
     async public void OnUnstakeNft()
     {
-
-        RemoveAllChildObjects(nftSlotRoot.transform);
-        ShowLoaderPopup("Unstaking nft");
-        string results = await BlockchainManager.instance.UnStakeNft(stakedNftKey);
-        //await Task.Delay(200);
-        Debug.Log("unstake nft: " + results);
-
-
-        Transform nftItem =  slot.transform.GetChild(0);
-        DraggableItem dragItem = nftItem.gameObject.GetComponent<DraggableItem>();
-
-        GameObject slotObj = Instantiate(nftSlotPrefab, nftSlotRoot.transform);
-        Slot _slot = slotObj.GetComponent<Slot>();
-        slot.id = 0;
-        DraggableItem itemSlot = _slot.GetComponentInChildren<DraggableItem>();
-        itemSlot.image.sprite = dragItem.image.sprite;
-        itemSlot.pubkeyNft = dragItem.pubkeyNft;
-        itemSlot.image.raycastTarget = true;
+        try{
+            RemoveAllChildObjects(nftSlotRoot.transform);
+            ShowLoaderPopup("Unstaking nft");
+            string results = await BlockchainManager.instance.UnStakeNft(stakedNftKey);
+            //await Task.Delay(200);
+            Debug.Log("unstake nft: " + results);
 
 
+            Transform nftItem = slot.transform.GetChild(0);
+            DraggableItem dragItem = nftItem.gameObject.GetComponent<DraggableItem>();
 
-        Destroy(nftItem.gameObject);
+            GameObject slotObj = Instantiate(nftSlotPrefab, nftSlotRoot.transform);
+            Slot _slot = slotObj.GetComponent<Slot>();
+            slot.id = 0;
+            DraggableItem itemSlot = _slot.GetComponentInChildren<DraggableItem>();
+            itemSlot.image.sprite = dragItem.image.sprite;
+            itemSlot.pubkeyNft = dragItem.pubkeyNft;
+            itemSlot.image.raycastTarget = true;
 
-        CloseLoaderPopup();
-        _unstakeButton.gameObject.SetActive(false);
-        isStaked = false;
+            Destroy(nftItem.gameObject);
+
+            CloseLoaderPopup();
+            _unstakeButton.gameObject.SetActive(false);
+            isStaked = false;
+        }catch(Exception e)
+        {
+            Debug.Log("Unable to unstake nft: " + e.Message);
+            CloseLoaderPopup();
+        }
+
     }
 
     async public Task LoadNfts()

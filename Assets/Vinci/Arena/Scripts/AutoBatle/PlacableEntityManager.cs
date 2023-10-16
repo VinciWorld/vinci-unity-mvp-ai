@@ -13,6 +13,8 @@ public class PlacableEntityManager : MonoBehaviour
 
     public RectTransform cardsParent;
 
+    public GameObject agentPrefab;
+
     ArenaGameController _arena;
 
     public List<AgentCard> cards = new List<AgentCard>();
@@ -94,7 +96,7 @@ public class PlacableEntityManager : MonoBehaviour
                 cards[cardId].ChangeActiveState(true);
 
                 AgentConfig agentConfig = cards[cardId].agentConfig;
-                GameObject.Instantiate(agentConfig.AgentPrefab, hit.point, Quaternion.identity, previewHolder.transform);
+                GameObject.Instantiate(agentPrefab, hit.point, Quaternion.identity, previewHolder.transform);
             }
             else
             {

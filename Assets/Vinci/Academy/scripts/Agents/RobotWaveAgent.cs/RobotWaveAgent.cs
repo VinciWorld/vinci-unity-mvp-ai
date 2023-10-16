@@ -154,7 +154,11 @@ public class RobotWaveAgent : Agent, IAgent
         agentDied?.Invoke(this);
         EndEpisode();
 
-        env.GoalCompleted(false);
+        if(env != null)
+        {
+            env.GoalCompleted(false);
+        }
+
     }
 
     private void OnKilledTarget()
