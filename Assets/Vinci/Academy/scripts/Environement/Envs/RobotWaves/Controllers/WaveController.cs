@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
+using System.Collections;
 
 
 public class WaveController : MonoBehaviour
@@ -25,12 +26,21 @@ public class WaveController : MonoBehaviour
     public event Action completedWave;
     public event Action completedAllWaves;
 
+    private bool _randomSpawn;
     private System.Random seededRandom;
+
 
     void Start()
     {
         int seed = 1987;
         seededRandom = new System.Random(seed);
+    }
+
+    public void Initialized(EnemyManager enemyManager, bool randomSpawn = false)
+    {
+        _enemyManager = enemyManager;
+        _enemyManager.enemyKilled += OnEnemyDie;
+        _randomSpawn = randomSpawn;
     }
 
     public void StartWaves()
@@ -39,14 +49,15 @@ public class WaveController : MonoBehaviour
     }
 
     private void Update()
-    {
+    {   /*
         if (_enemiesRemainingToSpawn > 0 && Time.time > _nextSpawnTime)
         {
             _enemiesRemainingToSpawn--;
             _nextSpawnTime = Time.time + _currentWave.intervalBetweenSpawns;
 
-            _enemyManager.SpawnEnemy(_currentWave.enemyPrefab, GetRandomSpawnPoint(), OnEnemyDie);
+            _enemyManager.SpawnEnemy(_currentWave.enemyPrefab, GetRandomSpawnPoint());
         }
+        */
     }
 
     private void NextWave()
@@ -57,10 +68,29 @@ public class WaveController : MonoBehaviour
             _currentWave = waves[_currentWaveIndex - 1];
             _enemiesRemainingToSpawn = _currentWave.amout;
             _enemiesRemainingAlive = _enemiesRemainingToSpawn;
+
+            StartCoroutine(EnemySpawnerRoutine());
         }
         else
         {
             completedAllWaves?.Invoke();
+        }
+    }
+
+    private IEnumerator EnemySpawnerRoutine()
+    {
+        while (_enemiesRemainingToSpawn > 0)
+        {
+            // Calculate the wait time
+            float waitTime = _nextSpawnTime - Time.time;
+            if (waitTime > 0)
+            {
+                yield return new WaitForSeconds(waitTime);
+            }
+
+            _enemiesRemainingToSpawn--;
+            _enemyManager.SpawnEnemy(_currentWave.enemyPrefab, GetRandomSpawnPoint());
+            _nextSpawnTime = Time.time + _currentWave.intervalBetweenSpawns;
         }
     }
 
@@ -78,6 +108,11 @@ public class WaveController : MonoBehaviour
         }
     }
 
+    void OnDestroy()
+    {
+        _enemyManager.enemyKilled -= OnEnemyDie;
+    }
+
     public void ResetWaves()
     {
         _currentWaveIndex = 0;
@@ -87,10 +122,19 @@ public class WaveController : MonoBehaviour
         _enemyManager.ResetEnemiesAi();
     }
 
-
     public Vector3 GetRandomSpawnPoint()
     {
-        int rnd = seededRandom.Next(0, _spawnPoints.Count);
+        int rnd = 0;
+        if (_randomSpawn)
+        {
+             rnd = Random.Range(0, _spawnPoints.Count);
+        }
+        else
+        {
+            rnd = seededRandom.Next(0, _spawnPoints.Count);
+
+        }
+
         return _spawnPoints[rnd].position;
     }
 }

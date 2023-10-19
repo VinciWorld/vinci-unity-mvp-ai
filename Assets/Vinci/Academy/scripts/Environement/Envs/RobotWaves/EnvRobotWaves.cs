@@ -8,10 +8,12 @@ using UnityEngine;
 
 public class EnvRobotWaves : EnvironementBase
 {
-    RobotWaveAgent _agent;
+    RobotWaveAgentTrain _agent;
 
     [SerializeField]
     WaveController _waveController;
+    [SerializeField]
+    EnemyManager _enemyManager;
 
     [SerializeField]
     Transform _agentSpawnPose;
@@ -44,7 +46,7 @@ public class EnvRobotWaves : EnvironementBase
     {
 
        // _loaderPopup = GameObject.Find("PopupLoader").GetComponent<LoaderPopup>();
-        _agent = agent.GetComponent<RobotWaveAgent>();
+        _agent = agent.GetComponent<RobotWaveAgentTrain>();
         _agent.env = this;
 
         Debug.Log("Initilize: " + _agent.env);
@@ -54,10 +56,12 @@ public class EnvRobotWaves : EnvironementBase
         successRatio = 0;
         totalStepCount = 0;
 
+        _waveController.Initialized(_enemyManager);
+
         _waveController.completedAllWaves += OnCompletedAllWaves;
         _waveController.completedWave += OnCompletedWave;
 
-        ShowLoaderPopup("Buffering episodes...");
+        //ShowLoaderPopup("Buffering episodes...");
     }
 
     public void OnCompletedWave()

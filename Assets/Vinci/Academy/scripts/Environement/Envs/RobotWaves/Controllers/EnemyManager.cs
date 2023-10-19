@@ -11,9 +11,53 @@ public enum SpawnMethod
     survival,
 }
 
-
 public class EnemyManager : MonoBehaviour
 {
+    private List<EnemyAI> allEnemies = new List<EnemyAI>();
+
+    public Action<EnemyAI> enemyKilled;
+
+
+    //TODO: OBJECT POOLING
+
+    public void SpawnEnemy(EnemyAI enenyPrefab, Vector3 spawnPos)
+    {
+        EnemyAI enemy = Instantiate(enenyPrefab, spawnPos, Quaternion.identity);
+
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(spawnPos, out hit, 5f, NavMesh.AllAreas))
+        {
+            enemy.SetPosition(hit.position);
+        }
+
+        allEnemies.Add(enemy);
+
+        //enemy.died += OnDie;
+        enemy.died += OnEnemyAiDied;
+    }
+
+    public void OnEnemyAiDied(EnemyAI enemyAI)
+    {
+        enemyKilled?.Invoke(enemyAI);
+        enemyAI.died -= OnEnemyAiDied;
+        allEnemies.Remove(enemyAI);
+    }
+
+    public void ResetEnemiesAi()
+    {
+        foreach (var enemy in allEnemies)
+        {
+            Destroy(enemy.gameObject);
+        }
+
+        allEnemies.Clear();
+    }
+}
+
+
+/*
+
+
     [SerializeField]
     private EnemyAI _enemyPrefab;
 
@@ -48,6 +92,68 @@ public class EnemyManager : MonoBehaviour
     public int _maxToSpawn = 2000;
     public int MaxToSpawn => _maxToSpawn;
 
+    public void Reset()
+    {
+        indexLasSpawn = 1;
+        _totalSpawns = 0;
+        _killedEnemies = 0;
+
+        foreach (EnemyAI enemy in _enemies)
+        {
+            if (enemy.gameObject.activeSelf)
+                _enemyPool.Release(enemy);
+        }
+
+        _enemies.Clear();
+    }
+
+    
+    private EnemyAI CreateEnemy()
+    {
+        //TODO: In the future change the spawn position, it may give problems
+        EnemyAI enemy = Instantiate(_enemyPrefab, Vector3.zero, Quaternion.identity);
+        return enemy;
+    }
+
+    private void OnGetEnemy(EnemyAI enemy)
+    {
+        enemy.gameObject.SetActive(true);
+    }
+
+    private void OnReleaseEnemy(EnemyAI enemy)
+    {
+        enemy.died -= OnEnemyDie;
+        enemy.gameObject.SetActive(false);
+    }
+
+    private void OnDestroyEnemy(EnemyAI enemy)
+    {
+        Destroy(enemy.gameObject);
+    }
+
+    Vector3 GetValidSpawnPos()
+    {
+        int index = UnityEngine.Random.Range(0, _spawnPoints.Count);
+        for (int i = 0; i < _spawnPoints.Count; i++)
+        {
+            index = UnityEngine.Random.Range(0, _spawnPoints.Count);
+            bool isEqual = false;
+            for (int j = 0; j < _lastSpawnUsed.Length; j++)
+            {
+                if (_lastSpawnUsed[j] == index)
+                {
+                    isEqual = true;
+                    break;
+                }
+            }
+            if (!isEqual) break;
+        }
+        _lastSpawnUsed[indexLasSpawn++ % _lastSpawnUsed.Length] = index;
+
+        Transform randomTransform = _spawnPoints[index].transform;
+
+        return randomTransform.position;
+    }
 
     public void Initialize(List<Transform> spawnPoints)
     {
@@ -137,100 +243,6 @@ public class EnemyManager : MonoBehaviour
 
         _totalSpawns++;
     }
-
-    List<EnemyAI> allEnemies = new();
-    public void SpawnEnemy(EnemyAI enenyPrefab, Vector3 spawnPos, Action<EnemyAI> OnDie)
-    {
-        EnemyAI enemy = Instantiate(enenyPrefab, spawnPos, Quaternion.identity);
-
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(spawnPos, out hit, 5f, NavMesh.AllAreas))
-        {
-            enemy.SetPosition(hit.position);
-        }
-
-        allEnemies.Add(enemy);
-
-
-        enemy.died += OnDie;
-        enemy.died += OnEnemyAiDied;
-    }
-
-    public void OnEnemyAiDied(EnemyAI enemyAI)
-    {
-        enemyAI.died -= OnEnemyAiDied;
-        allEnemies.Remove(enemyAI);
-    }
-
-    public void ResetEnemiesAi()
-    {
-        foreach (var enemy in allEnemies)
-        {
-            Destroy(enemy.gameObject);
-        }
-
-        allEnemies.Clear();
-    }
-
-    private EnemyAI CreateEnemy()
-    {
-        //TODO: In the future change the spawn position, it may give problems
-        EnemyAI enemy = Instantiate(_enemyPrefab, Vector3.zero, Quaternion.identity);
-        return enemy;
-    }
-
-    private void OnGetEnemy(EnemyAI enemy)
-    {
-        enemy.gameObject.SetActive(true);
-    }
-
-    private void OnReleaseEnemy(EnemyAI enemy)
-    {
-        enemy.died -= OnEnemyDie;
-        enemy.gameObject.SetActive(false);
-    }
-
-    private void OnDestroyEnemy(EnemyAI enemy)
-    {
-        Destroy(enemy.gameObject);
-    }
-
-    public void Reset()
-    {
-        indexLasSpawn = 1;
-        _totalSpawns = 0;
-        _killedEnemies = 0;
-
-        foreach (EnemyAI enemy in _enemies)
-        {
-            if (enemy.gameObject.activeSelf)
-                _enemyPool.Release(enemy);
-        }
-
-        _enemies.Clear();
-    }
-
-    Vector3 GetValidSpawnPos()
-    {
-        int index = UnityEngine.Random.Range(0, _spawnPoints.Count);
-        for (int i = 0; i < _spawnPoints.Count; i++)
-        {
-            index = UnityEngine.Random.Range(0, _spawnPoints.Count);
-            bool isEqual = false;
-            for (int j = 0; j < _lastSpawnUsed.Length; j++)
-            {
-                if (_lastSpawnUsed[j] == index)
-                {
-                    isEqual = true;
-                    break;
-                }
-            }
-            if (!isEqual) break;
-        }
-        _lastSpawnUsed[indexLasSpawn++ % _lastSpawnUsed.Length] = index;
-
-        Transform randomTransform = _spawnPoints[index].transform;
-
-        return randomTransform.position;
-    }
 }
+
+*/
