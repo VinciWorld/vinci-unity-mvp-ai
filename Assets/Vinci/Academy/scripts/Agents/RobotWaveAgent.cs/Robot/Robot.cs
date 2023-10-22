@@ -29,13 +29,13 @@ public class Robot : PlaceableEntity
         _rb = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
         _weaponController = GetComponent<WeaponController>();
+        _weaponController.Initialize();
     }
 
     // Start is called before the first frame update
     void Start()
     {
         targetable.died += OnDied;
-
     }
 
     private void OnDied(DamageableObject obj, float damage, Vector3 hitPoint)
@@ -73,8 +73,6 @@ public class Robot : PlaceableEntity
         }
     }
 
-
-
     public void UpdateAnimations(Vector3 move, float time)
     {
         if (move.z < deadZone)
@@ -97,9 +95,14 @@ public class Robot : PlaceableEntity
         }
     }
 
-    public void Shoot()
+    public bool Shoot()
     {
-        _weaponController.Shoot(targetable);
+        return _weaponController.Shoot(targetable);
+    }
+
+    public bool CanShoot()
+    {
+        return _weaponController.currentWeapon.canShoot;
     }
 
 

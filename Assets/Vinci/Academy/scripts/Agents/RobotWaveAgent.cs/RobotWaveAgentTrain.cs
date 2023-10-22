@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Barracuda;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -8,9 +9,9 @@ using Unity.MLAgents.Sensors;
 using UnityEngine;
 using Vinci.Core.BattleFramework;
 
-public class RobotWaveAgent : Agent, IAgent
+public class RobotWaveAgentTrain : Agent, IAgent
 {
-
+    public ObservationHelper observationHelper;
     InputControllerBasic _input;
     Robot _robot;
     public EnvironementBase env;
@@ -22,7 +23,16 @@ public class RobotWaveAgent : Agent, IAgent
     public int steps = 0;
 
     public List<ActionRobotBufferMsg> actionsBuffer = new List<ActionRobotBufferMsg>();
-    
+
+    //Energy
+    private const float startingEnergy = 50;
+    private const float maxEnergy = 100f;  // Max energy the robot can have
+    private float currentEnergy = startingEnergy; // The robot starts with max energy
+    private const float energyRestorationRate = 0.75f; // Amount of energy restored per second
+    private const float energyRequiredToShoot = 2; // Energy required to shoot
+    float threshold = 10;
+
+
     //Replay
     public Queue<ActionRobotBufferMsg> actionsQueueReceived;
 
@@ -32,9 +42,12 @@ public class RobotWaveAgent : Agent, IAgent
     public event Action<IAgent> agentDied;
     public event Action agentKill;
 
+
     protected override void Awake()
     {
         base.Awake();
+
+        MaxStep = 3500;
 
         _robot = GetComponent<Robot>();
         _input = GetComponent<InputControllerBasic>();
@@ -45,13 +58,13 @@ public class RobotWaveAgent : Agent, IAgent
     protected override void OnEnable()
     {
         base.OnEnable();
-
-
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        threshold = 0.25f * maxEnergy;
+
         _robot.targetable.hitTarget += OnhitTarget;
         _robot.targetable.missedTarget += OnMissedTarget;
         _robot.targetable.killedTarget += OnKilledTarget;
@@ -61,6 +74,7 @@ public class RobotWaveAgent : Agent, IAgent
     public override void OnEpisodeBegin()
     {
         base.OnEpisodeBegin();
+        currentEnergy = startingEnergy;
         env?.EpisodeBegin();
         steps = 0;
     }
@@ -68,7 +82,12 @@ public class RobotWaveAgent : Agent, IAgent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(StepCount / (float)MaxStep);
+        //sensor.AddObservation(StepCount / (float)MaxStep);
+        bool isLokking = observationHelper.IsPlayerLookingAtClosestEnemy(transform);
+
+        sensor.AddObservation(currentEnergy / 100);
+        sensor.AddObservation(_robot.CanShoot() && currentEnergy >= energyRequiredToShoot);
+        sensor.AddObservation(isLokking);
     }
 
 
@@ -89,10 +108,29 @@ public class RobotWaveAgent : Agent, IAgent
 
         AddReward(-1f / MaxStep);
 
-        MoveAgent(actionBuffers.DiscreteActions);
-        if (discreteActionsOut[1] == 1)
+        if (currentEnergy < threshold)
         {
-            _robot.Shoot();
+            float ratio = 1 - (currentEnergy / maxEnergy);
+
+            float negativeReward = -0.001f * ratio;
+
+            AddReward(negativeReward);
+        }
+        else
+        {
+            AddReward(0.001f);
+        }
+
+
+        MoveAgent(actionBuffers.DiscreteActions);
+        if (discreteActionsOut[1] == 1 && currentEnergy >= energyRequiredToShoot)
+        {
+           
+            if(_robot.Shoot())
+            {
+                currentEnergy -= energyRequiredToShoot;
+                //Debug.Log("Shoot");
+            }
         }
 
 #if !UNITY_EDITOR && UNITY_SERVER
@@ -105,7 +143,6 @@ public class RobotWaveAgent : Agent, IAgent
 
         actionsBuffer.Add(bufferActions);
 #endif
-
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -128,16 +165,8 @@ public class RobotWaveAgent : Agent, IAgent
         {
             discreteActionsOut[0] = 2;
         }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            discreteActionsOut[0] = 5;
-        }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            discreteActionsOut[0] = 6;
-        }
 
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(0))
         {
             discreteActionsOut[1] = 1;
         }
@@ -145,6 +174,16 @@ public class RobotWaveAgent : Agent, IAgent
         {
             discreteActionsOut[1] = 0;
         }
+    }
+
+    private void FixedUpdate()
+    {
+        RestoreEnergy(Time.fixedDeltaTime);
+    }
+
+    private void RestoreEnergy(float deltaTime)
+    {
+        currentEnergy = Mathf.Min(currentEnergy + energyRestorationRate * deltaTime, maxEnergy);
     }
 
     private void OnDied(DamageableObject @object, float arg2, Vector3 vector)
@@ -158,33 +197,33 @@ public class RobotWaveAgent : Agent, IAgent
         {
             env.GoalCompleted(false);
         }
-
     }
 
     private void OnKilledTarget()
     {
         //Debug.Log("kills ");
         agentKill?.Invoke();
-        AddReward(0.08f);
+        AddReward(0.1f);
     }
 
     private void OnMissedTarget()
     {
 //        Debug.Log("miss ");
 
-        AddReward(-0.05f);
+        AddReward(-0.01f);
     }
 
     private void OnhitTarget()
     {
       //  Debug.Log("hit ");
-        AddReward(0.001f);
+        AddReward(0.01f);
     }
 
 
     // Update is called once per frame
-    void FixedUpdate()
-    {/*
+    //void FixedUpdate()
+    //{
+        /*
         _robot.UpdateRobot(
             _input.GetMove(),
             _input.GetMoveDirection(),
@@ -192,7 +231,7 @@ public class RobotWaveAgent : Agent, IAgent
             Time.fixedDeltaTime);
 
     */
-    }
+   // }
 
     public void MoveAgent(ActionSegment<int> act)
     {
@@ -213,12 +252,6 @@ public class RobotWaveAgent : Agent, IAgent
                 break;
             case 4:
                 rotateDir = transform.up * -1f;
-                break;
-            case 5:
-                dirToGo = transform.right * 1f;
-                break;
-            case 6:
-                dirToGo = transform.right * -1;
                 break;
         }
         transform.Rotate(rotateDir, Time.deltaTime * rotationSpeed);

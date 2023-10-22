@@ -7,7 +7,9 @@ using Vinci.Core.BattleFramework;
 [RequireComponent(typeof(AudioSource))]
 public class WeaponController : MonoBehaviour
 {
-    public WeaponBase _currentWeapon;
+    private WeaponBase _currentWeapon;
+    public WeaponBase currentWeapon => _currentWeapon;
+
     [SerializeField]
     private WeaponBase _startingWeapom;
 
@@ -16,7 +18,7 @@ public class WeaponController : MonoBehaviour
 
     private List<WeaponBase> _weapons = new List<WeaponBase>();
 
-    private void Start()
+    public void Initialize()
     {
         if (_currentWeapon == null)
         {
@@ -24,9 +26,9 @@ public class WeaponController : MonoBehaviour
         }
     }
 
-    public void Shoot(Targetable owner, float damageFactor = 0f)
+    public bool Shoot(Targetable owner, float damageFactor = 0f)
     {
-        _currentWeapon?.Attack(owner, damageFactor);
+        return _currentWeapon.Attack(owner, damageFactor);
     }
 
     public void AddWeapon(WeaponBase weapon)
@@ -35,8 +37,6 @@ public class WeaponController : MonoBehaviour
         {
             Destroy(_currentWeapon.gameObject);
         }
-
-        Debug.Log("ADD WEAPON: " + _currentWeapon);
 
         _currentWeapon = Instantiate(weapon, _weaponSocket.position, Quaternion.Euler(-90f, 90f, 0));
         _currentWeapon.transform.parent = _weaponSocket;

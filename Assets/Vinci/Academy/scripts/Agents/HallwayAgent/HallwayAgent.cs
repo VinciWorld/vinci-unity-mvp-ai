@@ -6,6 +6,7 @@ using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
 using Unity.Barracuda;
 using System.Collections.Generic;
+using System;
 
 public class HallwayAgent : Agent, IAgent
 {
@@ -32,6 +33,7 @@ public class HallwayAgent : Agent, IAgent
     private int countObservations = 0;
     private int CountHeuristic = 0;
 
+    public event Action<IAgent> agentDied;
 
     protected override void Awake()
     {
@@ -220,5 +222,10 @@ public class HallwayAgent : Agent, IAgent
     public void SetIsReplay(bool isReplay)
     {
         _isReplay = isReplay;
+    }
+
+    public GameObject GetGameObject()
+    {
+        return this.gameObject;
     }
 }

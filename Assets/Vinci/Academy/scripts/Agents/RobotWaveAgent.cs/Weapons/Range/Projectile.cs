@@ -12,6 +12,7 @@ public class ProjectileTopDown : MonoBehaviour
     public float bulletDuration = 10f;
     private float _destroyTimer = 1f;
 
+    [HideInInspector]
     public Targetable owner;
 
     //VFX
@@ -71,7 +72,7 @@ public class ProjectileTopDown : MonoBehaviour
         Ray ray = new Ray(transform.position, transform.forward);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, moveDistance * 1.2f, colllisionMask))
+        if (Physics.Raycast(ray, out hit, moveDistance, colllisionMask))
         {
             
             Targetable otherTargatable = hit.collider.gameObject.GetComponent<Targetable>();
