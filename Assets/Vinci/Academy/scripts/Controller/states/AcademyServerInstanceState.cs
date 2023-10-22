@@ -28,9 +28,9 @@ public class AcademyServerInstanceState : StateBase
         config.num_of_areas = 6;
         config.agent_id = "1";
 
-        //StartTraining(config);
+        StartTraining(config);
 
-        ConnectWebSocketToTrainInstance();
+        //ConnectWebSocketToTrainInstance();
     }
 
     public override void OnExitState()

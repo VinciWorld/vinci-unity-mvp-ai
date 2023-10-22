@@ -20,6 +20,9 @@ public class EnvRobotWaves : EnvironementBase
     public Transform AgentSpawnPose => _agentSpawnPose;
 
     [SerializeField]
+    ObservationHelper _observationHelper;
+
+    [SerializeField]
     LoaderPopup _loaderPopup;
 
     public override event Action<Dictionary<string, string>> updateEnvResults;
@@ -44,10 +47,12 @@ public class EnvRobotWaves : EnvironementBase
 
     public override void Initialize(GameObject agent)
     {
+        _waveController.Initialized(_enemyManager);
 
-       // _loaderPopup = GameObject.Find("PopupLoader").GetComponent<LoaderPopup>();
+        // _loaderPopup = GameObject.Find("PopupLoader").GetComponent<LoaderPopup>();
         _agent = agent.GetComponent<RobotWaveAgentTrain>();
         _agent.env = this;
+        _agent.observationHelper = _observationHelper;
 
         Debug.Log("Initilize: " + _agent.env);
 
@@ -56,7 +61,7 @@ public class EnvRobotWaves : EnvironementBase
         successRatio = 0;
         totalStepCount = 0;
 
-        _waveController.Initialized(_enemyManager);
+      
 
         _waveController.completedAllWaves += OnCompletedAllWaves;
         _waveController.completedWave += OnCompletedWave;

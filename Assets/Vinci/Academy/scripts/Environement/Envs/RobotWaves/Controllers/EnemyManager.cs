@@ -13,7 +13,8 @@ public enum SpawnMethod
 
 public class EnemyManager : MonoBehaviour
 {
-    private List<EnemyAI> allEnemies = new List<EnemyAI>();
+    private List<EnemyAI> _allEnemies = new List<EnemyAI>();
+    public List<EnemyAI> allEnemies => _allEnemies;
 
     public Action<EnemyAI> enemyKilled;
 
@@ -30,7 +31,7 @@ public class EnemyManager : MonoBehaviour
             enemy.SetPosition(hit.position);
         }
 
-        allEnemies.Add(enemy);
+        _allEnemies.Add(enemy);
 
         //enemy.died += OnDie;
         enemy.died += OnEnemyAiDied;
@@ -40,17 +41,17 @@ public class EnemyManager : MonoBehaviour
     {
         enemyKilled?.Invoke(enemyAI);
         enemyAI.died -= OnEnemyAiDied;
-        allEnemies.Remove(enemyAI);
+        _allEnemies.Remove(enemyAI);
     }
 
     public void ResetEnemiesAi()
     {
-        foreach (var enemy in allEnemies)
+        foreach (var enemy in _allEnemies)
         {
             Destroy(enemy.gameObject);
         }
 
-        allEnemies.Clear();
+        _allEnemies.Clear();
     }
 }
 

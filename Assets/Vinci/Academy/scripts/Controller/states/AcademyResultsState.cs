@@ -65,6 +65,8 @@ public class AcademyResultsState : StateBase
         _resultsView.trainAgainButtonPressed -= OnTrainAgainButtonPressed;
         _resultsView.evaluateModelButtonPressed -= OnTestModelButtonPressed;
         _resultsView.stopEvaluateModelButtonPressed -= OnStopTestButtonPressed;
+
+        Time.timeScale = 1;
     }
 
     public override void Tick(float deltaTime)

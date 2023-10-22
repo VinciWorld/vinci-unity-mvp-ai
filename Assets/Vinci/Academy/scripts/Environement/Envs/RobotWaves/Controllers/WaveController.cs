@@ -23,6 +23,8 @@ public class WaveController : MonoBehaviour
     private int _enemiesRemainingAlive;
     private float _nextSpawnTime;
 
+    private Coroutine SpawnEaveCoroutine;
+
     public event Action completedWave;
     public event Action completedAllWaves;
 
@@ -30,14 +32,11 @@ public class WaveController : MonoBehaviour
     private System.Random seededRandom;
 
 
-    void Start()
+    public void Initialized(EnemyManager enemyManager, bool randomSpawn = false)
     {
         int seed = 1987;
         seededRandom = new System.Random(seed);
-    }
 
-    public void Initialized(EnemyManager enemyManager, bool randomSpawn = false)
-    {
         _enemyManager = enemyManager;
         _enemyManager.enemyKilled += OnEnemyDie;
         _randomSpawn = randomSpawn;
@@ -69,7 +68,7 @@ public class WaveController : MonoBehaviour
             _enemiesRemainingToSpawn = _currentWave.amout;
             _enemiesRemainingAlive = _enemiesRemainingToSpawn;
 
-            StartCoroutine(EnemySpawnerRoutine());
+            SpawnEaveCoroutine = StartCoroutine(EnemySpawnerRoutine());
         }
         else
         {
@@ -81,16 +80,15 @@ public class WaveController : MonoBehaviour
     {
         while (_enemiesRemainingToSpawn > 0)
         {
-            // Calculate the wait time
+            _enemiesRemainingToSpawn--;
+            _enemyManager.SpawnEnemy(_currentWave.enemyPrefab, GetRandomSpawnPoint());
+            _nextSpawnTime = Time.time + _currentWave.intervalBetweenSpawns;
+
             float waitTime = _nextSpawnTime - Time.time;
             if (waitTime > 0)
             {
                 yield return new WaitForSeconds(waitTime);
             }
-
-            _enemiesRemainingToSpawn--;
-            _enemyManager.SpawnEnemy(_currentWave.enemyPrefab, GetRandomSpawnPoint());
-            _nextSpawnTime = Time.time + _currentWave.intervalBetweenSpawns;
         }
     }
 
@@ -115,6 +113,12 @@ public class WaveController : MonoBehaviour
 
     public void ResetWaves()
     {
+        if(SpawnEaveCoroutine != null)
+        {
+            StopCoroutine(SpawnEaveCoroutine);
+            SpawnEaveCoroutine = null;
+        }
+
         _currentWaveIndex = 0;
         _enemiesRemainingToSpawn = 0;
         _enemiesRemainingAlive = 0;
@@ -132,7 +136,6 @@ public class WaveController : MonoBehaviour
         else
         {
             rnd = seededRandom.Next(0, _spawnPoints.Count);
-
         }
 
         return _spawnPoints[rnd].position;

@@ -12,13 +12,24 @@ public class AcademyController : MonoBehaviour
     public AcademyData academyData;
     public AcademySession session = new AcademySession();
 
+    public bool localTrain = false;
+
     private StateBase _activeState;
 
     void Start()
     {
         manager = GameManager.instance;
-#if UNITY_EDITOR || UNITY_WEBGL
+#if UNITY_WEBGL
         SwitchState(new AcademyMainState(this));
+#elif UNITY_EDITOR || UNITY_STANDALONE_WIN
+        if (localTrain)
+        {
+            SwitchState(new AcademyServerInstanceState(this));
+        }
+        else
+        {
+            SwitchState(new AcademyMainState(this));
+        }
 
 #elif !UNITY_EDITOR && UNITY_SERVER
         SwitchState(new AcademyServerInstanceState(this));
