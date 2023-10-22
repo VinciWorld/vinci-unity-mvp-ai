@@ -75,7 +75,8 @@ public class ArenaView : View
     {
         _registerCompetitionButton.gameObject.SetActive(true);
         if (GameManager.instance.playerData.isPlayerRegisteredOnCompetition)
-        {
+        {   
+            
             _registerCompetitionButton.gameObject.SetActive(false);
             _playCompetitionButton.gameObject.SetActive(true);
         }

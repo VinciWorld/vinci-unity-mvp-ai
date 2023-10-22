@@ -1,3 +1,5 @@
+using UnityEngine;
+
 [System.Serializable]
 public class UserData
 {
@@ -6,6 +8,8 @@ public class UserData
     public string bio;
     public string image_url;
     public string player_data;
+
+    public Sprite avatar;
 }
 
 

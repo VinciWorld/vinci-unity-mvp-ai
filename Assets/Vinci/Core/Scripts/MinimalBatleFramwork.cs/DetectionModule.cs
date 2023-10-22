@@ -17,7 +17,7 @@ namespace Vinci.Core.BattleFramework
         [SerializeField]
         private float viewAngle = 80f;
 
-        public Transform target { get; set; }
+        public Targetable target { get; set; }
 
         [SerializeField]
         private LayerMask thingsToHit;
@@ -55,7 +55,7 @@ namespace Vinci.Core.BattleFramework
             }
         }
 
-        private Transform FindClosestTarget()
+        private Targetable FindClosestTarget()
         {
             Collider[] colliders = Physics.OverlapSphere(transform.position, _detectionRange, targetsMask);
             float closestDistance = float.MaxValue;
@@ -71,7 +71,7 @@ namespace Vinci.Core.BattleFramework
                 }
             }
 
-            return closestTarget?.transform;
+            return closestTarget?.transform.gameObject.GetComponent<Targetable>();
         }
 
         private void CheckTargetVisibilityAndAttackRange()
@@ -94,7 +94,7 @@ namespace Vinci.Core.BattleFramework
             float sqrAttackRange = _attackRange * _attackRange;
 
             //Debug.Log(sqrDistance < sqrAttackRange);
-            if (sqrDistance < sqrAttackRange && CanSeeTarget(target, viewAngle, _attackRange))
+            if (sqrDistance < sqrAttackRange && CanSeeTarget(target.targetableTransform, viewAngle, _attackRange))
             {
                 IsTargetInAttackRange = true;
                 //Debug.Log("In attakak range");
@@ -122,13 +122,21 @@ namespace Vinci.Core.BattleFramework
 
         bool CanSeeTarget(Transform target, float viewAngle, float viewRange)
         {
-            Vector3 toTarget = target.position - transform.position;
+            Vector3 toTarget = target.position - _detectionOriginPoint.position;
             if (Vector3.Angle(transform.forward, toTarget) > viewAngle)
             {
                 return false;
             }
 
-            return Physics.Raycast(_detectionOriginPoint.position, toTarget, out RaycastHit hit, viewRange, thingsToHit);
+            if(Physics.Raycast(_detectionOriginPoint.position, toTarget, out RaycastHit hit, viewRange, thingsToHit))
+            {
+                if(hit.collider.gameObject.tag == "Player")
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void OnDrawGizmos()

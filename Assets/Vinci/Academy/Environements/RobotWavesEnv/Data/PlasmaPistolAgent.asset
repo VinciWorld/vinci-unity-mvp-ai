@@ -19,7 +19,7 @@ MonoBehaviour:
   range: 20
   startSpeed: 0
   speed: 20
-  Damage: 50
+  Damage: 60
   attackRate: 0.2
   shotShound: {fileID: 0}
   pickupSound: {fileID: 0}

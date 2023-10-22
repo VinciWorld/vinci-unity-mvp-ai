@@ -18,7 +18,7 @@ MonoBehaviour:
   description: Short Range
   range: 2.5
   startSpeed: 0
-  speed: 3
+  speed: 5
   Damage: 20
   attackRate: 1
   shotShound: {fileID: 0}

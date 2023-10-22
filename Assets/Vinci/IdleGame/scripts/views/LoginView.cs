@@ -91,15 +91,15 @@ public class LoginView : View
         }
     }
 
-    private void OnUserDataReceived(UserData userData, Sprite userAvatar)
+    private void OnUserDataReceived(UserData userData)
     {
         Debug.Log("Received data from central node!");
         GameManager.instance.UserData = userData;
 
         plyerUsername.text = userData.username;
-        if(userAvatar != null)
+        if(userData.avatar != null)
         {
-            userAvatarImage.sprite = userAvatar;
+            userAvatarImage.sprite = userData.avatar;
         }
 
         walletConnected?.Invoke();

@@ -128,7 +128,7 @@ public class AcademyTrainView : View
 
             if(stepsToTrain * 1000 > GameManager.instance.playerData.availableSteps)
             {
-                ShowWarningInputfield("You don't have avaiable steps", true);
+                ShowWarningInputfield("You don't have available steps", true);
             }
             else if(stepsToTrain < 10 )
             {

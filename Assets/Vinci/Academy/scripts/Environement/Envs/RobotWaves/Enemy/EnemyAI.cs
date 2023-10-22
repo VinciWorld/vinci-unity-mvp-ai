@@ -68,11 +68,11 @@ public class EnemyAI : AttackerPlacable
         _navMeshMovement.SetPosition(position);
     }
 
-    public void SetTarget(Transform target)
+    public void SetTarget(Targetable target)
     {
         if (_navMeshMovement != null)
         {
-            _navMeshMovement.SetNavDestination(target);
+            _navMeshMovement.SetNavDestination(target.transform);
 
             _detectionModule.target = target;
         }
@@ -111,7 +111,7 @@ public class EnemyAI : AttackerPlacable
             case AIState.idle:
                 break;
             case AIState.Follow:
-                _navMeshMovement.SetNavDestination(_detectionModule.target);
+                _navMeshMovement.SetNavDestination(_detectionModule.target.targetableTransform);
                 break;
             case AIState.Attack:
                 if(_detectionModule.target == null)
@@ -124,7 +124,7 @@ public class EnemyAI : AttackerPlacable
                         _detectionModule._detectionOriginPoint.position)
                     >= (AttackStopDistanceRatio * _detectionModule.AttackRange))
                 {
-                    _navMeshMovement.SetNavDestination(_detectionModule.target);
+                    _navMeshMovement.SetNavDestination(_detectionModule.target.targetableTransform);
                 }
                 else
                 {

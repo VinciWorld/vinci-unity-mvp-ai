@@ -15,4 +15,4 @@ MonoBehaviour:
   enemyPrefab: {fileID: 216447800159065404, guid: 400c4e1f70e8f834e9ed0acc1745a25e,
     type: 3}
   amout: 7
-  intervalBetweenSpawns: 2
+  intervalBetweenSpawns: 3

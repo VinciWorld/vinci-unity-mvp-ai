@@ -29,7 +29,7 @@ public class AttackerPlacable : PlaceableEntity
         transform.position = position;
     }
 
-    protected void TryAtack(Transform target, NavMeshMovement _navMeshAgent)
+    protected void TryAtack(Targetable target, NavMeshMovement _navMeshAgent)
     {
         weapon.Attack(targetable, 0, _navMeshAgent, target);
     }

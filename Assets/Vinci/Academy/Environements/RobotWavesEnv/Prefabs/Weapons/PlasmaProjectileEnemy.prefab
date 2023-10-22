@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7486645138477404970}
   - component: {fileID: 4466347431434372105}
   m_Layer: 11
-  m_Name: PlasmaProjectile
+  m_Name: PlasmaProjectileEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -98,7 +98,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   colllisionMask:
     serializedVersion: 2
-    m_Bits: 896
+    m_Bits: 448
   bulletDuration: 10
   owner: {fileID: 0}
   hittVfx: {fileID: 8510100222392572620, guid: f62cccd7bcbb8f44d9d4021a804987a3, type: 3}

@@ -5,6 +5,7 @@ using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Vinci.Core.Managers;
 
 public class MainTopBar : MonoBehaviour
@@ -14,7 +15,9 @@ public class MainTopBar : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI solanaBalance;
     [SerializeField]
-    TextMeshProUGUI stepsAvailable;
+    TextMeshProUGUI username;
+    [SerializeField]
+    Image userAvatarImage;
 
     void OnEnable()
     {
@@ -25,8 +28,9 @@ public class MainTopBar : MonoBehaviour
         {
             pubkey.text = GameManager.instance.UserData.pubkey;
             solanaBalance.text = GameManager.instance.solanaBalance.ToString("f5");
+            username.text = GameManager.instance.UserData.username;
+            userAvatarImage.sprite = GameManager.instance.UserData.avatar;
         }
-
     }
 
     private void OnDisable() {

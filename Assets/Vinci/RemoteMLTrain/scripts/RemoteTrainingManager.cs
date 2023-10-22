@@ -106,7 +106,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         }
     }
 
-    async public void LoginCentralNode(UserUpdate userDataUpdate, Action<UserData, Sprite> callback)
+    async public void LoginCentralNode(UserUpdate userDataUpdate, Action<UserData> callback)
     {   
         string url = http_prefix + centralNode + endpointUserLogin;
 
@@ -125,6 +125,8 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
             {
                 Debug.Log(response.DataAsText);
                 userAvatar = await DownloadImageAsync(userDataResponse.image_url);
+
+                userDataResponse.avatar = userAvatar;
             }
             catch (Exception e)
             {
@@ -132,7 +134,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
             }
 
 
-            callback?.Invoke(userDataResponse, userAvatar);
+            callback?.Invoke(userDataResponse);
         }
         else
         {

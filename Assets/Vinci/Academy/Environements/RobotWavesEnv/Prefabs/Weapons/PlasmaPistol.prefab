@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3833003404823442194}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 5135146222815034760}
   - component: {fileID: 5135146222815837608}
   - component: {fileID: 5135146222816935784}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: PlasmaPistol
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,7 +129,7 @@ GameObject:
   - component: {fileID: 8639312605084060848}
   - component: {fileID: 2772035108530361342}
   - component: {fileID: 6297581911833241009}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: PlasmaPistol
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -167,6 +167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _weaponData: {fileID: 11400000, guid: ed1d06a257a7f924d865ab09dcffc510, type: 2}
   _muzzleTransform: {fileID: 3833003404823442194}
+  canShoot: 1
 --- !u!82 &6297581911833241009
 AudioSource:
   m_ObjectHideFlags: 0
