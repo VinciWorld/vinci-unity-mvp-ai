@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class EnvRobotWaves : EnvironementBase
 {
-    RobotWaveAgentTrain _agent;
+    IAgent _agent;
 
     [SerializeField]
     WaveController _waveController;
@@ -50,11 +50,11 @@ public class EnvRobotWaves : EnvironementBase
         _waveController.Initialized(_enemyManager);
 
         // _loaderPopup = GameObject.Find("PopupLoader").GetComponent<LoaderPopup>();
-        _agent = agent.GetComponent<RobotWaveAgentTrain>();
-        _agent.env = this;
-        _agent.observationHelper = _observationHelper;
+        _agent = agent.GetComponent<IAgent>();
+        Debug.Log("RobotWaveAgentTrain" + _agent);
 
-        Debug.Log("Initilize: " + _agent.env);
+        _agent.SetEnv(this);
+        _agent.SetObservationHelper(_observationHelper);
 
         goalsCompletedCount = 0;
         goalsFailedCount = 0;
@@ -102,8 +102,7 @@ public class EnvRobotWaves : EnvironementBase
             _agent.Reset();
             _waveController.ResetWaves();
             _waveController.StartWaves();
-            _agent.transform.position = _agentSpawnPose.position;
-            _agent.transform.rotation = _agentSpawnPose.rotation;
+            _agent.SetAgentPose(_agentSpawnPose.position, _agentSpawnPose.rotation);
         }
 
         _episodeCount++;
@@ -162,8 +161,7 @@ public class EnvRobotWaves : EnvironementBase
     {
         _agent.Reset();
         _waveController.ResetWaves();
-        _agent.transform.position = _agentSpawnPose.position;
-        _agent.transform.rotation = _agentSpawnPose.rotation;
+        _agent.SetAgentPose(_agentSpawnPose.position, _agentSpawnPose.rotation);
         goalsCompletedCount = 0;
         goalsFailedCount = 0;
         successRatio = 0;
@@ -238,34 +236,33 @@ public class EnvRobotWaves : EnvironementBase
                 ActionsRobotWaveMsg action = actionStack.Pop();
 
                 _agent.EndEpisode();
-                _agent.transform.position = _agentSpawnPose.position;
-                _agent.transform.rotation = _agentSpawnPose.rotation;
+                _agent.SetAgentPose(_agentSpawnPose.position, _agentSpawnPose.rotation);
+
                 _waveController.ResetWaves();
                 _waveController.StartWaves();
 
 
                 actionsQueueReceived = new Queue<ActionRobotBufferMsg>(action.actionsBuffer);
-                _agent.actionsQueueReceived = actionsQueueReceived;
+                _agent.SetActionsQueueReceived(actionsQueueReceived);
 
                 Debug.Log("Actions received: " + actionsQueueReceived.Count);
 
                 Academy.Instance.AutomaticSteppingEnabled = true;
 
                 CloseLoaderPopup();
-                while (_agent.actionsQueueReceived.Count > 0)
+                while (_agent.GetActionsQueueReceived().Count > 0)
                 {
-                    episodeAndStepCountUpdated?.Invoke(action.episodeCount, _agent.steps, _agent.steps + totalStepCount);
+                    episodeAndStepCountUpdated?.Invoke(action.episodeCount, _agent.GetSteps(), _agent.GetSteps() + totalStepCount);
                     yield return new WaitForEndOfFrame();
                 }
-                episodeAndStepCountUpdated?.Invoke(action.episodeCount, _agent.steps, _agent.steps + totalStepCount);
+                episodeAndStepCountUpdated?.Invoke(action.episodeCount, _agent.GetSteps(), _agent.GetSteps() + totalStepCount);
                 Academy.Instance.AutomaticSteppingEnabled = false;
 
                 _waveController.ResetWaves();
-                _agent.transform.position = _agentSpawnPose.position;
-                _agent.transform.rotation = _agentSpawnPose.rotation;
+                _agent.SetAgentPose(_agentSpawnPose.position, _agentSpawnPose.rotation);
 
-                totalStepCount += _agent.steps;
-                _agent.steps = 0;
+                totalStepCount += _agent.GetSteps();
+                _agent.SetSteps(0);
             }
 
             yield return new WaitForEndOfFrame();

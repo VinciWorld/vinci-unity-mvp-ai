@@ -7,6 +7,7 @@ using UnityEngine;
 using Vinci.Core.Managers;
 using Vinci.Core.StateMachine;
 using Vinci.Core.UI;
+using WebSocketSharp;
 
 public class AcademyMainState : StateBase
 {
@@ -23,28 +24,39 @@ public class AcademyMainState : StateBase
         _mainView = ViewManager.GetView<AcademyMainView>();
         ViewManager.Show<AcademyMainView>();
 
-        _controller.session = new AcademySession();
+        if(_controller.session == null)
+        {
+            _controller.session = new AcademySession();
+        }
+
 
         _mainView.homeButtonPressed += OnHomeButtonPressed;
         _mainView.selectAgentButtonPressed += OnSelectAgentButtonPressed;
         _mainView.createAgentButtonPressed += OnCreateAgent;
         _mainView.watchTrainingButtonPressed += OnWatchTrainButtonPressed;
-        _controller.session.selectedAgent = null;
-        _controller.session.currentAgentInstance = null;
-        _controller.session.currentEnvInstance = null;
+        //_controller.session.currentAgentInstance = null;
+        //_controller.session.currentEnvInstance = null;
+
+        if(GameManager.instance.playerData.agents.Count > 0)
+        {
+            _controller.session.selectedAgent = GameManager.instance.playerData.GetAgent(0);
+        }
 
         //TODO: Load available models for this model
 
-
-        if (_controller.manager.playerData.agents.Count > 0 && _controller.manager.playerData.agents[0].modelConfig.isModelSubmitted)
+        //Retrieve trained Model from central node if it was't downloaded yet
+        if(_controller.session.selectedAgent != null)
         {
-            _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
-
-            if (_controller.manager.playerData.agents[0].modelConfig.isModelSucceeded == false)
+            if (!_controller.session.selectedAgent.modelConfig.run_id.IsNullOrEmpty()
+                && !_controller.session.selectedAgent.modelConfig.isModelLoaded)
             {
                 UpdateTrainJobStatus();
+                //if (_controller.manager.playerData.agents[0].modelConfig.isModelSucceeded == false)
+               // {  
+               // }
             }
         }
+
     }
 
     public override void OnExitState()

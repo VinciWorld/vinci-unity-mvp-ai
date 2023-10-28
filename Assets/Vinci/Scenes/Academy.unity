@@ -3667,6 +3667,7 @@ MonoBehaviour:
         behavior:
           behavior_name: RobotWave
           steps: 15000
+        trainJobStatus: 0
         isModelSubmitted: 0
         isModelTraining: 0
         isModelSucceeded: 0
@@ -3694,6 +3695,7 @@ MonoBehaviour:
         behavior:
           behavior_name: Hallway
           steps: 15000
+        trainJobStatus: 0
         isModelSubmitted: 0
         isModelTraining: 0
         isModelSucceeded: 0
@@ -3746,6 +3748,7 @@ MonoBehaviour:
         behavior:
           behavior_name: 
           steps: 0
+        trainJobStatus: 0
         isModelSubmitted: 0
         isModelTraining: 0
         isModelSucceeded: 0
@@ -3761,6 +3764,7 @@ MonoBehaviour:
           totalStepsTrained: 0
     currentAgentInstance: {fileID: 0}
     currentEnvInstance: {fileID: 0}
+  localTrain: 0
 --- !u!1 &397127304
 GameObject:
   m_ObjectHideFlags: 0
@@ -4057,6 +4061,7 @@ MonoBehaviour:
     bio: 
     image_url: 
     player_data: 
+    avatar: {fileID: 0}
   playerData:
     username: 
     isPlayerRegisteredOnCompetition: 0
@@ -4077,6 +4082,7 @@ MonoBehaviour:
         behavior:
           behavior_name: 
           steps: 0
+        trainJobStatus: 0
         isModelSubmitted: 0
         isModelTraining: 0
         isModelSucceeded: 0
@@ -7183,7 +7189,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTestMode: 0
-  isSecureConnection: 0
+  isSecureConnection: 1
   _jwtToken: eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..2DVSzAAKewITDBwS.TbK3Qbeq-t9Nza7WamJ0mf-SpOgsrkdYE7zgq-vypqRqFGH0TxQgcLevPShcq6e3PCaZuiotZLiDW0iONZ6IN9Jv85x2v-yojT60kKpW6RK7L4HCJpoHfywoWVDUjbBkNgYr6UylpI8Uv9vOy8k18DADriW0ia21b3WLpqfbTaTrn5tkJKau8B105XH6Wr8WLsWIPFx_NwlEDOciyWoAalA-vAxz5htiqDs00kgWLknVZyWPKP34GsHR7GcbSELpUOFUarDOZ5W-9FOQLJak7OVj3HqZb_ecfgoiBbpQGlfz657yWi-jorFGdqiEJXP_ckRGvzQg23BvXSU3H3qg3SCzosU5XftX9Si346K5qjKm3JEm--zZxV4WgoiksKtlYBdCPywyJEG34_k5j056q5VM2wbEbEOmbysZQfGtbF_0LrBMbzuH0Czj_OTR4-8zeeORmhpyBJQIQhPn0dEAWWoiMimc2mTL_PwnrF51uFiQUqltwwPGyvC4mitB_mp2IkQM0DEekqRFdovpaDc55zXRNA0qT6CvMgxSoJ7bpwEb-fJgslNUrc_7FYK5N4vdH8Ea2sE8VkodLPJrM0UdESmnXMjdLVyYnXLk439SEDlgvapc4TtFBNLQF4KlBIqoIng4NS7hWphPYWkzAngY4iD-Vra6JjEJdLPYPNKmEO1Z5wllLbdw_bgC5XhOBSX3JZRa5S6BzsYTkv2XvY9B8X2P8YviVBEacjkEKCML0RuWUKBE56A-IbG-OXesyGq4alJ1XGPtMu4ROCe518Nh2ZwKrghyUIs3_xiJ_61R2pwMPhAadwF68GOWhyw0Xt24U_8D_8JBUY9gBiXgXnX1Ki5FRmQnRwqxdAARAkLam832Mb8WBhUFOpHKtIrNa0vYxhLSkecAYHFTaP3xzAjeuBfJRna4CtgbrXZrMdyJEsGD31CNHvWRd4VtARQCGCXS32Px6-OOy4eEgGTVKWp3b0s9Oj2s16m0MZlFcKKLKrWktztvlqMAD8Vq-dMh_L0y8Oa9X1mCQ8KbOTYPHfqYCZtTM6SGh7nvjUlc_EH8jLCueGsykJYpcNIUi1Yfh9Ah2H0_Qm7pdOR6UiM5Nj0YhZhSTR5t6BhYSyRYujy_1-1moTqxjl9MmksQTiQFkcS7EhdAxW9cMdN0kTKfMkcI4aDcYorJJwv4G2RDNZd86Zmex_-_dzAlpNiNWMcRJjJZArnjEOM8lIHnVuVM9kxvjz0TzI4sLBtJ3Wq9UbWplN5Sdp-7LjOnSMUlw2iEhvC3p37k.ZRZOPAWeqU_mi9zO5TrcHw
   centralNode: central-node.vinciworld.io
   http_prefix: http://
@@ -8658,7 +8664,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.16666667
+  m_VoxelSize: 0.21333332
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 0}
   m_BuildHeightMesh: 0

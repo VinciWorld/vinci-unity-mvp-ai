@@ -11,12 +11,14 @@ public class ModelConfig
 
     public BehaviorConfigSmall behavior;
 
+    public TrainJobStatus trainJobStatus;
+
     public bool isModelSubmitted = false;
     public bool isModelTraining = false;
     public bool isModelSucceeded = false;
+
     public bool isModelLoaded = false;
     public bool isModelMinted = false;
-
     public bool modelFinishedTraining = false;
 
     public bool isEvaluated = false;

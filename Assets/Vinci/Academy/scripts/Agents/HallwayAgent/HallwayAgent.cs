@@ -228,4 +228,39 @@ public class HallwayAgent : Agent, IAgent
     {
         return this.gameObject;
     }
+
+    public int GetSteps()
+    {
+        return steps;
+    }
+
+    public void SetSteps(int steps)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetActionsQueueReceived(Queue<ActionRobotBufferMsg> actionsQueue)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Queue<ActionRobotBufferMsg> GetActionsQueueReceived()
+    {
+        return null;
+    }
+
+    public void SetAgentPose(Vector3 position, Quaternion quaternion)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetObservationHelper(ObservationHelper obsHelper)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetEnv(EnvironementBase env)
+    {
+        throw new NotImplementedException();
+    }
 }

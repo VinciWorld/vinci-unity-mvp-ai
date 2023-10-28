@@ -13,18 +13,18 @@ public class RobotWaveAgent : Agent, IAgent
 
     InputControllerBasic _input;
     Robot _robot;
-    public EnvironementBase env;
+    private EnvironementBase _env;
     BehaviorParameters _beahivor;
 
     Rigidbody _rb;
 
     private bool _isReplay = false;
-    public int steps = 0;
+    private int _steps = 0;
 
     public List<ActionRobotBufferMsg> actionsBuffer = new List<ActionRobotBufferMsg>();
     
     //Replay
-    public Queue<ActionRobotBufferMsg> actionsQueueReceived;
+    private Queue<ActionRobotBufferMsg> _actionsQueueReceived;
 
     public float agentRunSpeed = 1.5f;
     public float rotationSpeed = 100f;
@@ -61,8 +61,8 @@ public class RobotWaveAgent : Agent, IAgent
     public override void OnEpisodeBegin()
     {
         base.OnEpisodeBegin();
-        env?.EpisodeBegin();
-        steps = 0;
+        _env?.EpisodeBegin();
+        _steps = 0;
     }
 
 
@@ -74,14 +74,14 @@ public class RobotWaveAgent : Agent, IAgent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        steps++;
+        _steps++;
         var discreteActionsOut = actionBuffers.DiscreteActions;
 
         if (_isReplay)
         {
-            if (actionsQueueReceived.Count > 0)
+            if (_actionsQueueReceived.Count > 0)
             {
-                ActionRobotBufferMsg actionRobotBufferMsg = actionsQueueReceived.Dequeue();
+                ActionRobotBufferMsg actionRobotBufferMsg = _actionsQueueReceived.Dequeue();
                 discreteActionsOut[0] = actionRobotBufferMsg.direction;
                 discreteActionsOut[1] = actionRobotBufferMsg.fire;
             }
@@ -154,9 +154,9 @@ public class RobotWaveAgent : Agent, IAgent
         agentDied?.Invoke(this);
         EndEpisode();
 
-        if(env != null)
+        if(_env != null)
         {
-            env.GoalCompleted(false);
+            _env.GoalCompleted(false);
         }
 
     }
@@ -252,5 +252,41 @@ public class RobotWaveAgent : Agent, IAgent
     public GameObject GetGameObject()
     {
         return this.gameObject;
+    }
+
+    public int GetSteps()
+    {
+        return _steps;
+    }
+
+    public void SetSteps(int steps)
+    {
+        _steps = steps;
+    }
+
+    public void SetActionsQueueReceived(Queue<ActionRobotBufferMsg> actionsQueue)
+    {
+        _actionsQueueReceived = actionsQueue;
+    }
+
+    public Queue<ActionRobotBufferMsg> GetActionsQueueReceived()
+    {
+        return _actionsQueueReceived;
+    }
+
+    public void SetAgentPose(Vector3 position, Quaternion quaternion)
+    {
+        transform.position = position;
+        transform.rotation = quaternion;
+    }
+
+    public void SetObservationHelper(ObservationHelper obsHelper)
+    {
+        //obsHelper = obsHelper;
+    }
+
+    public void SetEnv(EnvironementBase env)
+    {
+        _env = env;
     }
 }

@@ -23,7 +23,6 @@ public class AcademyTrainState : StateBase
 
     public override void OnEnterState()
     {
-        Debug.Log("On Enter State!");
         trainView = ViewManager.GetView<AcademyTrainView>();
 
         ViewManager.Show<AcademyTrainView>();
@@ -126,6 +125,7 @@ public class AcademyTrainState : StateBase
         }
 
         Debug.Log("OnTrainButtonPressed 5");
+
         trainView.UptadeInfo(0, 0, 0);
         trainView.UpdateMetrics(0,0);
         trainView.SetTrainSetupSubViewState(false);
@@ -186,6 +186,7 @@ public class AcademyTrainState : StateBase
             new Vector3(0, 1.54f, -8.5f), Quaternion.identity,
             created_env.transform
         );
+        Debug.Log("Cagent: " + created_agent);
 
         created_env.Initialize(created_agent);
 

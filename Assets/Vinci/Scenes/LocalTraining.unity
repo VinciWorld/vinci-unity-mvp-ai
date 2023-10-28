@@ -4097,7 +4097,7 @@ MonoBehaviour:
   solanaBalance: 0
   baseNNModel: {fileID: 5022602860645237092, guid: 61881707995126849805040d9bdd3e61,
     type: 3}
-  version: v0.0.1
+  version: v0.0.2
 --- !u!1001 &421121864
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8660,7 +8660,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.16666667
+  m_VoxelSize: 0.21333332
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 0}
   m_BuildHeightMesh: 0
