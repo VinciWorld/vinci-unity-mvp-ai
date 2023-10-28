@@ -22,13 +22,13 @@ public class AcademyMainView : View
     [SerializeField]
     private Button _watchTrain;
 
+    [Header("Agent Info")]
     [SerializeField]
     private TextMeshProUGUI _agentType;
     [SerializeField]
     private TextMeshProUGUI _agentName;
     [SerializeField]
     private TextMeshProUGUI _agentDescription;
-
     [SerializeField]
     private TextMeshProUGUI _defenseStatText;
     [SerializeField]
@@ -36,10 +36,15 @@ public class AcademyMainView : View
     [SerializeField]
     private TextMeshProUGUI _speedStatText;
 
+    [Header("Trained Model info")]
     [SerializeField]
-    private TextMeshProUGUI _stepsTrainedText;
+    private KeyValueText _trainsCount;
     [SerializeField]
-    private TextMeshProUGUI _jobStatusText;
+    private KeyValueText _totalStepsTrainedText;
+    [SerializeField]
+    private KeyValueText _lastTrainJobStatus;
+    [SerializeField]
+    private KeyValueText _lastTrainSteps;
 
     [SerializeField]
     public GameObject _agentSlide;
@@ -136,14 +141,25 @@ public class AcademyMainView : View
         _loaderPopup.Close();
     }
 
-    public void SetJobStatus(string status)
+    public void SetLastJobStatus(string status)
     {
-        _jobStatusText.text = "Status: " +  status;
+        _lastTrainJobStatus.SetValue(status);
     }
 
-    public void SetStepsTrained(int steps)
+    public void SetTrainsCount(int trainsCount)
     {
-        int totlaSteps = steps / 1000;
-        _stepsTrainedText.text = "Steps trained: " + totlaSteps.ToString() + " k";
+        _trainsCount.SetValue(trainsCount.ToString());
+    }
+
+    public void SetLastTrainSteps(int trainSteps)
+    {
+        int lasttotlaSteps = trainSteps / 1000;
+        _lastTrainSteps.SetValue(lasttotlaSteps.ToString() + " k");
+    }
+
+    public void SetTotalStepsTrained(int totalSteps)
+    {
+        int totlaSteps = totalSteps / 1000;
+        _totalStepsTrainedText.SetValue( totlaSteps.ToString() + " k");
     }
 }

@@ -5,6 +5,8 @@ using Unity.MLAgents;
 using Unity.Barracuda;
 using Solana.Unity.SDK;
 using System;
+using WebSocketSharp;
+using Vinci.Core.ML.Utils;
 
 namespace Vinci.Core.Managers
 {
@@ -70,12 +72,37 @@ namespace Vinci.Core.Managers
                 //TODO: REMOVE !!!!
                 playerData.highScore = 0;
                 Debug.Log("Player data loaded from " + path);
+
+                LoadModelsRuntime();
             }
             else
             {
                 playerData = new PlayerData(); // Initialize with default values
 
                 Debug.Log("No saved player data found, initialized with default values.");
+            }
+        }
+
+        private void LoadModelsRuntime()
+        {
+            foreach(var agent in playerData.agents)
+            {
+                agent.modelConfig.isModelLoaded = false;
+
+                if(!agent.modelConfig.nnModel_path.IsNullOrEmpty())
+                {
+                    byte[] rawModel = File.ReadAllBytes(agent.modelConfig.nnModel_path);
+
+                    if(rawModel != null)
+                    {
+                        NNModel loadedModel = MLHelper.LoadModelRuntime(
+                            agent.modelConfig.behavior.behavior_name, rawModel
+                        );
+
+                        agent.modelConfig.nnModel = loadedModel;
+                        agent.modelConfig.isModelLoaded = true;
+                    }
+                }
             }
         }
     }

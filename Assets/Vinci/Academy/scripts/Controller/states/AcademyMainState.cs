@@ -5,6 +5,7 @@ using Unity.Barracuda.ONNX;
 using Unity.VisualScripting;
 using UnityEngine;
 using Vinci.Core.Managers;
+using Vinci.Core.ML.Utils;
 using Vinci.Core.StateMachine;
 using Vinci.Core.UI;
 using WebSocketSharp;
@@ -44,13 +45,15 @@ public class AcademyMainState : StateBase
 
         //TODO: Load available models for this model
 
+        UpdateTrainJobStatus();
+
         //Retrieve trained Model from central node if it was't downloaded yet
-        if(_controller.session.selectedAgent != null)
+        if (_controller.session.selectedAgent != null)
         {
             if (!_controller.session.selectedAgent.modelConfig.run_id.IsNullOrEmpty()
                 && !_controller.session.selectedAgent.modelConfig.isModelLoaded)
             {
-                UpdateTrainJobStatus();
+                
                 //if (_controller.manager.playerData.agents[0].modelConfig.isModelSucceeded == false)
                // {  
                // }
@@ -125,10 +128,33 @@ public class AcademyMainState : StateBase
 
         foreach (var agent in _controller.manager.playerData.agents)
         {
-            PostResponseTrainJob job = await RemoteTrainManager.instance.GetTrainJobByRunID(
-                agent.GetModelRunID(), null);
+            if (!agent.modelConfig.run_id.IsNullOrEmpty())
+            {
+                if(_controller.session.selectedAgent.modelConfig.trainJobStatus == TrainJobStatus.SUCCEEDED
+                    && _controller.session.selectedAgent.modelConfig.isModelLoaded)
+                {
+                    continue;
+                }
+                
+                if(!_controller.session.selectedAgent.modelConfig.isModelLoaded)
+                {
+                    PostResponseTrainJob job = await RemoteTrainManager.instance.GetTrainJobByRunID(
+                        agent.modelConfig.run_id, null
+                    );
 
-            OnReceiveTrainJobStatus(job);
+                    OnReceiveTrainJobStatus(job);
+                }
+                else
+                {
+                    _mainView.SetLastJobStatus("Completed");
+                    _mainView.SetLastTrainSteps(agent.modelConfig.behavior.steps);
+                    _mainView.SetTotalStepsTrained(agent.modelConfig.trainMetrics.stepsTrained);
+                }
+            }
+            else
+            {
+                _mainView.SetLastJobStatus("Not trained");
+            }
         }        
     }
 
@@ -139,61 +165,68 @@ public class AcademyMainState : StateBase
 
         AgentConfig agent = GameManager.instance.playerData.GetAgentById(job.env_config.agent_id);
 
-        _mainView.SetStepsTrained(agent.modelConfig.trainMetrics.stepsTrained);
-
         switch (job.job_status)
         {
             case TrainJobStatus.SUBMITTED:
                 {
-                    _mainView.SetJobStatus("SUBMITTED");
+                    _mainView.SetLastJobStatus("Waitting to train");
+                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUBMITTED;
                     agent.modelConfig.isModelSubmitted = true;
                     break;
                 }
             case TrainJobStatus.RETRIEVED:
                 {
-                    _mainView.SetJobStatus("RETRIEVED");
+                    _mainView.SetLastJobStatus("Waitting to train");
+                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RETRIEVED;
                     agent.modelConfig.isModelTraining = true;
                     break;
                 }
             case TrainJobStatus.STARTING:
                 {
-                    _mainView.SetJobStatus("STARTING");
+                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.STARTING;
+                    _mainView.SetLastJobStatus("Waitting to train");
                     agent.modelConfig.isModelTraining = true;
                     break;
                 }
             case TrainJobStatus.RUNNING:
                 {
-                    _mainView.SetJobStatus("RUNNING");
+                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RUNNING;
+                    _mainView.SetLastJobStatus("Training");
                     agent.modelConfig.isModelTraining = true;
                     break;
                 }
             case TrainJobStatus.SUCCEEDED:
                 {
-                    _mainView.SetJobStatus("Loading model...");
+                    _mainView.SetLastJobStatus("Loading model...");
                     _mainView.ShowLoaderPopup("Train is completed! Downloading Model...");
-                    if (agent.modelConfig.isModelTraining)
-                    {
-                        agent.modelConfig.AddStepsTrained(
-                            agent.modelConfig.behavior.steps
-                        );
 
-                        agent.modelConfig.isModelTraining = false;
-                        agent.modelConfig.modelFinishedTraining = true;
-                    }
-
-                    if(!agent.modelConfig.isModelLoaded)
+                    if (!agent.modelConfig.isModelLoaded)
                     {
-                        try{
+                        try
+                        {
                             byte[] model = await RemoteTrainManager.instance.DownloadNNModel(agent.modelConfig.run_id);
 
-                            SaveAndLoadModel(model, agent.modelConfig.run_id, agent.modelConfig.behavior.behavior_name, agent);
+                            var (filePath, nnModel) = MLHelper.SaveAndLoadModel(model, agent.modelConfig.run_id, agent.modelConfig.behavior.behavior_name);
 
+                            agent.SetModelAndPath(filePath, nnModel);
                             agent.modelConfig.isModelSucceeded = true;
-                            
-                            _mainView.SetJobStatus("SUCCEEDED");
+
+                            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUCCEEDED;
+                            agent.modelConfig.isModelTraining = false;
+                            agent.modelConfig.modelFinishedTraining = true;
+
+                            agent.modelConfig.AddStepsTrained(
+                                agent.modelConfig.behavior.steps
+                            );
+
+                            _mainView.SetLastJobStatus("Trained Completed");
+                            _mainView.SetLastTrainSteps(agent.modelConfig.behavior.steps);
+                            _mainView.SetTotalStepsTrained(agent.modelConfig.trainMetrics.stepsTrained);
+   
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
+                            _mainView.SetLastJobStatus("Failed to donwload model!");
                             Debug.Log("Error Unable to load model: " + e.Message + " stake: " + e.StackTrace);
                         }
                     }
@@ -202,61 +235,38 @@ public class AcademyMainState : StateBase
                     break;
                 }
 
-
             default:
                 Debug.Log("status not recognised");
                 break;
         }
     }
-
-    void SaveAndLoadModel(Byte[] rawModel, string runId, string behaviourName, AgentConfig agent)
+/*
+    void SaveAndLoadModel(Byte[] rawModel, string runId, string behaviourName)
     {
-        Debug.Log("behaviour name: " + behaviourName + " run_id: " + runId);
-        string directoryPath = Path.Combine(Application.persistentDataPath, "runs", runId, "models");
-        string filePath = Path.Combine(directoryPath, $"{behaviourName}.onnx");
-
-
-        // Ensure the directory exists
-        if (!Directory.Exists(directoryPath))
+        try
         {
-            Directory.CreateDirectory(directoryPath);
+            Debug.Log("behaviour name: " + behaviourName + " run_id: " + runId);
+            string directoryPath = Path.Combine(Application.persistentDataPath, "runs", runId, "models");
+            string filePath = Path.Combine(directoryPath, $"{behaviourName}.onnx");
+
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            //Save model to disk
+            File.WriteAllBytes(filePath, rawModel);
+            Debug.Log("Model saved at: " + filePath);
+
+            NNModel nnModel = MLHelper.LoadModelRuntime(behaviourName, rawModel);
+
+    
+
         }
-
-        // Convert and Save model to disk
-        NNModel nnModel = SaveAndConvertModel(filePath, rawModel);
-        nnModel.name = behaviourName;
-        Debug.Log("Model saved at: " + filePath);
-
-        agent.SetModelAndPath(filePath, nnModel);
-
-        // Load model on current agent
-        //_controller.session
-        //.currentAgentInstance.GetComponent<IAgent>()
-        //.LoadModel(behaviourName, nnModel);
-    }
-
-    NNModel SaveAndConvertModel(string filePath, byte[] rawModel)
-    {
-        //Save model to disk
-        File.WriteAllBytes(filePath, rawModel);
-
-        var converter = new ONNXModelConverter(true);
-        var onnxModel = converter.Convert(rawModel);
-
-        NNModelData assetData = ScriptableObject.CreateInstance<NNModelData>();
-        using (var memoryStream = new MemoryStream())
-        using (var writer = new BinaryWriter(memoryStream))
+        catch (Exception e)
         {
-            ModelWriter.Save(writer, onnxModel);
-            assetData.Value = memoryStream.ToArray();
+            throw e;
         }
-        assetData.name = "Data";
-        assetData.hideFlags = HideFlags.HideInHierarchy;
-
-        var asset = ScriptableObject.CreateInstance<NNModel>();
-        asset.modelData = assetData;
-
-        return asset;
     }
-
+    */
 }

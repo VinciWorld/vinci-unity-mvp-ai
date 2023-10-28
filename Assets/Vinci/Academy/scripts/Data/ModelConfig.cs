@@ -25,7 +25,6 @@ public class ModelConfig
 
     public string nnModel_path;
 
-    [System.NonSerialized]
     public NNModel nnModel;
 
     public ModelTrainMetrics trainMetrics = new();

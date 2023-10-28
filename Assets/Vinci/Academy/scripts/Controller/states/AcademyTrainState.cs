@@ -8,6 +8,7 @@ using Unity.MLAgents;
 using Unity.VisualScripting;
 using UnityEngine;
 using Vinci.Core.Managers;
+using Vinci.Core.ML.Utils;
 using Vinci.Core.StateMachine;
 using Vinci.Core.UI;
 
@@ -228,8 +229,8 @@ public class AcademyTrainState : StateBase
                 case TrainJobStatus.RETRIEVED:
                 case TrainJobStatus.STARTING:
                 case TrainJobStatus.RUNNING:
-                    GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelSubmitted = true;
-                    GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelTraining = true;
+                    _controller.session.selectedAgent.modelConfig.isModelSubmitted = true;
+                    _controller.session.selectedAgent.modelConfig.isModelTraining = true;
 
                     trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + response.job_status);
 
@@ -248,7 +249,7 @@ public class AcademyTrainState : StateBase
         {
             trainView.SetTrainSetupSubViewState(true);
             trainView.SetTrainHudSubViewState(false);
-            GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelTraining = false;
+            _controller.session.selectedAgent.modelConfig.isModelTraining = false;
             Debug.LogError("Unable to add job to the queue: " + e.Message);
             trainView.CloseLoaderPopup();
         }
@@ -266,15 +267,26 @@ public class AcademyTrainState : StateBase
     void OnBinaryDataRecived(byte[] data)
     {
         string runId = _controller.session.selectedAgent.GetModelRunID();
-        SaveAndLoadModel(data, runId, _controller.session.selectedAgent.modelConfig.behavior.behavior_name);
+
+        var (filePath, nnModel) = MLHelper.SaveAndLoadModel(data, runId, _controller.session.selectedAgent.modelConfig.behavior.behavior_name);
+
+
+        _controller.session.selectedAgent.SetModelAndPath(filePath, nnModel);
+
+        // Load model on current agent
+        _controller.session
+        .currentAgentInstance.GetComponent<IAgent>()
+        .LoadModel(_controller.session.selectedAgent.modelConfig.behavior.behavior_name, nnModel);
+
+
         _controller.session.selectedAgent.modelConfig.AddStepsTrained(
             _controller.session.selectedAgent.modelConfig.behavior.steps
         );
 
         RemoteTrainManager.instance.CloseWebSocketConnection();
-        _controller.session.currentEnvInstance.StopReplay();
 
-        GameManager.instance.playerData.currentAgentConfig.modelConfig.isModelTraining = false;
+        _controller.session.currentEnvInstance.StopReplay();
+        _controller.session.selectedAgent.modelConfig.isModelTraining = false;
 
         _controller.SwitchState(new AcademyResultsState(_controller));
     }
@@ -296,53 +308,24 @@ public class AcademyTrainState : StateBase
         //Debug.Log("Actions received: " + actionsJson);
     }
 
-    void SaveAndLoadModel(Byte[] rawModel, string runId, string behaviourName)
+    (string, NNModel) SaveAndLoadModel(Byte[] rawModel, string runId, string behaviourName)
     {
         string directoryPath = Path.Combine(Application.persistentDataPath, "runs", runId, "models");
         string filePath = Path.Combine(directoryPath, $"{behaviourName}.onnx");
 
-       
         // Ensure the directory exists
         if (!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
         }
-
-        // Convert and Save model to disk
-        NNModel nnModel = SaveAndConvertModel(filePath, rawModel);
-        nnModel.name = behaviourName;
-        Debug.Log("Model saved at: " + filePath);
-
-        _controller.session.selectedAgent.SetModelAndPath(filePath, nnModel);
-
-        // Load model on current agent
-        _controller.session
-        .currentAgentInstance.GetComponent<IAgent>()
-        .LoadModel(behaviourName, nnModel);
-    }
-
-    NNModel SaveAndConvertModel(string filePath, byte[] rawModel)
-    {
         //Save model to disk
         File.WriteAllBytes(filePath, rawModel);
+        Debug.Log("Model saved at: " + filePath);
 
-        var converter = new ONNXModelConverter(true);
-        var onnxModel = converter.Convert(rawModel);
-
-        NNModelData assetData = ScriptableObject.CreateInstance<NNModelData>();
-        using (var memoryStream = new MemoryStream())
-        using (var writer = new BinaryWriter(memoryStream))
-        {
-            ModelWriter.Save(writer, onnxModel);
-            assetData.Value = memoryStream.ToArray();
-        }
-        assetData.name = "Data";
-        assetData.hideFlags = HideFlags.HideInHierarchy;
-
-        var asset = ScriptableObject.CreateInstance<NNModel>();
-        asset.modelData = assetData;
-
-        return asset;
+        NNModel nnModel = MLHelper.LoadModelRuntime(behaviourName, rawModel);
+        nnModel.name = behaviourName;
+  
+        return (filePath, nnModel);
     }
 
     /*
