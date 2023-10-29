@@ -17,23 +17,20 @@ public class ModelConfig
     public int _totalStepsTrained;
     public int totalStepsTrained => _totalStepsTrained;
 
-    // Training Flags
-    // public bool isModelSubmitted = false;
-    // public bool isModelTraining  = false;
-    // public bool isModelSucceeded  = false;
-
-    // public bool modelFinishedTraining = false;
+    // Flags
     public bool isModelLoaded = false;
     public bool isModelMinted = false;
     public bool isEvaluated = false;
 
-    // Metrics & Evaluations
+    // Trian Metrics & Evaluations
     public List<ModelTrainMetric> trainMetrics = new();
-    public Dictionary<string, Dictionary<string, string>> modelEnvsEvaluationsResults = new();
+    //public Dictionary<string, Dictionary<string, string>> modelEnvsEvaluationsResults = new();
+
+    //Model Evaluation
+    public EvaluationMetrics evaluationMetrics = new EvaluationMetrics();
 
     // Methods
     public ModelTrainMetric GetMostRecentMetric() => trainMetrics.LastOrDefault();
-
     public float GetLastMeanReward() => GetMostRecentMetric()?.GetLastMeanReward() ?? 0f;
     public float GetLastStdReward() => GetMostRecentMetric()?.GetLastStdReward() ?? 0f;
     public int GetStepsTrained() => GetMostRecentMetric()?.stepsTrained ?? 0;

@@ -8,8 +8,9 @@ using UnityEngine;
 
 public class EnvRobotWaves : EnvironementBase
 {
-    IAgent _agent;
+    public int envId = 0;
 
+    IAgent _agent;
     [SerializeField]
     WaveController _waveController;
     [SerializeField]
@@ -25,7 +26,7 @@ public class EnvRobotWaves : EnvironementBase
     [SerializeField]
     LoaderPopup _loaderPopup;
 
-    public override event Action<Dictionary<string, string>> updateEnvResults;
+    public override event Action<Dictionary<string, MetricValue>> updateEnvResults;
     public override event Action<string> actionsReceived;
     public override event Action<int, int, int> episodeAndStepCountUpdated;
 
@@ -45,6 +46,11 @@ public class EnvRobotWaves : EnvironementBase
 
     private bool isFirstEpisode = true;
 
+
+    //Evaluation
+    private EvaluationMetrics evaluationMetrics;
+    Dictionary<string, MetricValue> envMetricsTemplate;
+
     public override void Initialize(GameObject agent)
     {
         _waveController.Initialized(_enemyManager);
@@ -60,8 +66,6 @@ public class EnvRobotWaves : EnvironementBase
         goalsFailedCount = 0;
         successRatio = 0;
         totalStepCount = 0;
-
-      
 
         _waveController.completedAllWaves += OnCompletedAllWaves;
         _waveController.completedWave += OnCompletedWave;
@@ -113,17 +117,7 @@ public class EnvRobotWaves : EnvironementBase
         return _agent;
     }
 
-    public override Dictionary<string, string> GetEvaluationMetricResults()
-    {
-        Dictionary<string, string> metrics = new Dictionary<string, string>
-        {
-            { "Goal Completed", goalsCompletedCount.ToString() },
-            { "Goal Failed", goalsFailedCount.ToString() },
-            { "Goal Success Ratio", successRatio.ToString("P2") } // P2 formats the number as a percentage
-        };
 
-        return metrics;
-    }
 
     public override void GoalCompleted(bool result)
     {
@@ -137,24 +131,6 @@ public class EnvRobotWaves : EnvironementBase
         }
 
         UpdateAndInvokeResults();
-    }
-
-    private void UpdateAndInvokeResults()
-    {
-        // Calculate success ratio
-        float totalGoals = goalsCompletedCount + goalsFailedCount;
-        successRatio = totalGoals > 0 ? (float)goalsCompletedCount / totalGoals : 0;
-
-        // Create and populate the results dictionary
-        Dictionary<string, string> metrics = new Dictionary<string, string>
-        {
-            { "Goal Completed", goalsCompletedCount.ToString() },
-            { "Goal Failed", goalsFailedCount.ToString() },
-            { "Goal Success Ratio", successRatio.ToString("P2") } // P2 formats the number as a percentage
-        };
-
-        // Invoke the event with the results dictionary
-        updateEnvResults?.Invoke(metrics);
     }
 
     public override void Reset()
@@ -209,6 +185,7 @@ public class EnvRobotWaves : EnvironementBase
     public override void StartReplay()
     {
         _isReplay = true;
+        Reset();
         //ShowLoaderPopup("Buffering episodes...");
 
     }
@@ -311,5 +288,67 @@ public class EnvRobotWaves : EnvironementBase
     {
         _loaderPopup.Close();
     }
+
+    #region Evaluations Metrics
+
+    private void InitializeEvaluationMetrics()
+    {
+        evaluationMetrics = new EvaluationMetrics();
+
+        envMetricsTemplate = new Dictionary<string, MetricValue>
+        {
+            {"Avg kills", new MetricValue(MetricType.Int, 0)},
+            {"Avg shoots missed", new MetricValue(MetricType.Float, 0.0)},
+            {"Avg shoots hits", new MetricValue(MetricType.Float, 0.0f)}
+        };
+        evaluationMetrics.Initialize(envId.ToString(), envMetricsTemplate);
+    }
+
+    public override Dictionary<string, MetricValue> GetEvaluaitonCommonTemplate()
+    {
+        return evaluationMetrics.GetZeroedCommonTemplate(envId.ToString());
+    }
+
+    public override Dictionary<string, MetricValue> GetEvaluaitonEnvTemplate()
+    {
+        return evaluationMetrics.GetZeroedEnvTemplate(envId.ToString());
+    }
+
+    public override Dictionary<string, string> GetEvaluationMetricResults()
+    {
+        Dictionary<string, string> metrics = new Dictionary<string, string>
+        {
+            { "Goal Completed", goalsCompletedCount.ToString() },
+            { "Goal Failed", goalsFailedCount.ToString() },
+            { "Goal Success Ratio", successRatio.ToString("P2") } // P2 formats the number as a percentage
+        };
+
+        return metrics;
+    }
+
+    private void UpdateEvaluationCommonResults()
+    {
+        // Calculate success ratio
+        float totalGoals = goalsCompletedCount + goalsFailedCount;
+        successRatio = totalGoals > 0 ? (float)goalsCompletedCount / totalGoals : 0;
+
+        // Create and populate the results dictionary
+        Dictionary<string, MetricValue> metrics = new Dictionary<string, MetricValue>
+        {
+            { "Goal Completed", new MetricValue(MetricType.Int, goalsCompletedCount) },
+            { "Goal Failed",  new MetricValue(MetricType.Int, goalsFailedCount)  },
+            { "Goal Success Ratio",  new MetricValue(MetricType.Percent, successRatio)  } // P2 formats the number as a percentage
+        };
+
+        // Invoke the event with the results dictionary
+        updateEnvResults?.Invoke(metrics);
+    }
+
+    public override Dictionary<string, string> GetEvaluationMetricTeamplate()
+    {
+        throw new NotImplementedException();
+    }
+
+    #endregion
 
 }

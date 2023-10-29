@@ -303,7 +303,7 @@ public class AcademyTrainState : StateBase
 
             RemoteTrainManager.instance.CloseWebSocketConnection();
 
-            _controller.SwitchState(new AcademyResultsState(_controller));
+            _controller.SwitchState(new EvaluateAndResultsState(_controller));
         }
         catch(Exception e)
         {

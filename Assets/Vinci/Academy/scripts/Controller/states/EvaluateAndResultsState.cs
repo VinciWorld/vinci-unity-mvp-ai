@@ -1,22 +1,17 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
-using Unity.Barracuda;
-using Unity.Barracuda.ONNX;
-using Unity.MLAgents;
 using UnityEngine;
 using Vinci.Core.Managers;
 using Vinci.Core.StateMachine;
 using Vinci.Core.UI;
 
-public class AcademyResultsState : StateBase
+public class EvaluateAndResultsState : StateBase
 {
     AcademyController _controller;
     AcademyTrainResultsView _resultsView;
 
     EnvironementBase currentEnvInstance;
 
-    public AcademyResultsState(AcademyController controller)
+    public EvaluateAndResultsState(AcademyController controller)
     {
         _controller = controller;
     }
@@ -29,8 +24,10 @@ public class AcademyResultsState : StateBase
         _resultsView.evaluateModelButtonPressed += OnTestModelButtonPressed;
         _resultsView.stopEvaluateModelButtonPressed += OnStopTestButtonPressed;
         _resultsView.homeButtonPressed += OnHomeButtonPressed;
+
         ViewManager.Show<AcademyTrainResultsView>();
-        _resultsView.ShowResultsSubView();
+
+      
 
         _resultsView.UpdateTrainResults(
             _controller.session.selectedAgent.modelConfig.GetStepsTrained(),
@@ -42,6 +39,10 @@ public class AcademyResultsState : StateBase
         currentEnvInstance.updateEnvResults += OnUpdateEnvResults;
         currentEnvInstance.StopEnv();
         currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.InferenceOnly);
+
+        //_resultsView.ShowResultsSubView();
+
+        EvaluateModel();
 
 
         Dictionary<string, string> evaluationResults =

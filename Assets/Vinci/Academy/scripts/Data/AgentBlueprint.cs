@@ -69,6 +69,7 @@ public class AgentBlueprint
         return modelConfig.runId;
     }
 
+    /*
     public void AddOrUpdateEvaluationResults(string envId, Dictionary<string, string> evaluationResults)
     {
         modelConfig.isEvaluated = true;
@@ -80,5 +81,6 @@ public class AgentBlueprint
         modelConfig.modelEnvsEvaluationsResults.TryGetValue(envId, out Dictionary<string, string> results);
         return results; 
     }
+    */
 }
 

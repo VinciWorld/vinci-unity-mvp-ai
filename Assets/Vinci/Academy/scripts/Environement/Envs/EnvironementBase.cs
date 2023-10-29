@@ -25,6 +25,7 @@ public abstract class EnvironementBase : MonoBehaviour
 
     public abstract void SetAgentBehavior(BehaviorType type);
 
+    public abstract Dictionary<string, string> GetEvaluationMetricTeamplate();
     public abstract Dictionary<string, string> GetEvaluationMetricResults();
 
     public abstract void OnActionsFromServerReceived(string actions);

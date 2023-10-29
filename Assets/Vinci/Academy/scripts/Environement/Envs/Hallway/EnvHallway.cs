@@ -337,4 +337,9 @@ public class EnvHallway : EnvironementBase
     {
         throw new System.NotImplementedException();
     }
+
+    public override Dictionary<string, string> GetEvaluationMetricTeamplate()
+    {
+        throw new System.NotImplementedException();
+    }
 }
