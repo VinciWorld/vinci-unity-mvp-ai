@@ -21,26 +21,26 @@ public class PlayerData
     public event Action<int> stepsAvailableChange;
 
 
-    public AgentConfig currentAgentConfig;
-    public List<AgentConfig> agents = new List<AgentConfig>();
+    public AgentBlueprint currentAgentConfig;
+    public List<AgentBlueprint> agents = new List<AgentBlueprint>();
 
 
     //Relation between model and train env
     public Dictionary<string, TrainEnvironmentConfig> modelTrainingEnv = new Dictionary<string, TrainEnvironmentConfig>();
     
 
-    public void AddAgent(AgentConfig newAgent)
+    public void AddAgent(AgentBlueprint newAgent)
     {
         currentAgentConfig = newAgent;
         agents.Add(newAgent);
     }
 
-    public AgentConfig GetAgent(int index)
+    public AgentBlueprint GetAgent(int index)
     {
         return agents[index];
     }
 
-    public AgentConfig GetAgentById(string id)
+    public AgentBlueprint GetAgentById(string id)
     {
         return agents.FirstOrDefault(agent => agent.id == id);
     }

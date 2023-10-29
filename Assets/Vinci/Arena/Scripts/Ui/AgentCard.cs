@@ -13,7 +13,7 @@ public class AgentCard : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointe
     public event Action<int> OnTapDownAction, OnTapReleaseAction;
 
     [HideInInspector] public int AgentCardId;
-    [HideInInspector] public AgentConfig agentConfig;
+    [HideInInspector] public AgentBlueprint agentConfig;
 
     public Image portraitImage; //Inspector-set reference
     private CanvasGroup canvasGroup;
@@ -27,7 +27,7 @@ public class AgentCard : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointe
     }
 
     //called by CardManager, it feeds CardData so this card can display the placeable's portrait
-    public void InitialiseWithData(AgentConfig agentConfig)
+    public void InitialiseWithData(AgentBlueprint agentConfig)
     {
         this.agentConfig = agentConfig;
         //portraitImage.sprite = this.agentConfig.agentImage;

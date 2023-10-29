@@ -89,9 +89,9 @@ namespace Vinci.Core.Managers
             {
                 agent.modelConfig.isModelLoaded = false;
 
-                if(!agent.modelConfig.nnModel_path.IsNullOrEmpty())
+                if(!agent.modelConfig.nnModelPath.IsNullOrEmpty())
                 {
-                    byte[] rawModel = File.ReadAllBytes(agent.modelConfig.nnModel_path);
+                    byte[] rawModel = File.ReadAllBytes(agent.modelConfig.nnModelPath);
 
                     if(rawModel != null)
                     {

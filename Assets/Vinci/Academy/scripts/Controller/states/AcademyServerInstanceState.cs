@@ -48,7 +48,7 @@ public class AcademyServerInstanceState : StateBase
         Debug.Log("START TRAINNING");
 
         TrainEnvironmentConfig envConfig = _controller.academyData.GetTrainEnvById(trainEnvConfig.env_id);
-        AgentConfig agentConfig = _controller.academyData.GetAgentById(trainEnvConfig.agent_id);
+        AgentBlueprint agentConfig = _controller.academyData.GetAgentById(trainEnvConfig.agent_id);
 
         if(envConfig == null)
         {

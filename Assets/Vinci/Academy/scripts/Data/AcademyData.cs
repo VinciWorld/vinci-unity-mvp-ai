@@ -7,7 +7,7 @@ using Vinci.Academy.Environement;
 [Serializable]
 public class AcademyData
 {
-    public List<AgentConfig> availableAgents;
+    public List<AgentBlueprint> availableAgents;
     public List<TrainEnvironmentConfig> availableTrainEnvs;
 
     public TrainEnvironmentConfig GetTrainEnvById(string id)
@@ -15,7 +15,7 @@ public class AcademyData
         return availableTrainEnvs.FirstOrDefault(env => env.env_id == id);
     }
 
-    public AgentConfig GetAgentById(string id)
+    public AgentBlueprint GetAgentById(string id)
     {
         return availableAgents.FirstOrDefault(agent => agent.id == id);
     }

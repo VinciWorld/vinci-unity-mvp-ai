@@ -1,53 +1,92 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Barracuda;
-using UnityEngine;
-//using MLAgents;
+
 
 [Serializable]
 public class ModelConfig
 {
-    public string run_id;
-
+    // Properties
+    public string runId;
     public BehaviorConfigSmall behavior;
-
     public TrainJobStatus trainJobStatus;
+    public string nnModelPath;
+    public NNModel nnModel;
+    public int trainCount => trainMetrics.Count;
+    public int _totalStepsTrained;
+    public int totalStepsTrained => _totalStepsTrained;
 
-    public bool isModelSubmitted = false;
-    public bool isModelTraining = false;
-    public bool isModelSucceeded = false;
+    // Training Flags
+    // public bool isModelSubmitted = false;
+    // public bool isModelTraining  = false;
+    // public bool isModelSucceeded  = false;
 
+    // public bool modelFinishedTraining = false;
     public bool isModelLoaded = false;
     public bool isModelMinted = false;
-    public bool modelFinishedTraining = false;
-
     public bool isEvaluated = false;
 
-    public string nnModel_path;
-
-    public NNModel nnModel;
-
-    public ModelTrainMetrics trainMetrics = new();
+    // Metrics & Evaluations
+    public List<ModelTrainMetric> trainMetrics = new();
     public Dictionary<string, Dictionary<string, string>> modelEnvsEvaluationsResults = new();
 
-    public void AddTrainMetrics(float meanReward, float stdReward)
+    // Methods
+    public ModelTrainMetric GetMostRecentMetric() => trainMetrics.LastOrDefault();
+
+    public float GetLastMeanReward() => GetMostRecentMetric()?.GetLastMeanReward() ?? 0f;
+    public float GetLastStdReward() => GetMostRecentMetric()?.GetLastStdReward() ?? 0f;
+    public int GetStepsTrained() => GetMostRecentMetric()?.stepsTrained ?? 0;
+
+
+    public void CreateNewTrainMetricsEntry()
     {
-        trainMetrics.meanReward = meanReward;
-        trainMetrics.stdReward = stdReward;
+        var trainMetric = new ModelTrainMetric();
+        trainMetrics.Add(trainMetric);
+    }
+
+    public void ResetLastTrainMetricsEntry()
+    {
+        var lastMetric = GetMostRecentMetric();
+        lastMetric.meanReward.Clear();
+        lastMetric.stdReward.Clear();
+        lastMetric.stepsTrained = 0;
     }
 
     public void AddStepsTrained(int stepsTrained)
     {
-        trainMetrics.stepsTrained = stepsTrained;
-        trainMetrics.totalStepsTrained += stepsTrained;
+        _totalStepsTrained += stepsTrained;
+        var lastMetric = GetMostRecentMetric();
+        if (lastMetric != null)
+        {
+            lastMetric.stepsTrained = stepsTrained;
+        }
     }
+
+    public void AddTrainMetrics(float meanReward, float stdReward)
+    {
+        var lastMetric = GetMostRecentMetric();
+        if (lastMetric != null)
+        {
+            lastMetric.AddMeanReward(meanReward);
+            lastMetric.AddStdReward(stdReward);
+        }
+    }
+
 }
 
 [Serializable]
-public class ModelTrainMetrics
+public class ModelTrainMetric
 {
-    public float meanReward = 0.0f;
-    public float stdReward = 0.0f;
-    public int stepsTrained = 0;
-    public int totalStepsTrained = 0;
+    // Properties
+ 
+    public List<float> meanReward { get; set; } = new List<float>();
+    public List<float> stdReward { get; set; } = new List<float>();
+    public int stepsTrained { get; set; } = 0;
+
+    // Methods
+    public float GetLastMeanReward() => meanReward.LastOrDefault();
+    public float GetLastStdReward() => stdReward.LastOrDefault();
+    public void AddMeanReward(float reward) => meanReward.Add(reward);
+    public void AddStdReward(float reward) => stdReward.Add(reward);
 }

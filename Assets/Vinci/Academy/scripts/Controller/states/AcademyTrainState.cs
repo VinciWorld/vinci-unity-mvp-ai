@@ -157,18 +157,22 @@ public class AcademyTrainState : StateBase
         else if(trainJobStatus.status == TrainJobStatus.FAILED)
         {
             Debug.Log("JOB FAILED");
+            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.FAILED;
             _controller.SwitchState(new AcademyTrainState(_controller));
         }
         else if (trainJobStatus.status == TrainJobStatus.RETRIEVED)
         {
+            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RETRIEVED;
             trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + trainJobStatus.status);
         }
         else if (trainJobStatus.status == TrainJobStatus.STARTING)
         {
+            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.STARTING;
             trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + trainJobStatus.status);
         }
         else if(trainJobStatus.status == TrainJobStatus.RUNNING)
         {
+            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RUNNING;
             trainView.CloseLoaderPopup();
         }
 
@@ -217,24 +221,34 @@ public class AcademyTrainState : StateBase
 
         try
         {
-            PostResponseTrainJob response = await RemoteTrainManager.instance.StartRemoteTrainning(trainJobRequest);
+            PostResponseTrainJob response = await RemoteTrainManager.instance.StartRemoteTrainning(trainJobRequest);           
+            RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
 
             _controller.session.selectedAgent.SetRunID(response.run_id);
-           
-            RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
+            _controller.session.selectedAgent.modelConfig.CreateNewTrainMetricsEntry();
 
             switch (response.job_status)
             {
                 case TrainJobStatus.SUBMITTED:
-                case TrainJobStatus.RETRIEVED:
-                case TrainJobStatus.STARTING:
-                case TrainJobStatus.RUNNING:
-                    _controller.session.selectedAgent.modelConfig.isModelSubmitted = true;
-                    _controller.session.selectedAgent.modelConfig.isModelTraining = true;
-
+                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUBMITTED;
                     trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + response.job_status);
-
                     break;
+
+                case TrainJobStatus.RETRIEVED:
+                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RETRIEVED;
+                    trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + response.job_status);
+                    break;
+
+                case TrainJobStatus.STARTING:
+                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.STARTING;
+                    trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + response.job_status);
+                    break;
+
+                case TrainJobStatus.RUNNING:
+                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RUNNING;
+                    trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + response.job_status);
+                    break;
+
                 case TrainJobStatus.SUCCEEDED:
                     break;
 
@@ -249,7 +263,7 @@ public class AcademyTrainState : StateBase
         {
             trainView.SetTrainSetupSubViewState(true);
             trainView.SetTrainHudSubViewState(false);
-            _controller.session.selectedAgent.modelConfig.isModelTraining = false;
+            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.FAILED;
             Debug.LogError("Unable to add job to the queue: " + e.Message);
             trainView.CloseLoaderPopup();
         }
@@ -265,30 +279,39 @@ public class AcademyTrainState : StateBase
     }
 
     void OnBinaryDataRecived(byte[] data)
-    {
-        string runId = _controller.session.selectedAgent.GetModelRunID();
+    {   
+        try
+        {
+            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUCCEEDED;
 
-        var (filePath, nnModel) = MLHelper.SaveAndLoadModel(data, runId, _controller.session.selectedAgent.modelConfig.behavior.behavior_name);
+            string runId = _controller.session.selectedAgent.GetModelRunID();
+
+            var (filePath, nnModel) = MLHelper.SaveAndLoadModel(data, runId, _controller.session.selectedAgent.modelConfig.behavior.behavior_name);
+
+            _controller.session.selectedAgent.modelConfig.isModelLoaded = true;
+            _controller.session.selectedAgent.SetModelAndPath(filePath, nnModel);
+
+            // Load model on current agent
+            _controller.session
+            .currentAgentInstance.GetComponent<IAgent>()
+            .LoadModel(_controller.session.selectedAgent.modelConfig.behavior.behavior_name, nnModel);
 
 
-        _controller.session.selectedAgent.SetModelAndPath(filePath, nnModel);
+            _controller.session.selectedAgent.modelConfig.AddStepsTrained(
+                _controller.session.selectedAgent.modelConfig.behavior.steps
+            );
 
-        // Load model on current agent
-        _controller.session
-        .currentAgentInstance.GetComponent<IAgent>()
-        .LoadModel(_controller.session.selectedAgent.modelConfig.behavior.behavior_name, nnModel);
+            _controller.session.currentEnvInstance.StopReplay();
 
+            RemoteTrainManager.instance.CloseWebSocketConnection();
 
-        _controller.session.selectedAgent.modelConfig.AddStepsTrained(
-            _controller.session.selectedAgent.modelConfig.behavior.steps
-        );
+            _controller.SwitchState(new AcademyResultsState(_controller));
+        }
+        catch(Exception e)
+        {
+            Debug.Log("OnBinaryDataRecived error: " + e.Message);
+        }
 
-        RemoteTrainManager.instance.CloseWebSocketConnection();
-
-        _controller.session.currentEnvInstance.StopReplay();
-        _controller.session.selectedAgent.modelConfig.isModelTraining = false;
-
-        _controller.SwitchState(new AcademyResultsState(_controller));
     }
 
     void OnReceivedTrainMetrics(MetricsMsg metrics)

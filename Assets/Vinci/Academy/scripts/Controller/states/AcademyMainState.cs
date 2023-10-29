@@ -42,23 +42,14 @@ public class AcademyMainState : StateBase
         {
             _controller.session.selectedAgent = GameManager.instance.playerData.GetAgent(0);
         }
+        else
+        {
+            _mainView.SetLastJobStatus("Not trained");
+        }
 
         //TODO: Load available models for this model
 
         UpdateTrainJobStatus();
-
-        //Retrieve trained Model from central node if it was't downloaded yet
-        if (_controller.session.selectedAgent != null)
-        {
-            if (!_controller.session.selectedAgent.modelConfig.run_id.IsNullOrEmpty()
-                && !_controller.session.selectedAgent.modelConfig.isModelLoaded)
-            {
-                
-                //if (_controller.manager.playerData.agents[0].modelConfig.isModelSucceeded == false)
-               // {  
-               // }
-            }
-        }
 
     }
 
@@ -128,7 +119,7 @@ public class AcademyMainState : StateBase
 
         foreach (var agent in _controller.manager.playerData.agents)
         {
-            if (!agent.modelConfig.run_id.IsNullOrEmpty())
+            if (!agent.modelConfig.runId.IsNullOrEmpty())
             {
                 if(_controller.session.selectedAgent.modelConfig.trainJobStatus == TrainJobStatus.SUCCEEDED
                     && _controller.session.selectedAgent.modelConfig.isModelLoaded)
@@ -139,7 +130,7 @@ public class AcademyMainState : StateBase
                 if(!_controller.session.selectedAgent.modelConfig.isModelLoaded)
                 {
                     PostResponseTrainJob job = await RemoteTrainManager.instance.GetTrainJobByRunID(
-                        agent.modelConfig.run_id, null
+                        agent.modelConfig.runId, null
                     );
 
                     OnReceiveTrainJobStatus(job);
@@ -148,7 +139,7 @@ public class AcademyMainState : StateBase
                 {
                     _mainView.SetLastJobStatus("Completed");
                     _mainView.SetLastTrainSteps(agent.modelConfig.behavior.steps);
-                    _mainView.SetTotalStepsTrained(agent.modelConfig.trainMetrics.stepsTrained);
+                    _mainView.SetTotalStepsTrained(agent.modelConfig.totalStepsTrained);
                 }
             }
             else
@@ -163,7 +154,7 @@ public class AcademyMainState : StateBase
 
         Debug.Log("Receveid train job: " + job.job_status);
 
-        AgentConfig agent = GameManager.instance.playerData.GetAgentById(job.env_config.agent_id);
+        AgentBlueprint agent = GameManager.instance.playerData.GetAgentById(job.env_config.agent_id);
 
         switch (job.job_status)
         {
@@ -171,28 +162,24 @@ public class AcademyMainState : StateBase
                 {
                     _mainView.SetLastJobStatus("Waitting to train");
                     _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUBMITTED;
-                    agent.modelConfig.isModelSubmitted = true;
                     break;
                 }
             case TrainJobStatus.RETRIEVED:
                 {
                     _mainView.SetLastJobStatus("Waitting to train");
                     _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RETRIEVED;
-                    agent.modelConfig.isModelTraining = true;
                     break;
                 }
             case TrainJobStatus.STARTING:
                 {
                     _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.STARTING;
                     _mainView.SetLastJobStatus("Waitting to train");
-                    agent.modelConfig.isModelTraining = true;
                     break;
                 }
             case TrainJobStatus.RUNNING:
                 {
                     _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RUNNING;
                     _mainView.SetLastJobStatus("Training");
-                    agent.modelConfig.isModelTraining = true;
                     break;
                 }
             case TrainJobStatus.SUCCEEDED:
@@ -204,16 +191,17 @@ public class AcademyMainState : StateBase
                     {
                         try
                         {
-                            byte[] model = await RemoteTrainManager.instance.DownloadNNModel(agent.modelConfig.run_id);
+                            byte[] model = await RemoteTrainManager.instance.DownloadNNModel(agent.modelConfig.runId);
 
-                            var (filePath, nnModel) = MLHelper.SaveAndLoadModel(model, agent.modelConfig.run_id, agent.modelConfig.behavior.behavior_name);
+                            var (filePath, nnModel) = MLHelper.SaveAndLoadModel(model, agent.modelConfig.runId, agent.modelConfig.behavior.behavior_name);
 
                             agent.SetModelAndPath(filePath, nnModel);
-                            agent.modelConfig.isModelSucceeded = true;
+                            agent.modelConfig.isModelLoaded = true;
 
                             _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUCCEEDED;
-                            agent.modelConfig.isModelTraining = false;
-                            agent.modelConfig.modelFinishedTraining = true;
+
+                            //TODO: Retrive from server metrics from the train!
+                            agent.modelConfig.ResetLastTrainMetricsEntry();
 
                             agent.modelConfig.AddStepsTrained(
                                 agent.modelConfig.behavior.steps
@@ -221,7 +209,7 @@ public class AcademyMainState : StateBase
 
                             _mainView.SetLastJobStatus("Trained Completed");
                             _mainView.SetLastTrainSteps(agent.modelConfig.behavior.steps);
-                            _mainView.SetTotalStepsTrained(agent.modelConfig.trainMetrics.stepsTrained);
+                            _mainView.SetTotalStepsTrained(agent.modelConfig.GetMostRecentMetric().stepsTrained);
    
                         }
                         catch (Exception e)

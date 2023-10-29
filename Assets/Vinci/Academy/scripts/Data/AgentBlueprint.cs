@@ -6,7 +6,7 @@ using Vinci.Academy.Environement;
 using Vinci.Core.Managers;
 
 [Serializable]
-public class AgentConfig
+public class AgentBlueprint
 {
     public string id;
 
@@ -45,21 +45,8 @@ public class AgentConfig
 
     public void SetModelAndPath(string modelPath, NNModel nnModel)
     {
-        modelConfig.nnModel_path = modelPath;
+        modelConfig.nnModelPath = modelPath;
         modelConfig.nnModel = nnModel;
-
-        modelConfig.isModelTraining = false;
-        modelConfig.isModelLoaded = true;
-    }
-
-    public bool GetIsModelTraining()
-    {
-        return modelConfig.isModelTraining;
-    }
-
-    public void SetIsModelTraining(bool isTraining)
-    {
-        modelConfig.isModelTraining = isTraining;
     }
 
     public bool GetIsModelLoaded()
@@ -74,12 +61,12 @@ public class AgentConfig
 
     public void SetRunID(string runId)
     {
-        modelConfig.run_id = runId;
+        modelConfig.runId = runId;
     }
 
     public string GetModelRunID()
     {
-        return modelConfig.run_id;
+        return modelConfig.runId;
     }
 
     public void AddOrUpdateEvaluationResults(string envId, Dictionary<string, string> evaluationResults)

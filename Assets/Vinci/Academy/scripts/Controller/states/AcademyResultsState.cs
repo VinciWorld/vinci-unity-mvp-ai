@@ -33,9 +33,9 @@ public class AcademyResultsState : StateBase
         _resultsView.ShowResultsSubView();
 
         _resultsView.UpdateTrainResults(
-            _controller.session.selectedAgent.modelConfig.trainMetrics.stepsTrained,
-            _controller.session.selectedAgent.modelConfig.trainMetrics.meanReward,
-            _controller.session.selectedAgent.modelConfig.trainMetrics.stdReward
+            _controller.session.selectedAgent.modelConfig.GetStepsTrained(),
+            _controller.session.selectedAgent.modelConfig.GetLastMeanReward(),
+            _controller.session.selectedAgent.modelConfig.GetLastStdReward()
         );
 
         currentEnvInstance = _controller.session.currentEnvInstance;
@@ -114,7 +114,7 @@ public class AcademyResultsState : StateBase
     {
         _resultsView.ShowLoaderPopup("Uploading trained Model to Arweave...");
 
-        string uri = await RemoteTrainManager.instance.SaveOnArweaveModelFromS3(_controller.session.selectedAgent.modelConfig.run_id);
+        string uri = await RemoteTrainManager.instance.SaveOnArweaveModelFromS3(_controller.session.selectedAgent.GetModelRunID());
         Debug.Log("uri: " + uri);
         _resultsView.UpdatePopupMessange("Minting model...");
 

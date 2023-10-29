@@ -9,7 +9,7 @@ public class PlacableEntityManager : MonoBehaviour
     public GameObject agentCardPrefab;
     public MeshRenderer forbiddenAreaRenderer;
 
-    public event Action<AgentConfig, Vector3> agentDeployed;
+    public event Action<AgentBlueprint, Vector3> agentDeployed;
 
     public RectTransform cardsParent;
 
@@ -36,7 +36,7 @@ public class PlacableEntityManager : MonoBehaviour
 
     public void LoadAgentsCard()
     {
-        List<AgentConfig> agentsConfig = GameManager.instance.playerData.agents;
+        List<AgentBlueprint> agentsConfig = GameManager.instance.playerData.agents;
 
         Debug.Log("LoadAgentsCard");
 
@@ -95,7 +95,7 @@ public class PlacableEntityManager : MonoBehaviour
                 previewHolder.transform.position = hit.point;
                 cards[cardId].ChangeActiveState(true);
 
-                AgentConfig agentConfig = cards[cardId].agentConfig;
+                AgentBlueprint agentConfig = cards[cardId].agentConfig;
                 GameObject.Instantiate(agentPrefab, hit.point, Quaternion.identity, previewHolder.transform);
             }
             else

@@ -86,7 +86,7 @@ public class ArenaGameController : MonoBehaviour
 
 
 
-    void OnDeployedAgent(AgentConfig agentConfig, Vector3 position)
+    void OnDeployedAgent(AgentBlueprint agentConfig, Vector3 position)
     {
         GameObject agent = Instantiate(
             agentPrefab, new Vector3(position.x, position.y + 0.1f, position.z)  , Quaternion.identity
