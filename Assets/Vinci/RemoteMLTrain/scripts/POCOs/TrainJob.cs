@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 [JsonConverter(typeof(TrainJobStatusConverter))]
 public enum TrainJobStatus
 {
+    NONE,
     SUBMITTED,
     RETRIEVED,
     STARTING,

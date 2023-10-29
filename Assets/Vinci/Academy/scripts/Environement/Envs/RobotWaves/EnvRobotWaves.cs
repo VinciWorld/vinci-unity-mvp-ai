@@ -66,7 +66,7 @@ public class EnvRobotWaves : EnvironementBase
         _waveController.completedAllWaves += OnCompletedAllWaves;
         _waveController.completedWave += OnCompletedWave;
 
-        //ShowLoaderPopup("Buffering episodes...");
+
     }
 
     public void OnCompletedWave()
@@ -205,6 +205,13 @@ public class EnvRobotWaves : EnvironementBase
     }
 #endif
 
+
+    public override void StartReplay()
+    {
+        _isReplay = true;
+        //ShowLoaderPopup("Buffering episodes...");
+
+    }
     // CLIENT SIDE
     public override void OnActionsFromServerReceived(string actions)
     {
@@ -226,7 +233,7 @@ public class EnvRobotWaves : EnvironementBase
         _agent.SetIsReplay(true);
 
 
-        UpdateLoaderMessage("Buffering train episode...");
+        UpdateLoaderMessage("Buffering episode...");
         Time.timeScale = 2f;
         while (_isReplay)
         {
@@ -276,10 +283,15 @@ public class EnvRobotWaves : EnvironementBase
 
     public override void StopReplay()
     {
+        Debug.Log("Stop reaply: " + replayActionsLoopCoroutine);
         _isReplay = false;
         _agent.SetIsReplay(false);
-        StopCoroutine(replayActionsLoopCoroutine);
+        if(replayActionsLoopCoroutine != null)
+        {
+            StopCoroutine(replayActionsLoopCoroutine);
+        }
         replayActionsLoopCoroutine = null;
+
         Time.timeScale = 1f;
     }
 

@@ -9,6 +9,7 @@ public abstract class EnvironementBase : MonoBehaviour
     public abstract event Action<string> actionsReceived;
     public abstract event Action<int, int, int> episodeAndStepCountUpdated;
 
+    public abstract void StartReplay();
     public abstract void SetIsReplay(bool isResplay);
     public abstract void StopReplay();
 

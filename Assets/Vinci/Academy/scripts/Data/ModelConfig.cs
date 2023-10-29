@@ -10,7 +10,7 @@ public class ModelConfig
     // Properties
     public string runId;
     public BehaviorConfigSmall behavior;
-    public TrainJobStatus trainJobStatus;
+    public TrainJobStatus trainJobStatus = TrainJobStatus.NONE;
     public string nnModelPath;
     public NNModel nnModel;
     public int trainCount => trainMetrics.Count;
@@ -72,7 +72,6 @@ public class ModelConfig
             lastMetric.AddStdReward(stdReward);
         }
     }
-
 }
 
 [Serializable]
@@ -80,9 +79,9 @@ public class ModelTrainMetric
 {
     // Properties
  
-    public List<float> meanReward { get; set; } = new List<float>();
-    public List<float> stdReward { get; set; } = new List<float>();
-    public int stepsTrained { get; set; } = 0;
+    public List<float> meanReward = new List<float>();
+    public List<float> stdReward  = new List<float>();
+    public int stepsTrained = 0;
 
     // Methods
     public float GetLastMeanReward() => meanReward.LastOrDefault();

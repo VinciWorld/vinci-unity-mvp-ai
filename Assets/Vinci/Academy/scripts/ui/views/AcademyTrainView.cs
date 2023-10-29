@@ -79,7 +79,7 @@ public class AcademyTrainView : View
         _categoryNavBar.homeButtonPressed += OnHomeButtonPressed;
         _categoryNavBar.SetTitles("Train Setup", "Academy");
         _categoryNavBar.SetNavigationButtons(
-            false,
+            true,
             true
         );
 

@@ -25,11 +25,14 @@ public class AcademyMainState : StateBase
         _mainView = ViewManager.GetView<AcademyMainView>();
         ViewManager.Show<AcademyMainView>();
 
-        if(_controller.session == null)
+        _mainView.HideAllButtons();
+
+        RemoteTrainManager.instance.statusReceived += OnReceivedTrainStatus;
+
+        if (_controller.session == null)
         {
             _controller.session = new AcademySession();
         }
-
 
         _mainView.homeButtonPressed += OnHomeButtonPressed;
         _mainView.selectAgentButtonPressed += OnSelectAgentButtonPressed;
@@ -41,21 +44,23 @@ public class AcademyMainState : StateBase
         if(GameManager.instance.playerData.agents.Count > 0)
         {
             _controller.session.selectedAgent = GameManager.instance.playerData.GetAgent(0);
+            UpdateTrainJobStatus();
         }
         else
         {
-            _mainView.SetLastJobStatus("Not trained");
+            _mainView.ShowCreateButton();
+            _mainView.SetLastJobStatus("Not trained", "#E44962");
         }
 
         //TODO: Load available models for this model
-
-        UpdateTrainJobStatus();
-
     }
 
     public override void OnExitState()
     {
-        GameManager.instance.SavePlayerData();
+       // RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
+
+        RemoteTrainManager.instance.statusReceived -= OnReceivedTrainStatus;
+
         _mainView.homeButtonPressed -= OnHomeButtonPressed;
         _mainView.selectAgentButtonPressed -= OnSelectAgentButtonPressed;
         _mainView.createAgentButtonPressed -= OnCreateAgent;
@@ -91,13 +96,12 @@ public class AcademyMainState : StateBase
     void OnHomeButtonPressed()
     {
         OnExitState();
-        GameManager.instance.SavePlayerData();
         SceneLoader.instance.LoadSceneDelay("IdleGame");
     }
 
     private void OnWatchTrainButtonPressed()
     {
-        _controller.session.selectedAgent = _controller.academyData.availableAgents[0];
+        _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
         _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
 
         _controller.SwitchState(new AcademyTrainState(_controller));
@@ -105,12 +109,97 @@ public class AcademyMainState : StateBase
 
     void OnSelectAgentButtonPressed()
     {
-        Debug.Log("_controller.session.selectedAgent: " + _controller.session.selectedAgent);
-        _controller.session.selectedAgent = _controller.academyData.availableAgents[0];
-        Debug.Log("_controller.session.selectedAgent: after " + _controller.session.selectedAgent);
+        _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
         _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
 
         _controller.SwitchState(new AcademyTrainState(_controller));
+    }
+
+    async void OnReceivedTrainStatus(TrainJobStatusMsg trainJobStatus)
+    {
+        if (trainJobStatus.status == TrainJobStatus.SUCCEEDED)
+        {
+            try
+            {
+
+                RemoteTrainManager.instance.CloseWebSocketConnection();
+
+                _mainView.SetLastJobStatus("Loading model...", "#00AE75");
+                _mainView.ShowLoaderPopup("Train is completed! Downloading Model...");
+
+                try
+                {
+                    byte[] model = await RemoteTrainManager.instance.DownloadNNModel(_controller.session.selectedAgent.modelConfig.runId);
+                    var (filePath, nnModel) = MLHelper.SaveAndLoadModel(model, _controller.session.selectedAgent.modelConfig.runId, _controller.session.selectedAgent.modelConfig.behavior.behavior_name);
+
+                    _controller.session.selectedAgent.SetModelAndPath(filePath, nnModel);
+                    _controller.session.selectedAgent.modelConfig.isModelLoaded = true;
+
+                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUCCEEDED;
+
+                    //TODO: Retrive from server metrics from the train!
+                    //agent.modelConfig.ResetLastTrainMetricsEntry();
+
+                    _controller.session.selectedAgent.modelConfig.AddStepsTrained(
+                        _controller.session.selectedAgent.modelConfig.behavior.steps
+                    );
+
+                    GameManager.instance.SavePlayerData();
+
+                    _mainView.SetLastJobStatus("Train completed", "#FFB33A");
+                    _mainView.SetTrainsCount(_controller.session.selectedAgent.modelConfig.trainCount);
+                    _mainView.SetLastTrainSteps(_controller.session.selectedAgent.modelConfig.behavior.steps);
+                    _mainView.SetTotalStepsTrained(_controller.session.selectedAgent.modelConfig.totalStepsTrained);
+                    _mainView.ShowEvaluateButton();
+
+                }
+                catch (Exception e)
+                {
+                    _mainView.SetLastJobStatus("Failed to donwload model!", "#E44962");
+                    _mainView.CloseLoaderPopup();
+                    Debug.Log("Error Unable to load model: " + e.Message + " stake: " + e.StackTrace);
+                }
+
+                //Show button evaluate model
+                _mainView.SetLastJobStatus("Train completed", "#FFB33A");
+                _mainView.ShowEvaluateButton();
+                _mainView.CloseLoaderPopup();
+
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Unable to save and Load model: " + e.Message);
+            }
+        }
+        else if (trainJobStatus.status == TrainJobStatus.FAILED)
+        {
+            Debug.Log("JOB FAILED");
+            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.FAILED;
+            _mainView.SetLastJobStatus("Failed", "#E44962");
+            _controller.SwitchState(new AcademyTrainState(_controller));
+        }
+        else if (trainJobStatus.status == TrainJobStatus.SUBMITTED)
+        {
+            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUBMITTED;
+            _mainView.SetLastJobStatus("On Queue", "#00AE75");
+        }
+        else if (trainJobStatus.status == TrainJobStatus.RETRIEVED)
+        {
+            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RETRIEVED;
+            _mainView.SetLastJobStatus("Retrieved", "#00AE75");
+        }
+        else if (trainJobStatus.status == TrainJobStatus.STARTING)
+        {
+            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.STARTING;
+            _mainView.SetLastJobStatus("Starting", "#00AE75");
+        }
+        else if (trainJobStatus.status == TrainJobStatus.RUNNING)
+        {
+            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RUNNING;
+            _mainView.SetLastJobStatus("Training", "#00AE75");
+        }
+
+        Debug.Log("Status received: " + trainJobStatus.status);
     }
 
 
@@ -124,10 +213,14 @@ public class AcademyMainState : StateBase
                 if(_controller.session.selectedAgent.modelConfig.trainJobStatus == TrainJobStatus.SUCCEEDED
                     && _controller.session.selectedAgent.modelConfig.isModelLoaded)
                 {
-                    continue;
+                    _mainView.SetLastJobStatus("Completed", "#FFB33A");
+                    _mainView.SetTrainsCount(agent.modelConfig.trainCount);
+                    _mainView.SetLastTrainSteps(agent.modelConfig.behavior.steps);
+                    _mainView.SetTotalStepsTrained(agent.modelConfig.totalStepsTrained);
+
+                    _mainView.ShowWTrainButton();
                 }
-                
-                if(!_controller.session.selectedAgent.modelConfig.isModelLoaded)
+                else
                 {
                     PostResponseTrainJob job = await RemoteTrainManager.instance.GetTrainJobByRunID(
                         agent.modelConfig.runId, null
@@ -135,16 +228,20 @@ public class AcademyMainState : StateBase
 
                     OnReceiveTrainJobStatus(job);
                 }
+
+            /*    
                 else
                 {
                     _mainView.SetLastJobStatus("Completed");
                     _mainView.SetLastTrainSteps(agent.modelConfig.behavior.steps);
                     _mainView.SetTotalStepsTrained(agent.modelConfig.totalStepsTrained);
                 }
+            */
             }
             else
             {
-                _mainView.SetLastJobStatus("Not trained");
+                _mainView.ShowWTrainButton();
+                _mainView.SetLastJobStatus("Not trained", "#E44962");
             }
         }        
     }
@@ -155,68 +252,68 @@ public class AcademyMainState : StateBase
         Debug.Log("Receveid train job: " + job.job_status);
 
         AgentBlueprint agent = GameManager.instance.playerData.GetAgentById(job.env_config.agent_id);
+        _controller.session.selectedAgent.modelConfig.trainJobStatus = job.job_status;
 
         switch (job.job_status)
         {
             case TrainJobStatus.SUBMITTED:
-                {
-                    _mainView.SetLastJobStatus("Waitting to train");
-                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUBMITTED;
-                    break;
-                }
             case TrainJobStatus.RETRIEVED:
-                {
-                    _mainView.SetLastJobStatus("Waitting to train");
-                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RETRIEVED;
-                    break;
-                }
             case TrainJobStatus.STARTING:
                 {
-                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.STARTING;
-                    _mainView.SetLastJobStatus("Waitting to train");
+                    _mainView.SetLastJobStatus("On Queue", "#00AE75");
+                    _mainView.ShowWatchButton();
                     break;
                 }
             case TrainJobStatus.RUNNING:
                 {
-                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RUNNING;
-                    _mainView.SetLastJobStatus("Training");
+                    if (!RemoteTrainManager.instance.isConnected)
+                    {
+                        RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
+                    }
+
+                    _mainView.SetTrainsCount(agent.modelConfig.trainCount);
+                    _mainView.SetLastTrainSteps(agent.modelConfig.behavior.steps);
+                    _mainView.SetTotalStepsTrained(agent.modelConfig.totalStepsTrained);
+
+                    _mainView.SetLastJobStatus("Training", "#00AE75");
+                    _mainView.ShowWatchButton();
                     break;
                 }
             case TrainJobStatus.SUCCEEDED:
                 {
-                    _mainView.SetLastJobStatus("Loading model...");
+                    _mainView.SetLastJobStatus("Loading model...", "#00AE75");
                     _mainView.ShowLoaderPopup("Train is completed! Downloading Model...");
 
-                    if (!agent.modelConfig.isModelLoaded)
+                    try
                     {
-                        try
-                        {
-                            byte[] model = await RemoteTrainManager.instance.DownloadNNModel(agent.modelConfig.runId);
+                        byte[] model = await RemoteTrainManager.instance.DownloadNNModel(agent.modelConfig.runId);
+                        var (filePath, nnModel) = MLHelper.SaveAndLoadModel(model, agent.modelConfig.runId, agent.modelConfig.behavior.behavior_name);
 
-                            var (filePath, nnModel) = MLHelper.SaveAndLoadModel(model, agent.modelConfig.runId, agent.modelConfig.behavior.behavior_name);
+                        agent.SetModelAndPath(filePath, nnModel);
+                        agent.modelConfig.isModelLoaded = true;
 
-                            agent.SetModelAndPath(filePath, nnModel);
-                            agent.modelConfig.isModelLoaded = true;
+                        _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUCCEEDED;
 
-                            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUCCEEDED;
+                        //TODO: Retrive from server metrics from the train!
+                        //agent.modelConfig.ResetLastTrainMetricsEntry();
 
-                            //TODO: Retrive from server metrics from the train!
-                            agent.modelConfig.ResetLastTrainMetricsEntry();
+                        agent.modelConfig.AddStepsTrained(
+                            agent.modelConfig.behavior.steps
+                        );
 
-                            agent.modelConfig.AddStepsTrained(
-                                agent.modelConfig.behavior.steps
-                            );
+                        GameManager.instance.SavePlayerData();
 
-                            _mainView.SetLastJobStatus("Trained Completed");
-                            _mainView.SetLastTrainSteps(agent.modelConfig.behavior.steps);
-                            _mainView.SetTotalStepsTrained(agent.modelConfig.GetMostRecentMetric().stepsTrained);
-   
-                        }
-                        catch (Exception e)
-                        {
-                            _mainView.SetLastJobStatus("Failed to donwload model!");
-                            Debug.Log("Error Unable to load model: " + e.Message + " stake: " + e.StackTrace);
-                        }
+                        _mainView.SetLastJobStatus("Train completed", "#FFB33A");
+                        _mainView.SetTrainsCount(agent.modelConfig.trainCount);
+                        _mainView.SetLastTrainSteps(agent.modelConfig.behavior.steps);
+                        _mainView.SetTotalStepsTrained(agent.modelConfig.totalStepsTrained);
+                        _mainView.ShowEvaluateButton();
+
+                    }
+                    catch (Exception e)
+                    {
+                        _mainView.SetLastJobStatus("Failed to donwload model!", "#E44962");
+                        Debug.Log("Error Unable to load model: " + e.Message + " stake: " + e.StackTrace);
                     }
 
                     _mainView.CloseLoaderPopup();

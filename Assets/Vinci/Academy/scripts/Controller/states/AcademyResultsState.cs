@@ -45,7 +45,7 @@ public class AcademyResultsState : StateBase
 
 
         Dictionary<string, string> evaluationResults =
-             GameManager.instance.playerData.GetEvaluationResultsByKey(_controller.session.selectedTrainEnv.env_id);
+            _controller.session.GetEvaluationResultsByKey(_controller.session.selectedTrainEnv.env_id);
 
         if (_controller.session.selectedAgent.modelConfig.isEvaluated && evaluationResults != null)
         {   
@@ -91,7 +91,7 @@ public class AcademyResultsState : StateBase
         Time.timeScale = 1;
         currentEnvInstance.StopEnv();
 
-        GameManager.instance.playerData.AddOrUpdateEvaluationResults(
+        _controller.session.AddOrUpdateEvaluationResults(
             _controller.session.selectedTrainEnv.env_id,
             currentEnvInstance.GetEvaluationMetricResults()
         );
@@ -99,7 +99,7 @@ public class AcademyResultsState : StateBase
         GameManager.instance.SavePlayerData();
 
         _resultsView.UpdateEvaluationMetricsResults(
-            GameManager.instance.playerData.GetEvaluationResultsByKey(_controller.session.selectedTrainEnv.env_id)
+            _controller.session.GetEvaluationResultsByKey(_controller.session.selectedTrainEnv.env_id)
         );
 
         _resultsView.ShowResultsSubView();

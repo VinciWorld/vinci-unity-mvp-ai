@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.Barracuda;
 using System.Linq;
 using Vinci.Academy.Environement;
+using UnityEngine.Rendering;
 
 [System.Serializable]
 public class PlayerData
@@ -21,7 +22,7 @@ public class PlayerData
     public event Action<int> stepsAvailableChange;
 
 
-    public AgentBlueprint currentAgentConfig;
+    //public AgentBlueprint currentAgentConfig;
     public List<AgentBlueprint> agents = new List<AgentBlueprint>();
 
 
@@ -31,7 +32,7 @@ public class PlayerData
 
     public void AddAgent(AgentBlueprint newAgent)
     {
-        currentAgentConfig = newAgent;
+       // currentAgentConfig = newAgent;
         agents.Add(newAgent);
     }
 
@@ -44,7 +45,7 @@ public class PlayerData
     {
         return agents.FirstOrDefault(agent => agent.id == id);
     }
-
+    /*
     public void SetIsModelLoaded(bool isTrained)
     {
         currentAgentConfig.SetIsModelLoaded(isTrained);
@@ -65,6 +66,7 @@ public class PlayerData
         return currentAgentConfig.GetIsModelLoaded();
     }
 
+
     public void SetModelAndPath(string modelPath, NNModel nnModel)
     {
         SetModelAndPath(modelPath, nnModel);
@@ -79,6 +81,7 @@ public class PlayerData
     {
         return currentAgentConfig.GetEvaluationResultsByKey(envId);
     }
+    */
 
     public void SubtractStepsAvailable(int steps)
     {

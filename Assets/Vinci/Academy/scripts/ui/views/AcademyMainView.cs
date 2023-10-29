@@ -16,11 +16,13 @@ public class AcademyMainView : View
     CategoryNavBar _categoryNavBar;
 
     [SerializeField]
-    private Button _createAgent;
+    private Button _createAgentButton;
     [SerializeField]
-    private Button _selectAgent;
+    private Button _selectAgentButton;
     [SerializeField]
-    private Button _watchTrain;
+    private Button _watchTrainButton;
+    [SerializeField]
+    private Button _evaluateModelButton;
 
     [Header("Agent Info")]
     [SerializeField]
@@ -42,7 +44,7 @@ public class AcademyMainView : View
     [SerializeField]
     private KeyValueText _totalStepsTrainedText;
     [SerializeField]
-    private KeyValueText _lastTrainJobStatus;
+    private TextMeshProUGUI _lastTrainJobStatus;
     [SerializeField]
     private KeyValueText _lastTrainSteps;
 
@@ -57,13 +59,15 @@ public class AcademyMainView : View
     public event Action createAgentButtonPressed;
     public event Action selectAgentButtonPressed;
     public event Action watchTrainingButtonPressed;
+    public event Action evaluateModelButtonPressed;
 
 
     public override void Initialize()
     {
-        _createAgent.onClick.AddListener(() => createAgentButtonPressed?.Invoke());
-        _selectAgent.onClick.AddListener(() => selectAgentButtonPressed?.Invoke());
-        _watchTrain.onClick.AddListener(() => watchTrainingButtonPressed?.Invoke());
+        _createAgentButton.onClick.AddListener(() => createAgentButtonPressed?.Invoke());
+        _selectAgentButton.onClick.AddListener(() => selectAgentButtonPressed?.Invoke());
+        _watchTrainButton.onClick.AddListener(() => watchTrainingButtonPressed?.Invoke());
+        _evaluateModelButton.onClick.AddListener(() => evaluateModelButtonPressed?.Invoke());
     }
 
     public override void Show()
@@ -75,7 +79,7 @@ public class AcademyMainView : View
             true
         );
 
-        CheckIfAgentIsCreated();
+       //CheckIfAgentIsCreated();
         UpdateStats(30, 40, 15);
 
         base.Show();
@@ -96,7 +100,7 @@ public class AcademyMainView : View
 
     public void SetButtonWatchState(bool state)
     {
-        _watchTrain.gameObject.SetActive(state);
+        _watchTrainButton.gameObject.SetActive(state);
     }
 
     public void SetAgentInfo(string type, string name, string description)
@@ -115,13 +119,54 @@ public class AcademyMainView : View
 
     public void CheckIfAgentIsCreated()
     {
-        _createAgent.gameObject.SetActive(true);
-        _selectAgent.gameObject.SetActive(false);
+        _createAgentButton.gameObject.SetActive(true);
+        _selectAgentButton.gameObject.SetActive(false);
         if (GameManager.instance.playerData.agents.Count >= 1)
         {
-            _createAgent.gameObject.SetActive(false);
-            _selectAgent.gameObject.SetActive(true);
+            _createAgentButton.gameObject.SetActive(false);
+            _selectAgentButton.gameObject.SetActive(true);
         }
+    }
+
+    public void HideAllButtons()
+    {
+        _createAgentButton.gameObject.SetActive(false);
+        _selectAgentButton.gameObject.SetActive(false);
+        _watchTrainButton.gameObject.SetActive(false);
+        _evaluateModelButton.gameObject.SetActive(false);
+    }
+
+    public void ShowCreateButton()
+    {
+        _createAgentButton.gameObject.SetActive(true);
+        _selectAgentButton.gameObject.SetActive(false);
+        _watchTrainButton.gameObject.SetActive(false);
+        _evaluateModelButton.gameObject.SetActive(false);
+    }
+
+    public void ShowWTrainButton()
+    {
+        _createAgentButton.gameObject.SetActive(false);
+        _selectAgentButton.gameObject.SetActive(true);
+        _watchTrainButton.gameObject.SetActive(false);
+        _evaluateModelButton.gameObject.SetActive(false);
+    }
+
+    public void ShowWatchButton()
+    {
+        _createAgentButton.gameObject.SetActive(false);
+        _selectAgentButton.gameObject.SetActive(false);
+        _watchTrainButton.gameObject.SetActive(true);
+        _evaluateModelButton.gameObject.SetActive(false);
+    }
+
+
+    public void ShowEvaluateButton()
+    {
+        _createAgentButton.gameObject.SetActive(false);
+        _selectAgentButton.gameObject.SetActive(false);
+        _watchTrainButton.gameObject.SetActive(false);
+        _evaluateModelButton.gameObject.SetActive(true);
     }
 
     public void ShowLoaderPopup(string messange)
@@ -141,9 +186,15 @@ public class AcademyMainView : View
         _loaderPopup.Close();
     }
 
-    public void SetLastJobStatus(string status)
+    public void SetLastJobStatus(string status, string hexColor = "EFF1F5")
     {
-        _lastTrainJobStatus.SetValue(status);
+        if (!ColorUtility.TryParseHtmlString(hexColor, out Color color))
+        {
+            color = Color.white;
+        }
+
+        _lastTrainJobStatus.color = color;
+        _lastTrainJobStatus.text = status;
     }
 
     public void SetTrainsCount(int trainsCount)

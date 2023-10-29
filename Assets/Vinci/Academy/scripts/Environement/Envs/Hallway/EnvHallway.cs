@@ -332,4 +332,9 @@ public class EnvHallway : EnvironementBase
     {
         _isReplay = isResplay;
     }
+
+    public override void StartReplay()
+    {
+        throw new System.NotImplementedException();
+    }
 }

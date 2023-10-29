@@ -87,6 +87,7 @@ namespace Vinci.Core.Managers
         {
             foreach(var agent in playerData.agents)
             {
+                Debug.Log("LOADING MODELS");
                 agent.modelConfig.isModelLoaded = false;
 
                 if(!agent.modelConfig.nnModelPath.IsNullOrEmpty())
@@ -101,6 +102,7 @@ namespace Vinci.Core.Managers
 
                         agent.modelConfig.nnModel = loadedModel;
                         agent.modelConfig.isModelLoaded = true;
+                        Debug.Log("agent.modelConfig.isModelLoade: " + agent.modelConfig.isModelLoaded);
                     }
                 }
             }

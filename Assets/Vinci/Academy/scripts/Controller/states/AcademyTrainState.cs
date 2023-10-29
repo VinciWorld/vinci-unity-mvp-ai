@@ -33,8 +33,7 @@ public class AcademyTrainState : StateBase
         trainView.trainButtonPressed += OnTrainButtonPressed;
         trainView.watchTrainButtonPressed += OnWatchButtonPressed;
 
-        trainView.SetTrainSetupSubViewState(true);
-        trainView.SetTrainHudSubViewState(false);
+
 
         RemoteTrainManager.instance.websocketOpen += OnWebSocketOpen;
         RemoteTrainManager.instance.actionsReceived += OnReceivedAgentActions;
@@ -44,12 +43,22 @@ public class AcademyTrainState : StateBase
 
         Academy.Instance.AutomaticSteppingEnabled = false;
 
-     
+        if(_controller.session.GetTrainJobStatus() == TrainJobStatus.SUCCEEDED ||
+            _controller.session.GetTrainJobStatus() == TrainJobStatus.FAILED ||
+            _controller.session.GetTrainJobStatus() == TrainJobStatus.NONE
+        )
+        {
+            trainView.SetTrainSetupSubViewState(true);
+            trainView.SetTrainHudSubViewState(false);
+        }
+        else
+        {
+            OnWatchButtonPressed();
+        }
     }
 
     public override void OnExitState()
     {
-        Debug.Log("OnExitState");
         GameManager.instance.SavePlayerData();
 
         trainView.homeButtonPressed -= OnHomeButtonPressed;
@@ -67,25 +76,11 @@ public class AcademyTrainState : StateBase
         if(_controller.session.currentEnvInstance)
         {
             _controller.session.currentEnvInstance.episodeAndStepCountUpdated -= trainView.UptadeInfo;
-            _controller.session.currentEnvInstance.SetIsReplay(false);
+            _controller.session.currentEnvInstance.StopReplay();
         }
 
         trainView.CloseLoaderPopup();
     }
-
-    private void CheckIfModelFinishedTraining()
-    {
-
-    }
-
-    private void OnWatchButtonPressed()
-    {
-        trainView.SetTrainHudSubViewState(true);
-        //_controller.session.currentEnvInstance.SetIsReplay(true);
-        //_controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
-        //_controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
-    }
-
 
     void OnHomeButtonPressed()
     {
@@ -95,6 +90,7 @@ public class AcademyTrainState : StateBase
 
     private void OnBackButtonPressed()
     {
+        OnExitState();
         //ViewManager.ShowLast();
         _controller.SwitchState(new AcademyMainState(_controller));
     }
@@ -113,11 +109,9 @@ public class AcademyTrainState : StateBase
         }
         _controller.session.selectedAgent.modelConfig.behavior.steps = steps * 1000;
 
-        GameManager.instance.playerData.SubtractStepsAvailable(_controller.session.selectedAgent.modelConfig.behavior.steps);
-
         _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
         _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
-        _controller.session.currentEnvInstance.SetIsReplay(true);
+        //_controller.session.currentEnvInstance.StartReplay();
 
 
         if (!RemoteTrainManager.instance.isConnected)
@@ -125,78 +119,41 @@ public class AcademyTrainState : StateBase
             //MainThreadDispatcher.Instance().EnqueueAsync(ConnectToRemoteInstance);
         }
 
-        Debug.Log("OnTrainButtonPressed 5");
-
         trainView.UptadeInfo(0, 0, 0);
         trainView.UpdateMetrics(0,0);
         trainView.SetTrainSetupSubViewState(false);
         trainView.SetTrainHudSubViewState(true);
         trainView.ShowLoaderPopup("Connecting to remote server...");
 
-        if (!RemoteTrainManager.instance.isConnected)
-        {
-            await ConnectToRemoteInstance();
-        }
+        await ConnectToRemoteInstance();
+
     }
 
-    void OnReceivedTrainStatus(TrainJobStatusMsg trainJobStatus)
+    private void OnWatchButtonPressed()
     {
-        if(trainJobStatus.status == TrainJobStatus.SUCCEEDED)
+        if (_controller.session.currentEnvInstance == null)
         {
-            try
-            {
-                trainView.SetTrainSetupSubViewState(false);
-                trainView.SetTrainHudSubViewState(false);
-    
-            }
-            catch (Exception e)
-            {
-                Debug.LogError("Unable to save and Load model: " + e.Message);
-            }
+            PrepareEnv();
         }
-        else if(trainJobStatus.status == TrainJobStatus.FAILED)
-        {
-            Debug.Log("JOB FAILED");
-            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.FAILED;
-            _controller.SwitchState(new AcademyTrainState(_controller));
-        }
-        else if (trainJobStatus.status == TrainJobStatus.RETRIEVED)
-        {
-            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RETRIEVED;
-            trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + trainJobStatus.status);
-        }
-        else if (trainJobStatus.status == TrainJobStatus.STARTING)
-        {
-            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.STARTING;
-            trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + trainJobStatus.status);
-        }
-        else if(trainJobStatus.status == TrainJobStatus.RUNNING)
-        {
-            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RUNNING;
-            trainView.CloseLoaderPopup();
-        }
-
         
-        Debug.Log("Status received: " + trainJobStatus.status);
-    }
+        if(!RemoteTrainManager.instance.isConnected)
+        {
+            Debug.Log("Connect to websockt stream!");
+            RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
+        }
 
-    public void PrepareEnv()
-    {
-        EnvironementBase created_env = _controller.envManager.CreateTrainEnv(
-            _controller.session.selectedTrainEnv
-        );
+        //_controller.session.currentEnvInstance.StartReplay();
+        _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
+        _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
 
-        GameObject created_agent = AgentFactory.instance.CreateAgent(
-            _controller.session.selectedAgent,
-            new Vector3(0, 1.54f, -8.5f), Quaternion.identity,
-            created_env.transform
-        );
-        Debug.Log("Cagent: " + created_agent);
+        trainView.UptadeInfo(0, 0, 0);
+        trainView.UpdateMetrics(0, 0);
+        trainView.SetTrainSetupSubViewState(false);
+        trainView.SetTrainHudSubViewState(true);
+        trainView.ShowLoaderPopup("Connecting to remote server...");
 
-        created_env.Initialize(created_agent);
+        trainView.SetTrainHudSubViewState(true);
 
-        _controller.session.currentAgentInstance = created_agent;
-        _controller.session.currentEnvInstance = created_env;
     }
 
     async Task ConnectToRemoteInstance()
@@ -221,45 +178,27 @@ public class AcademyTrainState : StateBase
 
         try
         {
-            PostResponseTrainJob response = await RemoteTrainManager.instance.StartRemoteTrainning(trainJobRequest);           
-            RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
+            PostResponseTrainJob response = await RemoteTrainManager.instance.StartRemoteTrainning(trainJobRequest);
 
-            _controller.session.selectedAgent.SetRunID(response.run_id);
-            _controller.session.selectedAgent.modelConfig.CreateNewTrainMetricsEntry();
-
-            switch (response.job_status)
+            if (!RemoteTrainManager.instance.isConnected)
             {
-                case TrainJobStatus.SUBMITTED:
-                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUBMITTED;
-                    trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + response.job_status);
-                    break;
+                //Open websocket with central node
+                RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
 
-                case TrainJobStatus.RETRIEVED:
-                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RETRIEVED;
-                    trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + response.job_status);
-                    break;
-
-                case TrainJobStatus.STARTING:
-                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.STARTING;
-                    trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + response.job_status);
-                    break;
-
-                case TrainJobStatus.RUNNING:
-                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RUNNING;
-                    trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + response.job_status);
-                    break;
-
-                case TrainJobStatus.SUCCEEDED:
-                    break;
-
-                default:
-                    Debug.Log("status not recognised");
-                    break;
             }
 
+            //Only subract steps when we have 200 response TODO: In the future this logic will be on a server
+            _controller.session.selectedAgent.SetRunID(response.run_id);
+            _controller.session.selectedAgent.modelConfig.CreateNewTrainMetricsEntry();
+            _controller.session.selectedAgent.modelConfig.trainJobStatus = response.job_status;
+
+            GameManager.instance.playerData.SubtractStepsAvailable(_controller.session.selectedAgent.modelConfig.behavior.steps);
+            GameManager.instance.SavePlayerData();
+
+            trainView.UpdateLoaderMessage("Train job submitted \nTrain job status: " + response.job_status);
             Debug.Log("response: " + response + " run_id: " + response.run_id);
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             trainView.SetTrainSetupSubViewState(true);
             trainView.SetTrainHudSubViewState(false);
@@ -267,6 +206,65 @@ public class AcademyTrainState : StateBase
             Debug.LogError("Unable to add job to the queue: " + e.Message);
             trainView.CloseLoaderPopup();
         }
+    }
+
+
+    void OnReceivedTrainStatus(TrainJobStatusMsg trainJobStatus)
+    {
+        trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + trainJobStatus.status);
+
+        if (trainJobStatus.status == TrainJobStatus.SUCCEEDED)
+        {
+            try
+            {
+                trainView.SetTrainSetupSubViewState(false);
+                trainView.SetTrainHudSubViewState(false);
+    
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Unable to save and Load model: " + e.Message);
+            }
+        }
+        else if(trainJobStatus.status == TrainJobStatus.FAILED)
+        {
+            Debug.Log("JOB FAILED");
+            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.FAILED;
+            _controller.SwitchState(new AcademyTrainState(_controller));
+        }
+        else if (trainJobStatus.status == TrainJobStatus.RETRIEVED)
+        {
+            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RETRIEVED;
+        }
+        else if (trainJobStatus.status == TrainJobStatus.STARTING)
+        {
+            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.STARTING;
+        }
+        else if(trainJobStatus.status == TrainJobStatus.RUNNING)
+        {
+            _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RUNNING;
+            trainView.CloseLoaderPopup();
+        }
+        
+        Debug.Log("Status received: " + trainJobStatus.status);
+    }
+
+    public void PrepareEnv()
+    {
+        EnvironementBase created_env = _controller.envManager.CreateTrainEnv(
+            _controller.session.selectedTrainEnv
+        );
+
+        GameObject created_agent = AgentFactory.instance.CreateAgent(
+            _controller.session.selectedAgent,
+            new Vector3(0, 1.54f, -8.5f), Quaternion.identity,
+            created_env.transform
+        );
+
+        created_env.Initialize(created_agent);
+
+        _controller.session.currentAgentInstance = created_agent;
+        _controller.session.currentEnvInstance = created_env;
     }
 
     void OnWebSocketOpen()
