@@ -107,6 +107,15 @@ public class AcademyMainState : StateBase
         _controller.SwitchState(new AcademyTrainState(_controller));
     }
 
+    private void OnEvaluateButtonPressed()
+    {
+        _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
+        _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
+
+        _controller.SwitchState(new EvaluateAndResultsState(_controller));
+    }
+
+
     void OnSelectAgentButtonPressed()
     {
         _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);

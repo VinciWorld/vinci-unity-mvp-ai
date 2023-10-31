@@ -111,7 +111,7 @@ public class AcademyTrainState : StateBase
 
         _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
         _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
-        //_controller.session.currentEnvInstance.StartReplay();
+        _controller.session.currentEnvInstance.StartReplay();
 
 
         if (!RemoteTrainManager.instance.isConnected)
@@ -142,7 +142,7 @@ public class AcademyTrainState : StateBase
             RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
         }
 
-        //_controller.session.currentEnvInstance.StartReplay();
+        _controller.session.currentEnvInstance.StartReplay();
         _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
         _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
 
@@ -309,7 +309,6 @@ public class AcademyTrainState : StateBase
         {
             Debug.Log("OnBinaryDataRecived error: " + e.Message);
         }
-
     }
 
     void OnReceivedTrainMetrics(MetricsMsg metrics)
@@ -326,7 +325,7 @@ public class AcademyTrainState : StateBase
     {
         _controller.session.currentEnvInstance.OnActionsFromServerReceived(actionsJson);
 
-        //Debug.Log("Actions received: " + actionsJson);
+        Debug.Log("Actions received: " + actionsJson);
     }
 
     (string, NNModel) SaveAndLoadModel(Byte[] rawModel, string runId, string behaviourName)

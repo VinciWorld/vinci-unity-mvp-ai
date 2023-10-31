@@ -19,10 +19,6 @@ public class AcademyTrainResultsView : View
     private LoaderPopup _loaderPopup;
 
     [SerializeField]
-    private Button _HomeButton;
-    [SerializeField]
-    private Button _backButton;
-    [SerializeField]
     private Button _mintModelButton;
     [SerializeField]
     private Button _trainAgainButton;
@@ -65,14 +61,14 @@ public class AcademyTrainResultsView : View
 
     public override void Show()
     {
-        _categoryNavBar.SetTitles("Results", "Academy");
+        _categoryNavBar.SetTitles("Model Evaluation", "Academy");
         _categoryNavBar.homeButtonPressed += OnHomeButtonPressed;
         _categoryNavBar.SetNavigationButtons(
             false,
             true
         );
 
-        ShowResultsSubView();
+        ShowTestModelMetrics();
         base.Show();
     }
 
@@ -88,9 +84,9 @@ public class AcademyTrainResultsView : View
         homeButtonPressed?.Invoke();
     }
 
-
-    public void ShowResultsSubView()
+    public void ShowResults()
     {
+        _categoryNavBar.SetTitles("Train results", "Academy");
         resultsSubView.SetActive(true);
         popUpTestModel.SetActive(false);
     }
@@ -125,26 +121,25 @@ public class AcademyTrainResultsView : View
         _loaderPopup.Close();
     }
 
-
-    public void UpdateEvaluationMetricsResults(Dictionary<string, string> metrics)
+    public void UpdateEvaluationCommonMetrics(Dictionary<string, MetricValue> metrics)
     {
         foreach (var metric in metrics)
         {
             if (!instantiatedPrefabs.TryGetValue(metric.Key, out KeyValueText keyValueTextInstance))
             {
                 keyValueTextInstance = Instantiate(keyValueTextPrefab, parentTransformEvaluatioResults);
-                keyValueTextInstance.SetKeyAndValue(metric.Key, metric.Value);
+
+                keyValueTextInstance.SetKeyAndValue(metric.Key, metric.Value.GetValueWithSymbol());
                 instantiatedPrefabs[metric.Key] = keyValueTextInstance;
             }
             else
             {
-                keyValueTextInstance.SetValue(metric.Value);
+                keyValueTextInstance.SetValue(metric.Value.GetValueWithSymbol());
             }
         }
     }
 
-
-    public void UpdateEvaluationMetrics(Dictionary<string, string> metrics)
+    public void UpdateEvaluationMetrics(Dictionary<string, MetricValue> metrics)
     {
         foreach (var metric in metrics)
         {
@@ -152,12 +147,12 @@ public class AcademyTrainResultsView : View
             {
                 keyValueTextInstance = Instantiate(keyValueTextPrefab, parentTransformEvaluationHud);
 
-                keyValueTextInstance.SetKeyAndValue(metric.Key, metric.Value);
+                keyValueTextInstance.SetKeyAndValue(metric.Key, metric.Value.GetValueWithSymbol());
                 instantiatedPrefabsEvaluate[metric.Key] = keyValueTextInstance;
             }
             else
             {
-                keyValueTextInstance.SetValue(metric.Value);
+                keyValueTextInstance.SetValue(metric.Value.GetValueWithSymbol());
             }
         }
     }

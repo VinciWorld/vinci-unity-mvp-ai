@@ -322,4 +322,9 @@ public class RobotWaveAgentTrain : Agent, IAgent
     {
         _env = env;
     }
+
+    public void SetEvaluationMetrics(EvaluationMetrics evaluationMetrics)
+    {
+        throw new NotImplementedException();
+    }
 }

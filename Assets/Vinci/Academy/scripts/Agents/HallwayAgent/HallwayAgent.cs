@@ -263,4 +263,9 @@ public class HallwayAgent : Agent, IAgent
     {
         throw new NotImplementedException();
     }
+
+    public void SetEvaluationMetrics(EvaluationMetrics evaluationMetrics)
+    {
+        throw new NotImplementedException();
+    }
 }

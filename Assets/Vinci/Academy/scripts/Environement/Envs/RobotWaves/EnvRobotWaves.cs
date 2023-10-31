@@ -6,6 +6,13 @@ using Unity.MLAgents;
 using Unity.MLAgents.Policies;
 using UnityEngine;
 
+public enum MetricKeys
+{
+    Kills,
+    Shoots_Missed,
+    Shoots_Hits
+}
+
 public class EnvRobotWaves : EnvironementBase
 {
     public int envId = 0;
@@ -26,9 +33,11 @@ public class EnvRobotWaves : EnvironementBase
     [SerializeField]
     LoaderPopup _loaderPopup;
 
-    public override event Action<Dictionary<string, MetricValue>> updateEnvResults;
+    //public override event Action<Dictionary<string, MetricValue>> updateCommonResults;
     public override event Action<string> actionsReceived;
     public override event Action<int, int, int> episodeAndStepCountUpdated;
+    public override event Action<Dictionary<string, MetricValue>> envMetricsUpdated;
+    public override event Action<Dictionary<string, MetricValue>> commonMetricsUpdated;
 
     [Header("Replay")]
     private bool _isReplay = false;
@@ -48,18 +57,20 @@ public class EnvRobotWaves : EnvironementBase
 
 
     //Evaluation
-    private EvaluationMetrics evaluationMetrics;
+    private EvaluationMetrics _evaluationMetrics;
     Dictionary<string, MetricValue> envMetricsTemplate;
 
     public override void Initialize(GameObject agent)
     {
         _waveController.Initialized(_enemyManager);
+        InitializeEvaluationMetrics();
 
         // _loaderPopup = GameObject.Find("PopupLoader").GetComponent<LoaderPopup>();
         _agent = agent.GetComponent<IAgent>();
         Debug.Log("RobotWaveAgentTrain" + _agent);
 
         _agent.SetEnv(this);
+        _agent.SetEvaluationMetrics(_evaluationMetrics);
         _agent.SetObservationHelper(_observationHelper);
 
         goalsCompletedCount = 0;
@@ -69,8 +80,6 @@ public class EnvRobotWaves : EnvironementBase
 
         _waveController.completedAllWaves += OnCompletedAllWaves;
         _waveController.completedWave += OnCompletedWave;
-
-
     }
 
     public void OnCompletedWave()
@@ -117,8 +126,6 @@ public class EnvRobotWaves : EnvironementBase
         return _agent;
     }
 
-
-
     public override void GoalCompleted(bool result)
     {
         if(result)
@@ -130,7 +137,7 @@ public class EnvRobotWaves : EnvironementBase
             goalsFailedCount++;
         }
 
-        UpdateAndInvokeResults();
+        UpdateEvaluationCommonMetrics();
     }
 
     public override void Reset()
@@ -151,14 +158,16 @@ public class EnvRobotWaves : EnvironementBase
 
     public override void StartEnv()
     {
-        Reset();
+
         _agent.EndEpisode();
+        Reset();
         Academy.Instance.AutomaticSteppingEnabled = true;
     }
 
     public override void StopEnv()
     {
         Academy.Instance.AutomaticSteppingEnabled = false;
+        Reset();
     }
 
     //REPLAY
@@ -202,11 +211,9 @@ public class EnvRobotWaves : EnvironementBase
 
         //Debug.Log("Received action from server: " + actions);
     }
-    bool isPopupUp;
+
     private IEnumerator ReplayActionsLoop()
     {
- 
-        Debug.Log("Start Replay");
         _agent.SetIsReplay(true);
 
 
@@ -293,60 +300,88 @@ public class EnvRobotWaves : EnvironementBase
 
     private void InitializeEvaluationMetrics()
     {
-        evaluationMetrics = new EvaluationMetrics();
+        _evaluationMetrics = new EvaluationMetrics();
 
         envMetricsTemplate = new Dictionary<string, MetricValue>
         {
-            {"Avg kills", new MetricValue(MetricType.Int, 0)},
-            {"Avg shoots missed", new MetricValue(MetricType.Float, 0.0)},
-            {"Avg shoots hits", new MetricValue(MetricType.Float, 0.0f)}
+            {MetricKeys.Kills.ToString(), new MetricValue(MetricType.Int, 0)},
+            {MetricKeys.Shoots_Missed.ToString(), new MetricValue(MetricType.Float, 0.0f)},
+            {MetricKeys.Shoots_Hits.ToString(), new MetricValue(MetricType.Float, 0.0f)}
         };
-        evaluationMetrics.Initialize(envId.ToString(), envMetricsTemplate);
+        _evaluationMetrics.Initialize(envMetricsTemplate);
     }
 
     public override Dictionary<string, MetricValue> GetEvaluaitonCommonTemplate()
     {
-        return evaluationMetrics.GetZeroedCommonTemplate(envId.ToString());
+        return _evaluationMetrics.GetZeroedCommonTemplate();
     }
 
     public override Dictionary<string, MetricValue> GetEvaluaitonEnvTemplate()
     {
-        return evaluationMetrics.GetZeroedEnvTemplate(envId.ToString());
+        return _evaluationMetrics.GetZeroedEnvTemplate();
     }
 
-    public override Dictionary<string, string> GetEvaluationMetricResults()
+    public override Dictionary<string, MetricValue> GetEvaluationMetricCommonResults()
     {
-        Dictionary<string, string> metrics = new Dictionary<string, string>
-        {
-            { "Goal Completed", goalsCompletedCount.ToString() },
-            { "Goal Failed", goalsFailedCount.ToString() },
-            { "Goal Success Ratio", successRatio.ToString("P2") } // P2 formats the number as a percentage
-        };
-
-        return metrics;
+        return _evaluationMetrics.GetCommonMetrics();
     }
 
-    private void UpdateEvaluationCommonResults()
+    public override Dictionary<string, MetricValue> GetEvaluationMetricEnvResults()
+    {
+        return _evaluationMetrics.GetEnvMetrics();
+    }
+
+    public override Dictionary<string, MetricChange> GetEvaluationMetricEnvComparsionResults()
+    {
+        return null;  //evaluationMetrics.CompareWithLastAndComputeChange();
+    }
+
+    public override Dictionary<string, MetricChange> GetEvaluationMetricCommonComparsionResults()
+    {
+        return null;//evaluationMetrics.CompareWithLastAndComputeChange(envId.ToString(), true);
+    }
+
+    private void UpdateEvaluationCommonMetrics()
     {
         // Calculate success ratio
         float totalGoals = goalsCompletedCount + goalsFailedCount;
-        successRatio = totalGoals > 0 ? (float)goalsCompletedCount / totalGoals : 0;
+        successRatio = totalGoals > 0 ? (float)goalsCompletedCount / totalGoals : 0f;
+        _evaluationMetrics.UpdateCommonMetrics(goalsCompletedCount, goalsFailedCount, successRatio);
 
-        // Create and populate the results dictionary
-        Dictionary<string, MetricValue> metrics = new Dictionary<string, MetricValue>
-        {
-            { "Goal Completed", new MetricValue(MetricType.Int, goalsCompletedCount) },
-            { "Goal Failed",  new MetricValue(MetricType.Int, goalsFailedCount)  },
-            { "Goal Success Ratio",  new MetricValue(MetricType.Percent, successRatio)  } // P2 formats the number as a percentage
-        };
-
-        // Invoke the event with the results dictionary
-        updateEnvResults?.Invoke(metrics);
+        //updateCommonResults?.Invoke(_evaluationMetrics.GetCommonMetrics());
     }
 
-    public override Dictionary<string, string> GetEvaluationMetricTeamplate()
+    private void UpdateEvaluationEnvMetrics()
     {
-        throw new NotImplementedException();
+        var metricsToUpdate = new Dictionary<string, object>
+        {
+            {"Temperature", 27.5f},
+            {"Pressure", 1012}
+        };
+
+        _evaluationMetrics.UpdateEnvMetrics(metricsToUpdate);
+    }
+
+    public override void SetEvaluationEvents(
+        Action<Dictionary<string, MetricValue>> commonMetricsUpdated,
+        Action<Dictionary<string, MetricValue>> envMetricsUpdated,
+        Action<Dictionary<string, MetricValue>> agentMetricsUpdated
+    )
+    {
+        _evaluationMetrics.commonMetricsUpdated += commonMetricsUpdated;
+        _evaluationMetrics.envMetricsUpdated += envMetricsUpdated;
+        _evaluationMetrics.agentMetricsUpdated += agentMetricsUpdated;
+    }
+
+    public override void RemoveListeners(
+        Action<Dictionary<string, MetricValue>> commonMetricsUpdated,
+        Action<Dictionary<string, MetricValue>> envMetricsUpdated,
+        Action<Dictionary<string, MetricValue>> agentMetricsUpdated
+    )
+    {
+        _evaluationMetrics.commonMetricsUpdated -= commonMetricsUpdated;
+        _evaluationMetrics.envMetricsUpdated -= envMetricsUpdated;
+        _evaluationMetrics.agentMetricsUpdated -= agentMetricsUpdated;
     }
 
     #endregion

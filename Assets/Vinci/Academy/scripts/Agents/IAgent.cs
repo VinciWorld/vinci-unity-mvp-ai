@@ -19,6 +19,7 @@ public interface IAgent
     public void AddReward(float reward);
     public void SetObservationHelper(ObservationHelper obsHelper);
     public void SetEnv(EnvironementBase env);
+    public void SetEvaluationMetrics(EvaluationMetrics evaluationMetrics);
     public void Reset();
     public void SetBehaviorType(BehaviorType type);
     public void LoadModel(string behaviorName, NNModel model);

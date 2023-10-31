@@ -5,9 +5,11 @@ using UnityEngine;
 
 public abstract class EnvironementBase : MonoBehaviour
 {
-    public abstract event Action<Dictionary<string, string>> updateEnvResults;
+    //public abstract event Action<Dictionary<string, MetricValue>> updateCommonResults;
     public abstract event Action<string> actionsReceived;
     public abstract event Action<int, int, int> episodeAndStepCountUpdated;
+    public abstract event Action<Dictionary<string, MetricValue>> envMetricsUpdated;
+    public abstract event Action<Dictionary<string, MetricValue>> commonMetricsUpdated;
 
     public abstract void StartReplay();
     public abstract void SetIsReplay(bool isResplay);
@@ -25,8 +27,25 @@ public abstract class EnvironementBase : MonoBehaviour
 
     public abstract void SetAgentBehavior(BehaviorType type);
 
-    public abstract Dictionary<string, string> GetEvaluationMetricTeamplate();
-    public abstract Dictionary<string, string> GetEvaluationMetricResults();
+    //Evaluation
+    public abstract void SetEvaluationEvents(
+        Action<Dictionary<string, MetricValue>> commonMetricsUpdated,
+        Action<Dictionary<string, MetricValue>> envMetricsUpdated,
+        Action<Dictionary<string, MetricValue>> agentMetricsUpdated
+    );
+
+    public abstract void RemoveListeners(
+        Action<Dictionary<string, MetricValue>> commonMetricsUpdated,
+        Action<Dictionary<string, MetricValue>> envMetricsUpdated,
+        Action<Dictionary<string, MetricValue>> agentMetricsUpdated
+    );
+
+    public abstract Dictionary<string, MetricValue> GetEvaluaitonCommonTemplate();
+    public abstract Dictionary<string, MetricValue> GetEvaluaitonEnvTemplate();
+    public abstract Dictionary<string, MetricValue> GetEvaluationMetricCommonResults();
+    public abstract Dictionary<string, MetricValue> GetEvaluationMetricEnvResults();
+    public abstract Dictionary<string, MetricChange> GetEvaluationMetricEnvComparsionResults();
+    public abstract Dictionary<string, MetricChange> GetEvaluationMetricCommonComparsionResults();
 
     public abstract void OnActionsFromServerReceived(string actions);
 }

@@ -38,9 +38,11 @@ public class EnvHallway : EnvironementBase
     private int goalsFailedCount = 0;
     private float successRatio = 0f;
 
-    public override event System.Action<Dictionary<string, string>> updateEnvResults;
     public override event System.Action<string> actionsReceived;
     public override event System.Action<int, int, int> episodeAndStepCountUpdated;
+    public override event System.Action<Dictionary<string, MetricValue>> envMetricsUpdated;
+    public override event System.Action<Dictionary<string, MetricValue>> commonMetricsUpdated;
+    //public override event System.Action<Dictionary<string, MetricValue>> updateCommonResults;
 
     private bool isFirstEpisode = true;
 
@@ -173,7 +175,7 @@ public class EnvHallway : EnvironementBase
         };
 
         // Invoke the event with the results dictionary
-        updateEnvResults?.Invoke(metrics);
+        //updateCommonResults?.Invoke(metrics);
     }
 
     public override void Reset()
@@ -184,17 +186,6 @@ public class EnvHallway : EnvironementBase
         successRatio = 0;
     }
 
-    public override Dictionary<string, string> GetEvaluationMetricResults()
-    {
-        Dictionary<string, string> metrics = new Dictionary<string, string>
-        {
-            { "Goal Completed", goalsCompletedCount.ToString() },
-            { "Goal Failed", goalsFailedCount.ToString() },
-            { "Goal Success Ratio", successRatio.ToString("P2") } // P2 formats the number as a percentage
-        };
-
-        return metrics;
-    }
 
     public override IAgent GetAgent()
     {
@@ -338,7 +329,42 @@ public class EnvHallway : EnvironementBase
         throw new System.NotImplementedException();
     }
 
-    public override Dictionary<string, string> GetEvaluationMetricTeamplate()
+    public override Dictionary<string, MetricValue> GetEvaluaitonCommonTemplate()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override Dictionary<string, MetricValue> GetEvaluaitonEnvTemplate()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override Dictionary<string, MetricValue> GetEvaluationMetricCommonResults()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override Dictionary<string, MetricValue> GetEvaluationMetricEnvResults()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override Dictionary<string, MetricChange> GetEvaluationMetricEnvComparsionResults()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override Dictionary<string, MetricChange> GetEvaluationMetricCommonComparsionResults()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void SetEvaluationEvents(System.Action<Dictionary<string, MetricValue>> commonMetricsUpdated, System.Action<Dictionary<string, MetricValue>> envMetricsUpdated, System.Action<Dictionary<string, MetricValue>> agentMetricsUpdated)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void RemoveListeners(System.Action<Dictionary<string, MetricValue>> commonMetricsUpdated, System.Action<Dictionary<string, MetricValue>> envMetricsUpdated, System.Action<Dictionary<string, MetricValue>> agentMetricsUpdated)
     {
         throw new System.NotImplementedException();
     }

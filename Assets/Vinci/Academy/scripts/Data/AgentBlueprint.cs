@@ -69,18 +69,43 @@ public class AgentBlueprint
         return modelConfig.runId;
     }
 
-    /*
-    public void AddOrUpdateEvaluationResults(string envId, Dictionary<string, string> evaluationResults)
+    public void AddOrUpdateCommonEvaluationMetrics(string envId, Dictionary<string, MetricValue> commonMetrics)
     {
-        modelConfig.isEvaluated = true;
-        modelConfig.modelEnvsEvaluationsResults[envId] = evaluationResults;
+        modelConfig.AddToCommonEvaluationMetrics(envId, commonMetrics);
     }
 
-    public Dictionary<string, string> GetEvaluationResultsByKey(string envId)
+    public void StoreSessionEvaluationMetrics(
+        string envId,
+        Dictionary<string, MetricValue> commonMetrics,
+        Dictionary<string, MetricValue> envMetrics,
+        Dictionary<int, Dictionary<string, MetricValue>> agentMetrics
+    )
     {
-        modelConfig.modelEnvsEvaluationsResults.TryGetValue(envId, out Dictionary<string, string> results);
-        return results; 
+        modelConfig.StoreSessionEvaluationMetrics(envId, commonMetrics, envMetrics, agentMetrics);
     }
-    */
+
+    public Dictionary<string, MetricValue> GetCommonEvaluationMetrics(string envId)
+    {
+        return modelConfig.GetCommonEvaluationMetrics(envId);
+    }
+    public void AddOrUpdateEnvEvaluationMetrics(string envId, Dictionary<string, MetricValue> envMetrics)
+    {
+        modelConfig.AddToEnvEvaluationMetrics(envId, envMetrics);
+    }
+
+    public Dictionary<string, MetricValue> GetEnvEvaluationMetrics(string envId)
+    {
+        return modelConfig.GetEnvEvaluationMetrics(envId);
+    }
+    public void AddOrUpdateAgentEvaluationMetrics(string envId, Dictionary<int, Dictionary<string, MetricValue>> agentMetrics)
+    {
+        modelConfig.AddToAgentEvaluationMetricsPerEpisode(envId, agentMetrics);
+    }
+
+    public Dictionary<int, Dictionary<string, MetricValue>> GetAgentEvaluationMetrics(string envId)
+    {
+        return modelConfig.GetAgentEvaluationMetricsPerEpisode(envId);
+    }
+
 }
 

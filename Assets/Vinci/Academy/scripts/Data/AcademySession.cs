@@ -37,15 +37,4 @@ public class AcademySession
     {
         return selectedAgent.GetIsModelLoaded();
     }
-
-
-    public void AddOrUpdateEvaluationResults(string envId, Dictionary<string, string> evaluationResults)
-    {
-        selectedAgent.AddOrUpdateEvaluationResults(envId, evaluationResults);
-    }
-
-    public Dictionary<string, string> GetEvaluationResultsByKey(string envId)
-    {
-        return selectedAgent.GetEvaluationResultsByKey(envId);
-    }
 }

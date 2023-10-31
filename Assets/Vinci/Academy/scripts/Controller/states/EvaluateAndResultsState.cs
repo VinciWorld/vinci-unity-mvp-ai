@@ -27,8 +27,6 @@ public class EvaluateAndResultsState : StateBase
 
         ViewManager.Show<AcademyTrainResultsView>();
 
-      
-
         _resultsView.UpdateTrainResults(
             _controller.session.selectedAgent.modelConfig.GetStepsTrained(),
             _controller.session.selectedAgent.modelConfig.GetLastMeanReward(),
@@ -36,7 +34,12 @@ public class EvaluateAndResultsState : StateBase
         );
 
         currentEnvInstance = _controller.session.currentEnvInstance;
-        currentEnvInstance.updateEnvResults += OnUpdateEnvResults;
+        currentEnvInstance.SetEvaluationEvents(
+            _resultsView.UpdateEvaluationMetrics,
+            _resultsView.UpdateEvaluationMetrics,
+            _resultsView.UpdateEvaluationMetrics
+        );
+
         currentEnvInstance.StopEnv();
         currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.InferenceOnly);
 
@@ -45,22 +48,22 @@ public class EvaluateAndResultsState : StateBase
         EvaluateModel();
 
 
-        Dictionary<string, string> evaluationResults =
-            _controller.session.GetEvaluationResultsByKey(_controller.session.selectedTrainEnv.env_id);
+        //Dictionary<string, MetricValue> evaluationResults =
+        //    _controller.session.selectedAgent.GetCommonEvaluationMetrics(_controller.session.selectedTrainEnv.env_id);
 
-        if (_controller.session.selectedAgent.modelConfig.isEvaluated && evaluationResults != null)
-        {   
-            _resultsView.UpdateEvaluationMetricsResults(evaluationResults);
-        }
-        else
-        {
-            _resultsView.UpdateEvaluationMetricsResults(currentEnvInstance.GetEvaluationMetricResults());
-        }
+        _resultsView.UpdateEvaluationCommonMetrics(currentEnvInstance.GetEvaluaitonCommonTemplate());
     }
 
     public override void OnExitState()
     {
-        currentEnvInstance.updateEnvResults -= OnUpdateEnvResults;
+        //currentEnvInstance.updateCommonResults -= OnUpdateEnvResults;
+
+        currentEnvInstance.RemoveListeners(
+            _resultsView.UpdateEvaluationMetrics,
+            _resultsView.UpdateEvaluationMetrics,
+            _resultsView.UpdateEvaluationMetrics
+        );
+
 
         _resultsView.mintModelButtonPressed -= OnMintModelButtonPressed;
         _resultsView.trainAgainButtonPressed -= OnTrainAgainButtonPressed;
@@ -92,18 +95,18 @@ public class EvaluateAndResultsState : StateBase
         Time.timeScale = 1;
         currentEnvInstance.StopEnv();
 
-        _controller.session.AddOrUpdateEvaluationResults(
+        _controller.session.selectedAgent.AddOrUpdateCommonEvaluationMetrics(
             _controller.session.selectedTrainEnv.env_id,
-            currentEnvInstance.GetEvaluationMetricResults()
+            currentEnvInstance.GetEvaluationMetricCommonResults()
         );
 
         GameManager.instance.SavePlayerData();
 
-        _resultsView.UpdateEvaluationMetricsResults(
-            _controller.session.GetEvaluationResultsByKey(_controller.session.selectedTrainEnv.env_id)
+        _resultsView.UpdateEvaluationCommonMetrics(
+            _controller.session.selectedAgent.GetCommonEvaluationMetrics(_controller.session.selectedTrainEnv.env_id)
         );
 
-        _resultsView.ShowResultsSubView();
+        _resultsView.ShowResults();
     }
 
     void OnTrainAgainButtonPressed()
@@ -127,15 +130,38 @@ public class EvaluateAndResultsState : StateBase
     void EvaluateModel()
     {
         Time.timeScale = 3;
-        _resultsView.UpdateEvaluationMetrics(currentEnvInstance.GetEvaluationMetricResults());
+        _resultsView.UpdateEvaluationMetrics(currentEnvInstance.GetEvaluaitonCommonTemplate());
         _resultsView.ShowTestModelMetrics();
+
+        if (_controller.session.currentEnvInstance == null)
+        {
+            PrepareEnv();
+        }
 
         currentEnvInstance.StartEnv();
         _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.InferenceOnly);
     }
 
-    void OnUpdateEnvResults(Dictionary<string, string> results)
+    void OnUpdateEnvResults(Dictionary<string, MetricValue> results)
     {
         _resultsView.UpdateEvaluationMetrics(results);
+    }
+
+    public void PrepareEnv()
+    {
+        EnvironementBase created_env = _controller.envManager.CreateTrainEnv(
+            _controller.session.selectedTrainEnv
+        );
+
+        GameObject created_agent = AgentFactory.instance.CreateAgent(
+            _controller.session.selectedAgent,
+            new Vector3(0, 1.54f, -8.5f), Quaternion.identity,
+            created_env.transform
+        );
+
+        created_env.Initialize(created_agent);
+
+        _controller.session.currentAgentInstance = created_agent;
+        _controller.session.currentEnvInstance = created_env;
     }
 }

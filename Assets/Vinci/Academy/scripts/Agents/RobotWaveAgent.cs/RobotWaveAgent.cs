@@ -20,11 +20,20 @@ public class RobotWaveAgent : Agent, IAgent
 
     private bool _isReplay = false;
     private int _steps = 0;
+    private int _episodes = 0;
 
     public List<ActionRobotBufferMsg> actionsBuffer = new List<ActionRobotBufferMsg>();
     
     //Replay
     private Queue<ActionRobotBufferMsg> _actionsQueueReceived;
+
+    //Evaluation Metrics
+    private EvaluationMetrics _evaluationMetrics;
+    private int killsPerEpisode;
+    private int shootHitsPerEpisode;
+    private int shootsMissedPerEpisode;
+
+
 
     public float agentRunSpeed = 1.5f;
     public float rotationSpeed = 100f;
@@ -63,14 +72,16 @@ public class RobotWaveAgent : Agent, IAgent
         base.OnEpisodeBegin();
         _env?.EpisodeBegin();
         _steps = 0;
+        _episodes++;
+        killsPerEpisode = 0;
+        shootHitsPerEpisode = 0;
+        shootsMissedPerEpisode = 0;
     }
-
 
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(StepCount / (float)MaxStep);
     }
-
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
@@ -158,7 +169,6 @@ public class RobotWaveAgent : Agent, IAgent
         {
             _env.GoalCompleted(false);
         }
-
     }
 
     private void OnKilledTarget()
@@ -166,6 +176,9 @@ public class RobotWaveAgent : Agent, IAgent
         //Debug.Log("kills ");
         agentKill?.Invoke();
         AddReward(0.08f);
+        _evaluationMetrics.UpdateAgentMetricForEpisode(
+            _episodes, MetricKeys.Kills.ToString(), new MetricValue(MetricType.Int, killsPerEpisode)
+        );
     }
 
     private void OnMissedTarget()
@@ -173,12 +186,18 @@ public class RobotWaveAgent : Agent, IAgent
 //        Debug.Log("miss ");
 
         AddReward(-0.05f);
+        _evaluationMetrics.UpdateAgentMetricForEpisode(
+            _episodes, MetricKeys.Shoots_Missed.ToString(), new MetricValue(MetricType.Int, shootsMissedPerEpisode)
+        );
     }
 
     private void OnhitTarget()
     {
       //  Debug.Log("hit ");
         AddReward(0.001f);
+        _evaluationMetrics.UpdateAgentMetricForEpisode(
+            _episodes, MetricKeys.Shoots_Hits.ToString(), new MetricValue(MetricType.Int, shootHitsPerEpisode)
+        );
     }
 
 
@@ -230,6 +249,7 @@ public class RobotWaveAgent : Agent, IAgent
     public void Reset()
     {
         _robot.Reset();
+        _episodes = 0;
     }
 
     public void SetBehaviorType(BehaviorType type)
@@ -288,5 +308,10 @@ public class RobotWaveAgent : Agent, IAgent
     public void SetEnv(EnvironementBase env)
     {
         _env = env;
+    }
+
+    public void SetEvaluationMetrics(EvaluationMetrics evaluationMetrics)
+    {
+        _evaluationMetrics = evaluationMetrics;
     }
 }
