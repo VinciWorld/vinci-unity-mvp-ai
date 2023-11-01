@@ -195,7 +195,16 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
             request.SetRequestHeader("Authorization", "Bearer " + _jwtToken);
         }
 
-        await request.SendWebRequest(); // Send the HTTP GET request asynchronously
+        try{
+            await request.SendWebRequest(); // Send the HTTP GET request asynchronously
+        }
+        catch(Exception e)
+        {
+            if (request.responseCode == 404)
+            {
+                throw new NotFoundException("Not found run id: " + runId + " error: " + e.Message);
+            }
+        }
 
         if (request.result == UnityWebRequest.Result.Success)
         {
@@ -209,7 +218,6 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         }
         else
         {
-            Debug.LogError($"HTTP Request failed with status code {request.responseCode}: {request.error}");
             throw new Exception($"HTTP Request failed with status code {request.responseCode}: {request.error}");
         }
     }

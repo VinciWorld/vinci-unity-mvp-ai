@@ -231,11 +231,33 @@ public class AcademyMainState : StateBase
                 }
                 else
                 {
-                    PostResponseTrainJob job = await RemoteTrainManager.instance.GetTrainJobByRunID(
-                        agent.modelConfig.runId, null
-                    );
+                    try
+                    {
+                        PostResponseTrainJob job = await RemoteTrainManager.instance.GetTrainJobByRunID(
+                                 agent.modelConfig.runId, null
+                             );
 
-                    OnReceiveTrainJobStatus(job);
+                        OnReceiveTrainJobStatus(job);
+                    }
+                    catch(NotFoundException e)
+                    {
+                        //If run id not found in server, reset current run id
+                        agent.modelConfig.runId = "";
+                        _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.NONE;
+                        _mainView.SetLastJobStatus("Not found", "#E44962");
+                        Debug.LogError(e.Message);
+
+                    }
+                    catch(Exception e)
+                    {
+                        _mainView.SetLastJobStatus("Failed", "#E44962");
+                        Debug.Log("Error: " + e.Message);
+                    }
+                    finally
+                    {
+                        _mainView.ShowWTrainButton();
+                    }
+    
                 }
 
             /*    
@@ -323,6 +345,7 @@ public class AcademyMainState : StateBase
                     {
                         _mainView.SetLastJobStatus("Failed to donwload model!", "#E44962");
                         Debug.Log("Error Unable to load model: " + e.Message + " stake: " + e.StackTrace);
+                        agent.modelConfig.isModelLoaded = false;
                     }
 
                     _mainView.CloseLoaderPopup();
