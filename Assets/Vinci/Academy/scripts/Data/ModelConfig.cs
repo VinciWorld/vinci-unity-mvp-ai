@@ -20,7 +20,7 @@ public class ModelConfig
 
     public string nnModelPath;
     public NNModel nnModel;
-    public int trainCount => trainMetrics.Count;
+    public int trainCount => trainMetricsHistory.Count;
     public int _totalStepsTrained;
     public int totalStepsTrained => _totalStepsTrained;
 
@@ -30,16 +30,16 @@ public class ModelConfig
     public bool isEvaluated = false;
 
     // Trian Metrics & Evaluations
-    public List<ModelTrainMetric> trainMetrics = new();
+    public List<ModelTrainMetrics> trainMetricsHistory = new();
 
     //Key envId
     public Dictionary<string, EnvSpecificData> envSpecificData = new();
 
     // Methods
-    public ModelTrainMetric GetMostRecentMetric() => trainMetrics.LastOrDefault();
-    public float GetLastMeanReward() => GetMostRecentMetric()?.GetLastMeanReward() ?? 0f;
-    public float GetLastStdReward() => GetMostRecentMetric()?.GetLastStdReward() ?? 0f;
-    public int GetStepsTrained() => GetMostRecentMetric()?.stepsTrained ?? 0;
+    public ModelTrainMetrics GetMostRecentMetricsHistory() => trainMetricsHistory.LastOrDefault();
+    public float GetLastMeanReward() => GetMostRecentMetricsHistory()?.GetLastMeanReward() ?? 0f;
+    public float GetLastStdReward() => GetMostRecentMetricsHistory()?.GetLastStdReward() ?? 0f;
+    public int GetStepsTrained() => GetMostRecentMetricsHistory()?.stepsTrained ?? 0;
 
 
     public void StoreSessionEvaluationMetrics(
@@ -135,51 +135,79 @@ public class ModelConfig
 
     public void CreateNewTrainMetricsEntry()
     {
-        var trainMetric = new ModelTrainMetric();
-        trainMetrics.Add(trainMetric);
+        var trainMetric = new ModelTrainMetrics();
+        trainMetricsHistory.Add(trainMetric);
+    }
+
+    public void AddTrainMetrics(List<MetricsData> metrics)
+    {
+        trainMetricsHistory.Add(new ModelTrainMetrics(metrics));
     }
 
     public void ResetLastTrainMetricsEntry()
     {
-        var lastMetric = GetMostRecentMetric();
-        lastMetric.meanReward.Clear();
-        lastMetric.stdReward.Clear();
-        lastMetric.stepsTrained = 0;
+        var lastMetric = GetMostRecentMetricsHistory();
+        lastMetric.Reset();
+
     }
 
     public void AddStepsTrained(int stepsTrained)
     {
         _totalStepsTrained += stepsTrained;
-        var lastMetric = GetMostRecentMetric();
+        var lastMetric = GetMostRecentMetricsHistory();
         if (lastMetric != null)
         {
             lastMetric.stepsTrained = stepsTrained;
         }
     }
 
-    public void AddTrainMetrics(float meanReward, float stdReward)
+    public void AddTrainMetrics(int setpCount, float meanReward, float stdReward, float timeElapsed)
     {
-        var lastMetric = GetMostRecentMetric();
+        var lastMetric = GetMostRecentMetricsHistory();
         if (lastMetric != null)
         {
+            lastMetric.AddStepCount(setpCount);
             lastMetric.AddMeanReward(meanReward);
             lastMetric.AddStdReward(stdReward);
+            lastMetric.AddTimeElapsed(timeElapsed);
         }
     }
 }
 
 [Serializable]
-public class ModelTrainMetric
+public class ModelTrainMetrics
 {
     // Properties
- 
+    List<MetricsData> _metrics;
+
+    public List<int> stepCount = new List<int>();
     public List<float> meanReward = new List<float>();
     public List<float> stdReward  = new List<float>();
+    public List<float> timeElapsedList = new List<float>();
     public int stepsTrained = 0;
 
+    public ModelTrainMetrics(){}
+    public ModelTrainMetrics(List<MetricsData> metrics)
+    {
+        _metrics = metrics;
+    }
+
     // Methods
-    public float GetLastMeanReward() => meanReward.LastOrDefault();
-    public float GetLastStdReward() => stdReward.LastOrDefault();
+    public float GetLastStepCount() => _metrics.LastOrDefault().step;
+    public float GetLastMeanReward() => _metrics.LastOrDefault().mean_reward;
+    public float GetLastStdReward() => _metrics.LastOrDefault().std_reward;
+    public float GetLastTimeElapsed() => _metrics.LastOrDefault().time_elapsed;
+    public void AddStepCount(int setpCount) => stepCount.Add(setpCount);
     public void AddMeanReward(float reward) => meanReward.Add(reward);
     public void AddStdReward(float reward) => stdReward.Add(reward);
+    public void AddTimeElapsed(float timeElapsed) => timeElapsedList.Add(timeElapsed);
+
+    public void Reset()
+    {
+        stepCount.Clear();
+        meanReward.Clear();
+        stdReward.Clear();
+        timeElapsedList.Clear();
+        stepsTrained = 0;
+    }
 }

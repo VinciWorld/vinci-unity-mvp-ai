@@ -33,9 +33,9 @@ public class AgentBlueprint
         //return modelConfig.nnModel;
     }
 
-    public void AddTrainMetrics(float meanReward, float stdReward)
+    public void AddTrainMetrics(int stepCount, float meanReward, float stdReward, float timeElapsed)
     {
-        modelConfig.AddTrainMetrics(meanReward, stdReward);
+        modelConfig.AddTrainMetrics(stepCount, meanReward, stdReward, timeElapsed);
     }
 
     public void AddStepsTrained(int stepsTrained)

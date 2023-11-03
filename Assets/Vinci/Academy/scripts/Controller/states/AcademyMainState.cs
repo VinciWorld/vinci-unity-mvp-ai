@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Unity.Barracuda;
 using Unity.Barracuda.ONNX;
 using Unity.VisualScripting;
@@ -138,29 +139,7 @@ public class AcademyMainState : StateBase
 
                 try
                 {
-                    byte[] model = await RemoteTrainManager.instance.DownloadNNModel(_controller.session.selectedAgent.modelConfig.runId);
-                    var (filePath, nnModel) = MLHelper.SaveAndLoadModel(model, _controller.session.selectedAgent.modelConfig.runId, _controller.session.selectedAgent.modelConfig.behavior.behavior_name);
-
-                    _controller.session.selectedAgent.SetModelAndPath(filePath, nnModel);
-                    _controller.session.selectedAgent.modelConfig.isModelLoaded = true;
-
-                    _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUCCEEDED;
-
-                    //TODO: Retrive from server metrics from the train!
-                    //agent.modelConfig.ResetLastTrainMetricsEntry();
-
-                    _controller.session.selectedAgent.modelConfig.AddStepsTrained(
-                        _controller.session.selectedAgent.modelConfig.behavior.steps
-                    );
-
-                    GameManager.instance.SavePlayerData();
-
-                    _mainView.SetLastJobStatus("Train completed", "#FFB33A");
-                    _mainView.SetTrainsCount(_controller.session.selectedAgent.modelConfig.trainCount);
-                    _mainView.SetLastTrainSteps(_controller.session.selectedAgent.modelConfig.behavior.steps);
-                    _mainView.SetTotalStepsTrained(_controller.session.selectedAgent.modelConfig.totalStepsTrained);
-                    _mainView.ShowEvaluateButton();
-
+                    await LoadModel(_controller.session.selectedAgent);
                 }
                 catch (Exception e)
                 {
@@ -277,6 +256,38 @@ public class AcademyMainState : StateBase
         }        
     }
 
+    async public Task LoadModel(AgentBlueprint agent)
+    {
+        var (model, metrics) = await RemoteTrainManager.instance.DownloadNNModelAndMetricsData(_controller.session.selectedAgent.modelConfig.runId);
+
+        agent.modelConfig.ResetLastTrainMetricsEntry();
+        agent.modelConfig.AddTrainMetrics(metrics);
+
+        Debug.Log("model bytes: " + model.Length);
+
+        var (filePath, nnModel) = MLHelper.SaveAndLoadModel(model, agent.modelConfig.runId, agent.modelConfig.behavior.behavior_name);
+
+        agent.SetModelAndPath(filePath, nnModel);
+        agent.modelConfig.isModelLoaded = true;
+
+        _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUCCEEDED;
+
+        //TODO: Retrive from server metrics from the train!
+      
+
+        agent.modelConfig.AddStepsTrained(
+            agent.modelConfig.behavior.steps
+        );
+
+        GameManager.instance.SavePlayerData();
+
+        _mainView.SetLastJobStatus("Train completed", "#FFB33A");
+        _mainView.SetTrainsCount(agent.modelConfig.trainCount);
+        _mainView.SetLastTrainSteps(agent.modelConfig.behavior.steps);
+        _mainView.SetTotalStepsTrained(agent.modelConfig.totalStepsTrained);
+        _mainView.ShowEvaluateButton();
+    }
+
     async private void OnReceiveTrainJobStatus(PostResponseTrainJob job)
     {
 
@@ -317,29 +328,7 @@ public class AcademyMainState : StateBase
 
                     try
                     {
-                        byte[] model = await RemoteTrainManager.instance.DownloadNNModel(agent.modelConfig.runId);
-                        var (filePath, nnModel) = MLHelper.SaveAndLoadModel(model, agent.modelConfig.runId, agent.modelConfig.behavior.behavior_name);
-
-                        agent.SetModelAndPath(filePath, nnModel);
-                        agent.modelConfig.isModelLoaded = true;
-
-                        _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUCCEEDED;
-
-                        //TODO: Retrive from server metrics from the train!
-                        //agent.modelConfig.ResetLastTrainMetricsEntry();
-
-                        agent.modelConfig.AddStepsTrained(
-                            agent.modelConfig.behavior.steps
-                        );
-
-                        GameManager.instance.SavePlayerData();
-
-                        _mainView.SetLastJobStatus("Train completed", "#FFB33A");
-                        _mainView.SetTrainsCount(agent.modelConfig.trainCount);
-                        _mainView.SetLastTrainSteps(agent.modelConfig.behavior.steps);
-                        _mainView.SetTotalStepsTrained(agent.modelConfig.totalStepsTrained);
-                        _mainView.ShowEvaluateButton();
-
+                        await LoadModel(agent);
                     }
                     catch (Exception e)
                     {

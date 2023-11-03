@@ -8,6 +8,7 @@ using System.Text;
 using Vinci.Core.Utils;
 using Cysharp.Threading.Tasks;
 using UnityEngine.Networking;
+using System.Collections.Generic;
 
 public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager> 
 {
@@ -85,18 +86,111 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
             throw new Exception($"HTTP Request failed with status code {response.StatusCode}: {response.Message}");
         }
     }
+    /*
+        async public Task<byte[]> DownloadNNModel(string runId)
+        {
+            string url = http_prefix + centralNode + endpointTainJobs + "/" + runId + "/nn-model";
 
-    async public Task<byte[]> DownloadNNModel(string runId)
+            using (UnityWebRequest request = UnityWebRequest.Get(url))
+            {
+                await request.SendWebRequest(); // Send the HTTP GET request asynchronously
+
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    return request.downloadHandler.data;
+                }
+                else
+                {
+                    Debug.LogError($"HTTP Request failed with status code {request.responseCode}: {request.error}");
+                    throw new Exception($"HTTP Request failed with status code {request.responseCode}: {request.error}");
+                }
+            }
+        }
+    */
+
+    async public Task<(byte[], List<MetricsData> metrics)> DownloadNNModelAndMetricsData(string runId)
     {
-        string url = http_prefix + centralNode + endpointTainJobs + "/" + runId + "/nn-model";
+        string url = http_prefix + centralNode + endpointTainJobs + "/" + runId + "/train-results";
 
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
+            request.SetRequestHeader("Authorization", "Bearer " + _jwtToken);
             await request.SendWebRequest(); // Send the HTTP GET request asynchronously
 
             if (request.result == UnityWebRequest.Result.Success)
             {
-                return request.downloadHandler.data;
+                //var (model, metricsBytes) = RequestsUtils.ParseMultipartResponseNew(request.downloadHandler.data);
+                RequestsUtils.ParseMultipartResponseNew(request.downloadHandler.data);
+
+                /*
+                string metricsJson = Encoding.UTF8.GetString(metricsBytes);
+                List<string> metricsJsonArray = JsonConvert.DeserializeObject<List<string>>(metricsJson);
+                List<MetricsData> metricsList = new List<MetricsData>();
+                foreach (string mJson in metricsJsonArray)
+                {
+                    MetricsData metricsDataConvereted = JsonConvert.DeserializeObject<MetricsData>(mJson);
+                    metricsList.Add(metricsDataConvereted);
+                }
+ */
+                return (null, null);
+               
+            }
+            else
+            {
+                Debug.LogError($"HTTP Request failed with status code {request.responseCode}: {request.error}");
+                throw new Exception($"HTTP Request failed with status code {request.responseCode}: {request.error}");
+            }
+        }
+    }
+
+    public async Task<(byte[] model, List<MetricsData> metrics)> DownloadNNModelAndMetrics(string runId)
+    {
+        string url = http_prefix + centralNode + endpointTainJobs + "/" + runId + "/train-results";
+
+        using (UnityWebRequest request = UnityWebRequest.Get(url))
+        {
+            request.SetRequestHeader("Authorization", "Bearer " + _jwtToken);
+            await request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                // Parse the multipart response
+                var contentType = request.GetResponseHeader("content-type");
+                var boundary = contentType.Split('=')[1];
+                var formSections = RequestsUtils.ParseMultipartFormData(request.downloadHandler.data, boundary);
+
+                byte[] modelData = null;
+                byte[] metricsData = null;
+
+                // Extract the model and metrics data from the response
+                foreach (var section in formSections)
+                {
+                    if (section.Contains("filename=model"))
+                    {
+                        modelData = RequestsUtils.ExtractContent(section);
+                    }
+                    else if (section.Contains("filename=metrics"))
+                    {
+                        metricsData = RequestsUtils.ExtractContent(section);
+                    }
+                }
+
+                if (modelData == null || metricsData == null)
+                {
+                    throw new Exception("Model or Metrics data is missing in the response.");
+                }
+
+
+                string metricsJson = Encoding.UTF8.GetString(metricsData);
+                List<string> metricsJsonArray = JsonConvert.DeserializeObject<List<string>>(metricsJson);
+                List<MetricsData> metricsList = new List<MetricsData>();
+                foreach (string mJson in metricsJsonArray)
+                {
+                    MetricsData metricsDataConvereted = JsonConvert.DeserializeObject<MetricsData>(mJson);
+                    metricsList.Add(metricsDataConvereted);
+                }
+
+                return (modelData, metricsList);
             }
             else
             {

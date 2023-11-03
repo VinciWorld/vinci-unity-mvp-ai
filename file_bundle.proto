@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+message File {
+  string name = 1;
+  bytes content = 2;
+  int32 index = 3;
+}
+
+message FileBundle {
+  repeated File files = 1;
+}

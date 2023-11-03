@@ -313,7 +313,12 @@ public class AcademyTrainState : StateBase
 
     void OnReceivedTrainMetrics(MetricsMsg metrics)
     {
-        _controller.session.selectedAgent.AddTrainMetrics(metrics.mean_reward, metrics.mean_reward);
+        _controller.session.selectedAgent.AddTrainMetrics(
+            metrics.step,
+            metrics.mean_reward,
+            metrics.mean_reward,
+            metrics.time_elapsed
+        );
 
         trainView.UpdateMetrics(
             metrics.mean_reward,
