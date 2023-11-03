@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4556,7 +4556,7 @@ MonoBehaviour:
         isModelLoaded: 0
         isModelMinted: 0
         isEvaluated: 0
-        trainMetrics: []
+        trainMetricsHistory: []
     - id: 999
       agentName: Big Eye
       description: What is a Cross?
@@ -4578,7 +4578,7 @@ MonoBehaviour:
         isModelLoaded: 0
         isModelMinted: 0
         isEvaluated: 0
-        trainMetrics: []
+        trainMetricsHistory: []
     availableTrainEnvs:
     - env_id: 1
       envName: RobotWaveEnv
@@ -4625,7 +4625,7 @@ MonoBehaviour:
         isModelLoaded: 0
         isModelMinted: 0
         isEvaluated: 0
-        trainMetrics: []
+        trainMetricsHistory: []
     currentAgentInstance: {fileID: 0}
     currentEnvInstance: {fileID: 0}
   localTrain: 0
@@ -5078,7 +5078,7 @@ MonoBehaviour:
   solanaBalance: 0
   baseNNModel: {fileID: 5022602860645237092, guid: 61881707995126849805040d9bdd3e61,
     type: 3}
-  version: v0.0.1
+  version: v0.0.3
 --- !u!1001 &421121864
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8092,7 +8092,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0.9111482}
-  m_AnchoredPosition: {x: 0, y: 0.000061035156}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &602719072

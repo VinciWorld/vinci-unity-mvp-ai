@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Barracuda;
+using Unity.Sentis;
 
 public class EnvSpecificData
 {
@@ -19,7 +19,7 @@ public class ModelConfig
     public TrainJobStatus trainJobStatus = TrainJobStatus.NONE;
 
     public string nnModelPath;
-    public NNModel nnModel;
+    public ModelAsset nnModel;
     public int trainCount => trainMetricsHistory.Count;
     public int _totalStepsTrained;
     public int totalStepsTrained => _totalStepsTrained;

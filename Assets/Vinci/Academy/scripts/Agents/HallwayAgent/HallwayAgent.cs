@@ -4,9 +4,9 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
-using Unity.Barracuda;
 using System.Collections.Generic;
 using System;
+using Unity.Sentis;
 
 public class HallwayAgent : Agent, IAgent
 {
@@ -183,7 +183,7 @@ public class HallwayAgent : Agent, IAgent
         }
     }
 
-    public void LoadModel(string behaviorName, NNModel model)
+    public void LoadModel(string behaviorName, ModelAsset model)
     {
         _beahivor.BehaviorType = BehaviorType.HeuristicOnly;
         Debug.Log(behaviorName);

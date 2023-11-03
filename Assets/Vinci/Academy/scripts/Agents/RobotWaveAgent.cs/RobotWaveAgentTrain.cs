@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
-using Unity.Barracuda;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
+using Unity.Sentis;
 using UnityEngine;
 using Vinci.Core.BattleFramework;
 
@@ -270,7 +270,7 @@ public class RobotWaveAgentTrain : Agent, IAgent
         _beahivor.BehaviorType = type;
     }
 
-    public void LoadModel(string behaviorName, NNModel model)
+    public void LoadModel(string behaviorName, ModelAsset model)
     {
         _beahivor.BehaviorType = BehaviorType.HeuristicOnly;
         SetModel(behaviorName, model);

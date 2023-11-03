@@ -2,16 +2,19 @@ using System.IO;
 using UnityEngine;
 using Vinci.Core.Utils;
 using Unity.MLAgents;
-using Unity.Barracuda;
 using Solana.Unity.SDK;
 using System;
 using WebSocketSharp;
 using Vinci.Core.ML.Utils;
+using Unity.Sentis;
+using File = System.IO.File;
 
 namespace Vinci.Core.Managers
 {
     public class GameManager : PersistentSingleton<GameManager>
     {
+        public string version = "v0.0.3";
+
         public UserData UserData;
         public PlayerData playerData;
 
@@ -19,13 +22,11 @@ namespace Vinci.Core.Managers
 
         public double solanaBalance;    
 
-        public NNModel baseNNModel;
+        public ModelAsset baseNNModel;
 
-        public string version = "v0.0.1";
 
- 
+
         private const string PlayerDataFileName = "playerData.json";
-
 
         protected override void Awake()
         {
@@ -57,7 +58,7 @@ namespace Vinci.Core.Managers
         {
             string path = Path.Combine(Application.persistentDataPath, PlayerDataFileName);
             string json = JsonUtility.ToJson(playerData);
-            File.WriteAllText(path, json);
+            System.IO.File.WriteAllText(path, json);
             Debug.Log("Player data saved to " + path);
         }
 
@@ -95,8 +96,8 @@ namespace Vinci.Core.Managers
 
                     if(rawModel != null)
                     {
-                        NNModel loadedModel = MLHelper.LoadModelRuntime(
-                            agent.modelConfig.behavior.behavior_name, rawModel
+                        ModelAsset loadedModel = MLHelper.LoadModelRuntime(
+                             rawModel, agent.modelConfig.behavior.behavior_name
                         );
 
                         agent.modelConfig.nnModel = loadedModel;

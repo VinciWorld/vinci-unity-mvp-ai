@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Unity.Barracuda;
+using Unity.Sentis;
 using UnityEngine;
 using Vinci.Academy.Environement;
 using Vinci.Core.Managers;
@@ -23,7 +23,7 @@ public class AgentBlueprint
     
     public ModelConfig modelConfig;
 
-    public NNModel GetNNModel()
+    public ModelAsset GetNNModel()
     {
         //if(modelConfig.nnModel == null)
         //{
@@ -43,7 +43,7 @@ public class AgentBlueprint
         modelConfig.AddStepsTrained(stepsTrained);
     }
 
-    public void SetModelAndPath(string modelPath, NNModel nnModel)
+    public void SetModelAndPath(string modelPath, ModelAsset nnModel)
     {
         modelConfig.nnModelPath = modelPath;
         modelConfig.nnModel = nnModel;

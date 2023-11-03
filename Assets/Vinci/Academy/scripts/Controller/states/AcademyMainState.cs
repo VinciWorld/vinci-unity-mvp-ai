@@ -1,8 +1,6 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Unity.Barracuda;
-using Unity.Barracuda.ONNX;
 using Unity.VisualScripting;
 using UnityEngine;
 using Vinci.Core.Managers;

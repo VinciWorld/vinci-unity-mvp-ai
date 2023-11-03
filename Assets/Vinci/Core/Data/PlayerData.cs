@@ -1,7 +1,6 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using Unity.Barracuda;
 using System.Linq;
 using Vinci.Academy.Environement;
 using UnityEngine.Rendering;

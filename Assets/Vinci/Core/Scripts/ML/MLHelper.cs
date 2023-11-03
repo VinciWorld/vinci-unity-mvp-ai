@@ -1,15 +1,15 @@
 using System;
 using System.IO;
-using Unity.Barracuda;
-using Unity.Barracuda.ONNX;
+using Unity.Sentis;
+using Unity.Sentis.ONNX;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Vinci.Core.ML.Utils
 {
     public static class MLHelper
     {
-
-        public static (string filePath, NNModel nnModel) SaveAndLoadModel(Byte[] rawModel, string runId, string behaviourName)
+        public static (string filePath, ModelAsset nnModel) SaveAndLoadModel(Byte[] rawModel, string runId, string behaviourName)
         {
             try
             {
@@ -20,13 +20,13 @@ namespace Vinci.Core.ML.Utils
                 {
                     Directory.CreateDirectory(directoryPath);
                 }
+
                 //Save model to disk
                 File.WriteAllBytes(filePath, rawModel);
                 Debug.Log("Model saved at: " + filePath);
 
-                NNModel nnModel = MLHelper.LoadModelRuntime(behaviourName, rawModel);
-                nnModel.name = behaviourName;
-
+                ModelAsset nnModel = LoadModelRuntime(rawModel, behaviourName);
+              
                 return (filePath, nnModel);
             }
             catch (Exception e)
@@ -35,12 +35,17 @@ namespace Vinci.Core.ML.Utils
             }
         }
 
-        public static NNModel LoadModelRuntime(string behaviourName, byte[] rawModel)
+        public static ModelAsset LoadModelRuntime(byte[] rawModel, string behaviourName)
         {
-            var converter = new ONNXModelConverter(true);
-            var onnxModel = converter.Convert(rawModel);
+            var asset = ScriptableObject.CreateInstance<ModelAsset>();
+            asset.modelAssetData = ScriptableObject.CreateInstance<ModelAssetData>();
+            asset.modelAssetData.value = rawModel;
+            asset.name = behaviourName;
 
-            NNModelData assetData = ScriptableObject.CreateInstance<NNModelData>();
+            return asset;
+
+            /*
+            Model assetData = ScriptableObject.CreateInstance<NNModelData>();
             using (var memoryStream = new MemoryStream())
             using (var writer = new BinaryWriter(memoryStream))
             {
@@ -49,13 +54,13 @@ namespace Vinci.Core.ML.Utils
             }
             assetData.name = "Data";
             assetData.hideFlags = HideFlags.HideInHierarchy;
+            
 
-            var asset = ScriptableObject.CreateInstance<NNModel>();
+            var asset = ScriptableObject.CreateInstance<Model>();
             asset.modelData = assetData;
 
             asset.name = behaviourName;
-
-            return asset;
+            */
         }
     }
 }

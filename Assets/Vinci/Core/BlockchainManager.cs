@@ -12,7 +12,6 @@ using Solana.Unity.SDK;
 using Solana.Unity.SDK.Nft;
 using Solana.Unity.Wallet;
 using TMPro;
-using Unity.Barracuda;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Vinci.Core.Utils;

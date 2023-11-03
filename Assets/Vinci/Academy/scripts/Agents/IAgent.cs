@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Unity.Barracuda;
 using Unity.MLAgents.Policies;
+using Unity.Sentis;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -22,7 +22,7 @@ public interface IAgent
     public void SetEvaluationMetrics(EvaluationMetrics evaluationMetrics);
     public void Reset();
     public void SetBehaviorType(BehaviorType type);
-    public void LoadModel(string behaviorName, NNModel model);
+    public void LoadModel(string behaviorName, ModelAsset model);
     public void SetIsReplay(bool isReplay);
     public GameObject GetGameObject();
 }

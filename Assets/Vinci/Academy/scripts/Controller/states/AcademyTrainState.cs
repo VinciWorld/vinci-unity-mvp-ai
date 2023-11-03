@@ -2,9 +2,8 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Unity.Barracuda;
-using Unity.Barracuda.ONNX;
 using Unity.MLAgents;
+using Unity.Sentis;
 using Unity.VisualScripting;
 using UnityEngine;
 using Vinci.Core.Managers;
@@ -333,7 +332,8 @@ public class AcademyTrainState : StateBase
         Debug.Log("Actions received: " + actionsJson);
     }
 
-    (string, NNModel) SaveAndLoadModel(Byte[] rawModel, string runId, string behaviourName)
+/*
+    (string, Model) SaveAndLoadModel(Byte[] rawModel, string runId, string behaviourName)
     {
         string directoryPath = Path.Combine(Application.persistentDataPath, "runs", runId, "models");
         string filePath = Path.Combine(directoryPath, $"{behaviourName}.onnx");
@@ -347,12 +347,13 @@ public class AcademyTrainState : StateBase
         File.WriteAllBytes(filePath, rawModel);
         Debug.Log("Model saved at: " + filePath);
 
-        NNModel nnModel = MLHelper.LoadModelRuntime(behaviourName, rawModel);
-        nnModel.name = behaviourName;
+        Model nnModel = MLHelper.LoadModelRuntime(behaviourName, rawModel);
+        //TODO: NAME
+        //nnModel = behaviourName;
   
         return (filePath, nnModel);
     }
-
+*/
     /*
     public void CreateAgent()
     {

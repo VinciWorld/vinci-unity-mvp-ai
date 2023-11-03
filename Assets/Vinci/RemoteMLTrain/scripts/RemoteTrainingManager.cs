@@ -108,7 +108,8 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
         }
     */
 
-    async public Task<(byte[], List<MetricsData> metrics)> DownloadNNModelAndMetricsData(string runId)
+
+    async public Task<(byte[], List<MetricsData>)> DownloadNNModelAndMetricsData(string runId)
     {
         string url = http_prefix + centralNode + endpointTainJobs + "/" + runId + "/train-results";
 
@@ -119,21 +120,36 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
 
             if (request.result == UnityWebRequest.Result.Success)
             {
-                //var (model, metricsBytes) = RequestsUtils.ParseMultipartResponseNew(request.downloadHandler.data);
-                RequestsUtils.ParseMultipartResponseNew(request.downloadHandler.data);
+                TrainFileBundle trainFileBundle = TrainFileBundle.Parser.ParseFrom(request.downloadHandler.data);
 
-                /*
-                string metricsJson = Encoding.UTF8.GetString(metricsBytes);
-                List<string> metricsJsonArray = JsonConvert.DeserializeObject<List<string>>(metricsJson);
+                byte[] modelBytes = null;
                 List<MetricsData> metricsList = new List<MetricsData>();
-                foreach (string mJson in metricsJsonArray)
+
+                foreach (var file in trainFileBundle.TrainFiles)
                 {
-                    MetricsData metricsDataConvereted = JsonConvert.DeserializeObject<MetricsData>(mJson);
-                    metricsList.Add(metricsDataConvereted);
+                    if (file.Name == "model.onnx")
+                    {
+                        modelBytes = file.Content.ToByteArray();
+                    }
+                    else if (file.Name == "metrics.json")
+                    {
+                        string metricsJson = file.Content.ToStringUtf8();
+                        List<string> metricsJsonArray = JsonConvert.DeserializeObject<List<string>>(metricsJson);
+
+                        foreach (string mJson in metricsJsonArray)
+                        {
+                            MetricsData metricsDataConverted = JsonConvert.DeserializeObject<MetricsData>(mJson);
+                            metricsList.Add(metricsDataConverted);
+                        }
+                    }
                 }
- */
-                return (null, null);
-               
+
+                if (modelBytes == null)
+                {
+                    throw new Exception("Model data not found in the response.");
+                }
+
+                return (modelBytes, metricsList);
             }
             else
             {
@@ -142,6 +158,7 @@ public class RemoteTrainManager : PersistentSingleton<RemoteTrainManager>
             }
         }
     }
+
 
     public async Task<(byte[] model, List<MetricsData> metrics)> DownloadNNModelAndMetrics(string runId)
     {
