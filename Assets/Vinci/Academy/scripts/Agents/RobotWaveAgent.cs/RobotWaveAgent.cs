@@ -10,9 +10,9 @@ using Vinci.Core.BattleFramework;
 
 public class RobotWaveAgent : Agent, IAgent
 {
-
+    
     InputControllerBasic _input;
-    Robot _robot;
+    public Robot _robot;
     private EnvironementBase _env;
     BehaviorParameters _beahivor;
 
@@ -80,7 +80,11 @@ public class RobotWaveAgent : Agent, IAgent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(StepCount / (float)MaxStep);
+        if(!_isReplay)
+        {
+            sensor.AddObservation(StepCount / (float)MaxStep);
+            sensor.AddObservation(true);
+        }
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
@@ -88,6 +92,7 @@ public class RobotWaveAgent : Agent, IAgent
         _steps++;
         var discreteActionsOut = actionBuffers.DiscreteActions;
 
+        Debug.Log(_isReplay);
         if (_isReplay)
         {
             if (_actionsQueueReceived.Count > 0)
@@ -97,8 +102,10 @@ public class RobotWaveAgent : Agent, IAgent
                 discreteActionsOut[1] = actionRobotBufferMsg.fire;
             }
         }
-
-        AddReward(-1f / MaxStep);
+        else
+        {
+            AddReward(-1f / MaxStep);
+        }
 
         MoveAgent(actionBuffers.DiscreteActions);
         if (discreteActionsOut[1] == 1)
@@ -259,9 +266,10 @@ public class RobotWaveAgent : Agent, IAgent
 
     public void LoadModel(string behaviorName, ModelAsset model)
     {
-        _beahivor.BehaviorType = BehaviorType.HeuristicOnly;
+        //_beahivor.BehaviorType = BehaviorType.HeuristicOnly;
+        Debug.Log("Set model!: " + model.name);
         SetModel(behaviorName, model);
-        _beahivor.BehaviorType = BehaviorType.InferenceOnly;
+        //_beahivor.BehaviorType = BehaviorType.InferenceOnly;
     }
 
     public void SetIsReplay(bool isReplay)

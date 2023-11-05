@@ -5060,6 +5060,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb4fc4d74127014da8f9400c725484b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  version: v0.0.3
+  localEnv: 1
   UserData:
     pubkey: 
     username: 
@@ -5078,7 +5080,6 @@ MonoBehaviour:
   solanaBalance: 0
   baseNNModel: {fileID: 5022602860645237092, guid: 61881707995126849805040d9bdd3e61,
     type: 3}
-  version: v0.0.3
 --- !u!1001 &421121864
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27040,11 +27041,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 6504583924473299716, guid: 6c0cbfd59cd4ee342ae6012c8002f2f6,
-        type: 3}
-      propertyPath: m_BehaviorName
-      value: RobotWave
-      objectReference: {fileID: 0}
     - target: {fileID: 6504583924473299732, guid: 6c0cbfd59cd4ee342ae6012c8002f2f6,
         type: 3}
       propertyPath: m_Name

@@ -7,7 +7,6 @@ using Unity.Sentis;
 using Unity.VisualScripting;
 using UnityEngine;
 using Vinci.Core.Managers;
-using Vinci.Core.ML.Utils;
 using Vinci.Core.StateMachine;
 using Vinci.Core.UI;
 
@@ -306,7 +305,7 @@ public class AcademyTrainState : StateBase
         }
         catch(Exception e)
         {
-            Debug.Log("OnBinaryDataRecived error: " + e.Message);
+            Debug.Log("OnBinaryDataRecived error: " + e.Message + " trace: " + e.StackTrace);
         }
     }
 

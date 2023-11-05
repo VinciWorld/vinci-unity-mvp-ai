@@ -5,7 +5,6 @@ using Unity.MLAgents;
 using Solana.Unity.SDK;
 using System;
 using WebSocketSharp;
-using Vinci.Core.ML.Utils;
 using Unity.Sentis;
 using File = System.IO.File;
 
@@ -14,6 +13,7 @@ namespace Vinci.Core.Managers
     public class GameManager : PersistentSingleton<GameManager>
     {
         public string version = "v0.0.3";
+        public bool localEnv = false;
 
         public UserData UserData;
         public PlayerData playerData;
@@ -96,12 +96,12 @@ namespace Vinci.Core.Managers
 
                     if(rawModel != null)
                     {
-                        ModelAsset loadedModel = MLHelper.LoadModelRuntime(
-                             rawModel, agent.modelConfig.behavior.behavior_name
-                        );
+                        //ModelAsset loadedModel = MLHelper.LoadModelRuntime(
+                        //     rawModel, agent.modelConfig.behavior.behavior_name
+                        //);
 
-                        agent.modelConfig.nnModel = loadedModel;
-                        agent.modelConfig.isModelLoaded = true;
+                        //agent.modelConfig.nnModel = loadedModel;
+                        //agent.modelConfig.isModelLoaded = true;
                     }
                 }
             }

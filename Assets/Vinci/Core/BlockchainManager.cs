@@ -14,6 +14,7 @@ using Solana.Unity.Wallet;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Vinci.Core.Managers;
 using Vinci.Core.Utils;
 using VinciAccounts;
 using VinciAccounts.Accounts;
@@ -362,6 +363,9 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
 
     async public Task<string> RegisterPlayerOnCompetition()
     {
+        if (GameManager.instance.localEnv)
+            return "";
+
         ulong score = 0;
         PublicKey userAccount;
         byte bump;
@@ -398,6 +402,9 @@ public class BlockchainManager : PersistentSingleton<BlockchainManager>
 
     async public Task<int> GetPlayeresScores()
     {
+        if (GameManager.instance.localEnv)
+            return 0;
+
         PublicKey userAccount;
         byte bump;
         var blockHash = await Web3.Rpc.GetLatestBlockHashAsync();
