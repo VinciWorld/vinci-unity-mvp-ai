@@ -54,6 +54,39 @@ namespace Unity.Sentis
             }
         }
 
+        public static ModelAsset LoadModelRuntime(string behaviourName, string modelPath)
+        {
+            byte[] rawModel = File.ReadAllBytes(modelPath);
+            Model sentisModel = ModelLoader.Load(modelPath);
+
+            var asset = ScriptableObject.CreateInstance<ModelAsset>();
+
+            asset.modelAssetData = ScriptableObject.CreateInstance<ModelAssetData>();
+            asset.modelAssetData.name = "Data";
+            asset.modelAssetData.hideFlags = HideFlags.HideInHierarchy;
+            asset.modelAssetData.value = rawModel;
+
+            var weightStreams = new List<MemoryStream>();
+            SaveModelWeights(weightStreams, sentisModel);
+
+            asset.modelWeightsChunks = new ModelAssetWeightsData[weightStreams.Count];
+            for (int i = 0; i < weightStreams.Count; i++)
+            {
+                var stream = weightStreams[i];
+                asset.modelWeightsChunks[i] = ScriptableObject.CreateInstance<ModelAssetWeightsData>();
+                asset.modelWeightsChunks[i].value = stream.ToArray();
+                asset.modelWeightsChunks[i].name = "Data";
+                asset.modelWeightsChunks[i].hideFlags = HideFlags.HideInHierarchy;
+
+                stream.Close();
+                stream.Dispose();
+            }
+
+            asset.name = behaviourName;
+
+            return asset;
+        }
+
         public static ModelAsset LoadModelRuntime(Byte[] rawModel, Model sentisModel, string behaviourName)
         {
 

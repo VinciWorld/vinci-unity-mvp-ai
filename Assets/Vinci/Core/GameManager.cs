@@ -92,18 +92,14 @@ namespace Vinci.Core.Managers
 
                 if(!agent.modelConfig.nnModelPath.IsNullOrEmpty())
                 {
-                    byte[] rawModel = File.ReadAllBytes(agent.modelConfig.nnModelPath);
+ 
+                    ModelAsset loadedModel = MLHelper.LoadModelRuntime(
+                        agent.modelConfig.behavior.behavior_name, agent.modelConfig.nnModelPath
+                    );
 
-                    if(rawModel != null)
-                    {
-                        //ModelAsset loadedModel = MLHelper.LoadModelRuntime(
-                        //     rawModel, agent.modelConfig.behavior.behavior_name
-                        //);
-
-                        //agent.modelConfig.nnModel = loadedModel;
-                        //agent.modelConfig.isModelLoaded = true;
-                    }
-                }
+                    agent.modelConfig.nnModel = loadedModel;
+                    agent.modelConfig.isModelLoaded = true;
+            }
             }
         }
     }
