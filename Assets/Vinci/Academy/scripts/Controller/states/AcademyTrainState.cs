@@ -73,7 +73,7 @@ public class AcademyTrainState : StateBase
 
         if(_controller.session.currentEnvInstance)
         {
-            _controller.session.currentEnvInstance.episodeAndStepCountUpdated -= trainView.UptadeInfo;
+            _controller.session.currentEnvInstance.episodeCountStepCountTotalStepCountUpdated -= trainView.UptadeInfo;
             _controller.session.currentEnvInstance.StopReplay();
         }
 
@@ -107,8 +107,8 @@ public class AcademyTrainState : StateBase
         }
         _controller.session.selectedAgent.modelConfig.behavior.steps = steps * 1000;
 
-        _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
-        _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
+       // _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
+        _controller.session.currentEnvInstance.episodeCountStepCountTotalStepCountUpdated += trainView.UptadeInfo;
         _controller.session.currentEnvInstance.StartReplay();
 
 
@@ -140,9 +140,9 @@ public class AcademyTrainState : StateBase
             RemoteTrainManager.instance.ConnectWebSocketCentralNodeClientStream();
         }
 
+        _controller.session.currentEnvInstance.episodeCountStepCountTotalStepCountUpdated += trainView.UptadeInfo;
         _controller.session.currentEnvInstance.StartReplay();
-        _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
-        _controller.session.currentEnvInstance.episodeAndStepCountUpdated += trainView.UptadeInfo;
+       
 
         trainView.UptadeInfo(0, 0, 0);
         trainView.UpdateMetrics(0, 0);
@@ -314,7 +314,7 @@ public class AcademyTrainState : StateBase
         _controller.session.selectedAgent.AddTrainMetrics(
             metrics.step,
             metrics.mean_reward,
-            metrics.mean_reward,
+            metrics.std_reward,
             metrics.time_elapsed
         );
 
