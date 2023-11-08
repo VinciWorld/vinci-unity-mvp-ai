@@ -7,6 +7,7 @@ using System;
 using WebSocketSharp;
 using Unity.Sentis;
 using File = System.IO.File;
+using Newtonsoft.Json;
 
 namespace Vinci.Core.Managers
 {
@@ -57,19 +58,21 @@ namespace Vinci.Core.Managers
         public void SavePlayerData()
         {
             string path = Path.Combine(Application.persistentDataPath, PlayerDataFileName);
-            string json = JsonUtility.ToJson(playerData);
+            string json = JsonConvert.SerializeObject(playerData, Formatting.Indented);
             System.IO.File.WriteAllText(path, json);
             Debug.Log("Player data saved to " + path);
         }
 
         private void LoadPlayerData()
         {
+           
+
             string path = Path.Combine(Application.persistentDataPath, PlayerDataFileName);
             if (File.Exists(path))
             {
                 string json = File.ReadAllText(path);
-                playerData = JsonUtility.FromJson<PlayerData>(json);
-                
+                playerData = JsonConvert.DeserializeObject<PlayerData>(json);
+
                 //TODO: REMOVE !!!!
                 playerData.highScore = 0;
                 Debug.Log("Player data loaded from " + path);
