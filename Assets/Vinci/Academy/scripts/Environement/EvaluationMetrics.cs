@@ -2,8 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
-using UnityEngine.Rendering;
-using Unity.MLAgents;
+using WebSocketSharp;
 
 [Serializable]
 public enum MetricType
@@ -51,7 +50,7 @@ public class MetricValue
 public class MetricChange
 {
     public MetricValue currentValue;
-    public object change; // Variation from the previous value
+    public object change;
     public ChangeStatus status;
 
     public MetricChange(MetricValue currentValue, object change, ChangeStatus status)
@@ -59,6 +58,43 @@ public class MetricChange
         this.currentValue = currentValue;
         this.change = change;
         this.status = status;
+    }
+
+    public string GetValueWithSymbol()
+    {
+        switch (currentValue.type)
+        {
+            case MetricType.Int:
+                return currentValue.value.ToString();
+            case MetricType.Float:
+                return ((float)currentValue.value).ToString("F2");
+            case MetricType.Percent:
+                return ((float)currentValue.value).ToString("P1");
+            case MetricType.String:
+                return currentValue.value as string;
+            default:
+                return "Unknown Type";
+        }
+    }
+
+    public string GetValueChangeWithSymbol()
+    {
+        if (change is string && ((string)change).IsNullOrEmpty())
+            return change as string;
+
+        switch (currentValue.type)
+        {
+            case MetricType.Int:
+                return change.ToString();
+            case MetricType.Float:
+                return ((float)change).ToString("F2");
+            case MetricType.Percent:
+                return ((float)change).ToString("P1");
+            case MetricType.String:
+                return change as string;
+            default:
+                return "Unknown Type";
+        }
     }
 }
 
@@ -84,22 +120,26 @@ public class EvaluationMetrics
 
     public Dictionary<string, MetricValue> commonEvaluationMetrics = new();
     public Dictionary<string, MetricValue> envEvaluationMetrics = new();
+    public Dictionary<string, MetricValue> agentEvaluationMetrics = new();
+
     public Dictionary<int, Dictionary<string, MetricValue>> agentEvaluationMetricsPerEpisode = new();
 
-    public List<Dictionary<string, MetricValue>> commonMetricsHistory = new();
-    public List<Dictionary<string, MetricValue>> envMetricsHistory = new();
-    public List<Dictionary<int, Dictionary<string, MetricValue>>> agentMetricsHistory = new();
+    //public List<Dictionary<string, MetricValue>> commonMetricsHistory = new();
+    //public List<Dictionary<string, MetricValue>> envMetricsHistory = new();
+    //public List<Dictionary<int, Dictionary<string, MetricValue>>> agentMetricsHistory = new();
 
     public event Action<Dictionary<string, MetricValue>> commonMetricsUpdated;
     public event Action<Dictionary<string, MetricValue>> envMetricsUpdated;
     public event Action<Dictionary<string, MetricValue>> agentMetricsUpdated;
 
 
-    public void Initialize(Dictionary<string, MetricValue> envMetricsTemplate)
+    public void Initialize(Dictionary<string, MetricValue> envMetricsTemplate,
+        Dictionary<string, MetricValue> agentMetricsTemplate
+    )
     {
         commonEvaluationMetrics = new Dictionary<string, MetricValue>(commonMetricsTemplate);
         envEvaluationMetrics = new Dictionary<string, MetricValue>(envMetricsTemplate);
-
+        agentEvaluationMetrics = new Dictionary<string, MetricValue>(agentMetricsTemplate);
     }
 
     public bool UpdateAgentMetricForEpisode(int episode, string metricKey, MetricValue metricValue)
@@ -108,9 +148,10 @@ public class EvaluationMetrics
         {
             // If the episode doesn't exist, initialize it
             metrics = new Dictionary<string, MetricValue>();
-            foreach (var metric in envEvaluationMetrics)
+            foreach (var metric in agentEvaluationMetrics)
             {
                 metrics[metric.Key] = new MetricValue(metric.Value.type, metric.Value.value, metric.Value.IsHigherBetter);
+            
             }
             agentEvaluationMetricsPerEpisode[episode] = metrics;
         }
@@ -206,6 +247,13 @@ public class EvaluationMetrics
     {
 
         return envEvaluationMetrics;;
+
+    }
+
+    public Dictionary<int, Dictionary<string, MetricValue>> GetAgentetrics()
+    {
+
+        return agentEvaluationMetricsPerEpisode; ;
 
     }
 
@@ -341,7 +389,7 @@ public class EvaluationMetrics
                 var change = new MetricChange
                 (
                     metric.Value,
-                    null,
+                    "",
                     ChangeStatus.Same
                 );
 
@@ -351,8 +399,53 @@ public class EvaluationMetrics
         return result;
     }
 
+    public static Dictionary<string, MetricValue> ComputeAgentMetricsSumForEnvMetrics(
+    Dictionary<string, MetricValue> envMetrics,
+    Dictionary<int, Dictionary<string, MetricValue>> agentMetrics
+)
+    {
+        foreach (var key in envMetrics.Keys.ToList())
+        {
+            double totalValue = 0.0;
+            int count = 0;
 
-    public static Dictionary<string, MetricValue> ComputeAverageForEnvMetrics(
+            foreach (var episodeMetrics in agentMetrics.Values)
+            {
+                if (episodeMetrics.ContainsKey(key))
+                {
+                    switch (episodeMetrics[key].type)
+                    {
+                        case MetricType.Float:
+                            totalValue += (float)episodeMetrics[key].value;
+                            count++;
+                            break;
+                        case MetricType.Int:
+                            totalValue += (int)episodeMetrics[key].value;
+                            count++;
+                            break;
+                    }
+                }
+            }
+
+            if (envMetrics[key].type == MetricType.Float)
+            {
+                envMetrics[key] = new MetricValue(MetricType.Float, (float)totalValue, envMetrics[key].IsHigherBetter);
+            }
+            else if (envMetrics[key].type == MetricType.Percent)
+            {
+                envMetrics[key] = new MetricValue(MetricType.Float, (float)totalValue, envMetrics[key].IsHigherBetter);
+            }
+            else if (envMetrics[key].type == MetricType.Int)
+            {
+                envMetrics[key] = new MetricValue(MetricType.Int, (int)Math.Round(totalValue), envMetrics[key].IsHigherBetter);
+            }
+        }
+
+        return envMetrics;
+    }
+
+
+    public static Dictionary<string, MetricValue> ComputeAgentMetricsAverageForEnvMetrics(
         Dictionary<string, MetricValue> envMetrics,
         Dictionary<int, Dictionary<string, MetricValue>> agentMetrics
     )
@@ -388,6 +481,10 @@ public class EvaluationMetrics
                 {
                     envMetrics[key] = new MetricValue(MetricType.Float, (float)averageValue, envMetrics[key].IsHigherBetter);
                 }
+                else if (envMetrics[key].type == MetricType.Percent)
+                {
+                    envMetrics[key] = new MetricValue(MetricType.Float, (float)averageValue, envMetrics[key].IsHigherBetter);
+                }
                 else if (envMetrics[key].type == MetricType.Int)
                 {
                     envMetrics[key] = new MetricValue(MetricType.Int, (int)Math.Round(averageValue), envMetrics[key].IsHigherBetter);
@@ -398,7 +495,7 @@ public class EvaluationMetrics
         return envMetrics;
     }
 
-    public static Dictionary<string, MetricChange> CompareWithPreviousEpisode(Dictionary<int, Dictionary<string, MetricValue>> agentMetrics)
+    public static Dictionary<string, MetricChange> CompareAgentMetricsWithPreviousEpisode(Dictionary<int, Dictionary<string, MetricValue>> agentMetrics)
     {
         if (agentMetrics.Count == 0) return new Dictionary<string, MetricChange>();
 

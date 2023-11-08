@@ -39,9 +39,11 @@ public class EnvHallway : EnvironementBase
     private float successRatio = 0f;
 
     public override event System.Action<string> actionsReceived;
-    public override event System.Action<int, int, int> episodeAndStepCountUpdated;
+    public override event System.Action<int, int, int> episodeCountStepCountTotalStepCountUpdated;
     public override event System.Action<Dictionary<string, MetricValue>> envMetricsUpdated;
     public override event System.Action<Dictionary<string, MetricValue>> commonMetricsUpdated;
+    public override event System.Action<int> episodeCountUpdated;
+
     //public override event System.Action<Dictionary<string, MetricValue>> updateCommonResults;
 
     private bool isFirstEpisode = true;
@@ -191,13 +193,13 @@ public class EnvHallway : EnvironementBase
     {
         return _agent;
     }
-
+/*
     public override void SetAgentBehavior(BehaviorType type)
     {
         _agent.SetBehaviorType(type);
     }
-
-    public override void StartEnv()
+*/
+    public override void StartEnv(BehaviorType type)
     {
         Reset();
         Academy.Instance.AutomaticSteppingEnabled = true;
@@ -283,7 +285,7 @@ public class EnvHallway : EnvironementBase
                 Academy.Instance.AutomaticSteppingEnabled = true;
                 while(_agent.actionsQueueReceived.Count > 0)
                 {
-                    episodeAndStepCountUpdated?.Invoke(action.episodeCount, _agent.steps, totalStepCount + _agent.steps);
+                    episodeCountStepCountTotalStepCountUpdated?.Invoke(action.episodeCount, _agent.steps, totalStepCount + _agent.steps);
                     yield return new WaitForEndOfFrame();
                 }
                 Academy.Instance.AutomaticSteppingEnabled = false;
@@ -365,6 +367,11 @@ public class EnvHallway : EnvironementBase
     }
 
     public override void RemoveListeners(System.Action<Dictionary<string, MetricValue>> commonMetricsUpdated, System.Action<Dictionary<string, MetricValue>> envMetricsUpdated, System.Action<Dictionary<string, MetricValue>> agentMetricsUpdated)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override Dictionary<int, Dictionary<string, MetricValue>> GetEvaluationMetricAgentResults()
     {
         throw new System.NotImplementedException();
     }

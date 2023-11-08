@@ -37,18 +37,34 @@ public class AcademyMainState : StateBase
         _mainView.selectAgentButtonPressed += OnSelectAgentButtonPressed;
         _mainView.createAgentButtonPressed += OnCreateAgent;
         _mainView.watchTrainingButtonPressed += OnWatchTrainButtonPressed;
+        _mainView.evaluateModelButtonPressed += OnEvaluateButtonPressed;
         //_controller.session.currentAgentInstance = null;
         //_controller.session.currentEnvInstance = null;
 
-        if(GameManager.instance.playerData.agents.Count > 0)
+        _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
+        if (GameManager.instance.playerData.agents.Count > 0)
         {
             _controller.session.selectedAgent = GameManager.instance.playerData.GetAgent(0);
+            _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
             UpdateTrainJobStatus();
         }
         else
         {
             _mainView.ShowCreateButton();
+            _mainView.ShowEvalauteMessage("Train the model first.", false);
             _mainView.SetLastJobStatus("Not trained", "#E44962");
+        }
+
+        if(_controller.session.selectedAgent.modelConfig.isEvaluated)
+        {
+            _mainView.ShowEvaluateMetrics(
+                _controller.session.selectedAgent.modelConfig.GetCommonEvaluationMetricsChange(
+                    _controller.session.selectedTrainEnv.env_id
+                ),
+                _controller.session.selectedAgent.modelConfig.GetEnvEvaluationMetricsChange(
+                    _controller.session.selectedTrainEnv.env_id
+                )
+            );
         }
 
         //TODO: Load available models for this model
@@ -137,7 +153,7 @@ public class AcademyMainState : StateBase
 
                 try
                 {
-                    await LoadModel(_controller.session.selectedAgent);
+                    await LoadModelAndMetrics(_controller.session.selectedAgent);
                 }
                 catch (Exception e)
                 {
@@ -148,7 +164,6 @@ public class AcademyMainState : StateBase
 
                 //Show button evaluate model
                 _mainView.SetLastJobStatus("Train completed", "#FFB33A");
-                _mainView.ShowEvaluateButton();
                 _mainView.CloseLoaderPopup();
 
             }
@@ -191,7 +206,6 @@ public class AcademyMainState : StateBase
 
     async void UpdateTrainJobStatus()
     {
-
         foreach (var agent in _controller.manager.playerData.agents)
         {
             if (!agent.modelConfig.runId.IsNullOrEmpty())
@@ -199,12 +213,25 @@ public class AcademyMainState : StateBase
                 if(_controller.session.selectedAgent.modelConfig.trainJobStatus == TrainJobStatus.SUCCEEDED
                     && _controller.session.selectedAgent.modelConfig.isModelLoaded)
                 {
-                    _mainView.SetLastJobStatus("Completed", "#FFB33A");
+                    _mainView.SetLastJobStatus("Trained", "#00AE75");
                     _mainView.SetTrainsCount(agent.modelConfig.trainCount);
-                    _mainView.SetLastTrainSteps(agent.modelConfig.behavior.steps);
-                    _mainView.SetTotalStepsTrained(agent.modelConfig.totalStepsTrained);
+                    _mainView.SetTotalStepsTrained(agent.modelConfig.totalStepsTrained, agent.modelConfig.behavior.steps);
 
-                    _mainView.ShowWTrainButton();
+                    if(_controller.session.selectedAgent.modelConfig.isEvaluated)
+                    {
+                        _mainView.ShowEvaluateMetrics(
+                            _controller.session.selectedAgent.modelConfig.GetCommonEvaluationMetricsChange(
+                                _controller.session.selectedTrainEnv.env_id
+                            ),
+                            null
+                        );
+
+                        _mainView.ShowWTrainButton();
+                    }
+                    else
+                    {
+                        _mainView.ShowEvalauteMessage("Training complete. Evaluate the model.", true);
+                    }
                 }
                 else
                 {
@@ -254,37 +281,7 @@ public class AcademyMainState : StateBase
         }        
     }
 
-    async public Task LoadModel(AgentBlueprint agent)
-    {
-        var (model, metrics) = await RemoteTrainManager.instance.DownloadNNModelAndMetricsData(_controller.session.selectedAgent.modelConfig.runId);
 
-        agent.modelConfig.ResetLastTrainMetricsEntry();
-        agent.modelConfig.AddTrainMetrics(metrics);
-
-        Debug.Log("model bytes: " + model.Length);
-
-        var (filePath, nnModel) = MLHelper.SaveAndLoadModel(model, agent.modelConfig.runId, agent.modelConfig.behavior.behavior_name);
-
-        agent.SetModelAndPath(filePath, nnModel);
-        agent.modelConfig.isModelLoaded = true;
-
-        _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUCCEEDED;
-
-        //TODO: Retrive from server metrics from the train!
-      
-
-        agent.modelConfig.AddStepsTrained(
-            agent.modelConfig.behavior.steps
-        );
-
-        GameManager.instance.SavePlayerData();
-
-        _mainView.SetLastJobStatus("Train completed", "#FFB33A");
-        _mainView.SetTrainsCount(agent.modelConfig.trainCount);
-        _mainView.SetLastTrainSteps(agent.modelConfig.behavior.steps);
-        _mainView.SetTotalStepsTrained(agent.modelConfig.totalStepsTrained);
-        _mainView.ShowEvaluateButton();
-    }
 
     async private void OnReceiveTrainJobStatus(PostResponseTrainJob job)
     {
@@ -312,8 +309,7 @@ public class AcademyMainState : StateBase
                     }
 
                     _mainView.SetTrainsCount(agent.modelConfig.trainCount);
-                    _mainView.SetLastTrainSteps(agent.modelConfig.behavior.steps);
-                    _mainView.SetTotalStepsTrained(agent.modelConfig.totalStepsTrained);
+                    _mainView.SetTotalStepsTrained(agent.modelConfig.totalStepsTrained, agent.modelConfig.behavior.steps);
 
                     _mainView.SetLastJobStatus("Training", "#00AE75");
                     _mainView.ShowWatchButton();
@@ -326,7 +322,7 @@ public class AcademyMainState : StateBase
 
                     try
                     {
-                        await LoadModel(agent);
+                        await LoadModelAndMetrics(agent);
                     }
                     catch (Exception e)
                     {
@@ -342,35 +338,67 @@ public class AcademyMainState : StateBase
             default:
                 Debug.Log("status not recognised");
                 break;
-        }
+        }   
     }
-/*
-    void SaveAndLoadModel(Byte[] rawModel, string runId, string behaviourName)
+
+    async private Task LoadModelAndMetrics(AgentBlueprint agent)
     {
-        try
-        {
-            Debug.Log("behaviour name: " + behaviourName + " run_id: " + runId);
-            string directoryPath = Path.Combine(Application.persistentDataPath, "runs", runId, "models");
-            string filePath = Path.Combine(directoryPath, $"{behaviourName}.onnx");
+       await GetModelAndMetrics(agent);
 
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
+        agent.modelConfig.AddStepsTrained(
+            agent.modelConfig.behavior.steps
+        );
 
-            //Save model to disk
-            File.WriteAllBytes(filePath, rawModel);
-            Debug.Log("Model saved at: " + filePath);
+        GameManager.instance.SavePlayerData();
 
-            NNModel nnModel = MLHelper.LoadModelRuntime(behaviourName, rawModel);
-
-    
-
-        }
-        catch (Exception e)
-        {
-            throw e;
-        }
+        _mainView.SetLastJobStatus("Train completed", "#FFB33A");
+        _mainView.SetTrainsCount(agent.modelConfig.trainCount);
+        _mainView.SetTotalStepsTrained(agent.modelConfig.totalStepsTrained, agent.modelConfig.behavior.steps);
+        _mainView.ShowEvalauteMessage("Training complete. Evaluate the model.", true);
     }
-    */
+
+    async private Task GetModelAndMetrics(AgentBlueprint agent)
+    {
+        var (model, metrics) = await RemoteTrainManager.instance.DownloadNNModelAndMetricsData(_controller.session.selectedAgent.modelConfig.runId);
+
+        agent.modelConfig.CreateNewTrainMetricsEntry(metrics);
+
+        Debug.Log("model bytes: " + model.Length);
+
+        var (filePath, nnModel) = MLHelper.SaveAndLoadModel(model, agent.modelConfig.runId, agent.modelConfig.behavior.behavior_name);
+
+        agent.SetModelAndPath(filePath, nnModel);
+        agent.modelConfig.isModelLoaded = true;
+
+        _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.SUCCEEDED;
+    }
+    /*
+        void SaveAndLoadModel(Byte[] rawModel, string runId, string behaviourName)
+        {
+            try
+            {
+                Debug.Log("behaviour name: " + behaviourName + " run_id: " + runId);
+                string directoryPath = Path.Combine(Application.persistentDataPath, "runs", runId, "models");
+                string filePath = Path.Combine(directoryPath, $"{behaviourName}.onnx");
+
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                //Save model to disk
+                File.WriteAllBytes(filePath, rawModel);
+                Debug.Log("Model saved at: " + filePath);
+
+                NNModel nnModel = MLHelper.LoadModelRuntime(behaviourName, rawModel);
+
+
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+        */
 }

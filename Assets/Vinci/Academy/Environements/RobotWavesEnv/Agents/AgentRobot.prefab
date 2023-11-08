@@ -708,7 +708,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  DecisionStep: 5
+  DecisionStep: 4
   TakeActionsBetweenDecisions: 1
 --- !u!1 &6504583924745361688
 GameObject:

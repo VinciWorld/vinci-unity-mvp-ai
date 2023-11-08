@@ -33,12 +33,6 @@ public class EnvRobotWaves : EnvironementBase
     [SerializeField]
     LoaderPopup _loaderPopup;
 
-    //public override event Action<Dictionary<string, MetricValue>> updateCommonResults;
-    public override event Action<string> actionsReceived;
-    public override event Action<int, int, int> episodeAndStepCountUpdated;
-    public override event Action<Dictionary<string, MetricValue>> envMetricsUpdated;
-    public override event Action<Dictionary<string, MetricValue>> commonMetricsUpdated;
-
     [Header("Replay")]
     private bool _isReplay = false;
     private int _episodeCount = 0;
@@ -46,6 +40,13 @@ public class EnvRobotWaves : EnvironementBase
     private Coroutine replayActionsLoopCoroutine;
     private Stack<ActionsRobotWaveMsg> actionStack = new Stack<ActionsRobotWaveMsg>();
     public Queue<ActionRobotBufferMsg> actionsQueueReceived;
+
+    //public override event Action<Dictionary<string, MetricValue>> updateCommonResults;
+    public override event Action<string> actionsReceived;
+    public override event Action<int, int, int> episodeCountStepCountTotalStepCountUpdated;
+    public override event Action<Dictionary<string, MetricValue>> envMetricsUpdated;
+    public override event Action<Dictionary<string, MetricValue>> commonMetricsUpdated;
+    public override event Action<int> episodeCountUpdated;
 
     private int goalsCompletedCount = 0;
     private int goalsFailedCount = 0;
@@ -59,6 +60,7 @@ public class EnvRobotWaves : EnvironementBase
     //Evaluation
     private EvaluationMetrics _evaluationMetrics;
     Dictionary<string, MetricValue> envMetricsTemplate;
+    Dictionary<string, MetricValue> agentMetricsTemplate;
 
     public override void Initialize(GameObject agent)
     {
@@ -119,6 +121,7 @@ public class EnvRobotWaves : EnvironementBase
         }
 
         _episodeCount++;
+        episodeCountUpdated?.Invoke(_episodeCount);
     }
 
     public override IAgent GetAgent()
@@ -150,27 +153,31 @@ public class EnvRobotWaves : EnvironementBase
         successRatio = 0;
         _episodeCount = 0;
     }
-
+/*
     public override void SetAgentBehavior(BehaviorType type)
     {
         _agent.SetBehaviorType(type);
     }
-
-    public override void StartEnv()
+*/
+    public override void StartEnv(BehaviorType behaviorType)
     {
-
         _agent.EndEpisode();
+        
         Reset();
+
+        _agent.SetBehaviorType(behaviorType);
         Academy.Instance.AutomaticSteppingEnabled = true;
     }
 
     public override void StopEnv()
     {
+        _agent.SetBehaviorType(BehaviorType.HeuristicOnly);
         Academy.Instance.AutomaticSteppingEnabled = false;
         Reset();
     }
 
-    //REPLAY
+
+#region Replay
     //Server side code!
 #if !UNITY_EDITOR && UNITY_SERVER
     private void SendEpisodeActionsToClient()
@@ -195,6 +202,7 @@ public class EnvRobotWaves : EnvironementBase
     {
         _isReplay = true;
         Reset();
+        _agent.SetBehaviorType(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
         //ShowLoaderPopup("Buffering episodes...");
 
     }
@@ -243,10 +251,10 @@ public class EnvRobotWaves : EnvironementBase
                 CloseLoaderPopup();
                 while (_agent.GetActionsQueueReceived().Count > 0)
                 {
-                    episodeAndStepCountUpdated?.Invoke(action.episodeCount, _agent.GetSteps(), _agent.GetSteps() + totalStepCount);
+                    episodeCountStepCountTotalStepCountUpdated?.Invoke(action.episodeCount, _agent.GetSteps(), _agent.GetSteps() + totalStepCount);
                     yield return new WaitForEndOfFrame();
                 }
-                episodeAndStepCountUpdated?.Invoke(action.episodeCount, _agent.GetSteps(), _agent.GetSteps() + totalStepCount);
+                episodeCountStepCountTotalStepCountUpdated?.Invoke(action.episodeCount, _agent.GetSteps(), _agent.GetSteps() + totalStepCount);
                 Academy.Instance.AutomaticSteppingEnabled = false;
 
                 _waveController.ResetWaves();
@@ -279,6 +287,8 @@ public class EnvRobotWaves : EnvironementBase
         Time.timeScale = 1f;
     }
 
+#endregion
+
     public void ShowLoaderPopup(string messange)
     {
         _loaderPopup.gameObject.SetActive(true);
@@ -305,10 +315,18 @@ public class EnvRobotWaves : EnvironementBase
         envMetricsTemplate = new Dictionary<string, MetricValue>
         {
             {MetricKeys.Kills.ToString(), new MetricValue(MetricType.Int, 0)},
-            {MetricKeys.Shoots_Missed.ToString(), new MetricValue(MetricType.Float, 0.0f)},
-            {MetricKeys.Shoots_Hits.ToString(), new MetricValue(MetricType.Float, 0.0f)}
+            {MetricKeys.Shoots_Missed.ToString(), new MetricValue(MetricType.Int, 0, false)},
+            {MetricKeys.Shoots_Hits.ToString(), new MetricValue(MetricType.Int, 0)}
         };
-        _evaluationMetrics.Initialize(envMetricsTemplate);
+
+        agentMetricsTemplate = new Dictionary<string, MetricValue>
+        {
+            {MetricKeys.Kills.ToString(), new MetricValue(MetricType.Int, 0)},
+            {MetricKeys.Shoots_Missed.ToString(), new MetricValue(MetricType.Int, 0,false)},
+            {MetricKeys.Shoots_Hits.ToString(), new MetricValue(MetricType.Int, 0)}
+        };
+
+        _evaluationMetrics.Initialize(envMetricsTemplate, agentMetricsTemplate);
     }
 
     public override Dictionary<string, MetricValue> GetEvaluaitonCommonTemplate()
@@ -329,6 +347,11 @@ public class EnvRobotWaves : EnvironementBase
     public override Dictionary<string, MetricValue> GetEvaluationMetricEnvResults()
     {
         return _evaluationMetrics.GetEnvMetrics();
+    }
+
+    public override Dictionary<int, Dictionary<string, MetricValue>> GetEvaluationMetricAgentResults()
+    {
+        return _evaluationMetrics.GetAgentetrics();
     }
 
     public override Dictionary<string, MetricChange> GetEvaluationMetricEnvComparsionResults()
@@ -364,23 +387,30 @@ public class EnvRobotWaves : EnvironementBase
 
     public override void SetEvaluationEvents(
         Action<Dictionary<string, MetricValue>> commonMetricsUpdated,
-        Action<Dictionary<string, MetricValue>> envMetricsUpdated,
-        Action<Dictionary<string, MetricValue>> agentMetricsUpdated
+        Action<Dictionary<string, MetricValue>> agentMetricsUpdated,
+        Action<Dictionary<string, MetricValue>> envMetricsUpdated = null
     )
     {
         _evaluationMetrics.commonMetricsUpdated += commonMetricsUpdated;
-        _evaluationMetrics.envMetricsUpdated += envMetricsUpdated;
         _evaluationMetrics.agentMetricsUpdated += agentMetricsUpdated;
+        if(envMetricsUpdated != null)
+        {
+            _evaluationMetrics.envMetricsUpdated += envMetricsUpdated;
+        }
+
     }
 
     public override void RemoveListeners(
         Action<Dictionary<string, MetricValue>> commonMetricsUpdated,
-        Action<Dictionary<string, MetricValue>> envMetricsUpdated,
-        Action<Dictionary<string, MetricValue>> agentMetricsUpdated
+        Action<Dictionary<string, MetricValue>> agentMetricsUpdated,
+        Action<Dictionary<string, MetricValue>> envMetricsUpdated = null
     )
     {
         _evaluationMetrics.commonMetricsUpdated -= commonMetricsUpdated;
-        _evaluationMetrics.envMetricsUpdated -= envMetricsUpdated;
+        if (envMetricsUpdated != null)
+        {
+            _evaluationMetrics.envMetricsUpdated += envMetricsUpdated;
+        }
         _evaluationMetrics.agentMetricsUpdated -= agentMetricsUpdated;
     }
 

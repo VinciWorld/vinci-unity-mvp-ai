@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using Unity.MLAgents;
 using UnityEngine;
@@ -21,8 +22,7 @@ public class AcademyMainView : View
     private Button _selectAgentButton;
     [SerializeField]
     private Button _watchTrainButton;
-    [SerializeField]
-    private Button _evaluateModelButton;
+
 
     [Header("Agent Info")]
     [SerializeField]
@@ -32,21 +32,37 @@ public class AcademyMainView : View
     [SerializeField]
     private TextMeshProUGUI _agentDescription;
     [SerializeField]
-    private TextMeshProUGUI _defenseStatText;
+    private TextMeshProUGUI _processingPoswerStatText;
     [SerializeField]
-    private TextMeshProUGUI _attackStatText;
+    private TextMeshProUGUI _structuralIntegrityStatText;
     [SerializeField]
-    private TextMeshProUGUI _speedStatText;
+    private TextMeshProUGUI _sensorRangeStatText;
+    [SerializeField]
+    private TextMeshProUGUI _powerEfficiencyText;
 
-    [Header("Trained Model info")]
+    [Header("Section Model info")]
+    [SerializeField]
+    private KeyValueText _trainStatus;
     [SerializeField]
     private KeyValueText _trainsCount;
     [SerializeField]
-    private KeyValueText _totalStepsTrainedText;
+    private KeyValueTextWithChange _totalTrainStepsKeyValue;
+
+    [Header("Section Evaluation Model")]
     [SerializeField]
-    private TextMeshProUGUI _lastTrainJobStatus;
+    private TextMeshProUGUI _evaluationActionText;
     [SerializeField]
-    private KeyValueText _lastTrainSteps;
+    private Button _evaluateModelButton;
+    [SerializeField]
+    private GameObject _evaluatLayoutMessage;
+    [SerializeField]
+    private GameObject _evaluatLayotMetrics;
+    [SerializeField]
+    public GameObject slotKeyTexChangePrefab;
+    [SerializeField]
+    public Transform parentLayoutModelCommonMetrics;
+    [SerializeField]
+    public Transform parentLayoutModelEnvMetrics;
 
     [SerializeField]
     public GameObject _agentSlide;
@@ -54,6 +70,10 @@ public class AcademyMainView : View
     [SerializeField]
     public GameObject _availableAgentsList;
 
+    [SerializeField]
+    private KeyValueTextWithChange keyValueTextWithChangePrefab;
+    private Dictionary<string, KeyValueTextWithChange> instantiatedPrefabsCommonMetrics = new Dictionary<string, KeyValueTextWithChange>();
+    private Dictionary<string, KeyValueTextWithChange> instantiatedPrefabsEnvMetrics = new Dictionary<string, KeyValueTextWithChange>();
 
     public event Action homeButtonPressed;
     public event Action createAgentButtonPressed;
@@ -79,8 +99,7 @@ public class AcademyMainView : View
             true
         );
 
-       //CheckIfAgentIsCreated();
-        UpdateStats(30, 40, 15);
+        UpdateStats(30, 40, 15, 20);
 
         base.Show();
     }
@@ -110,11 +129,17 @@ public class AcademyMainView : View
         _agentDescription.text = description;
     }
 
-    public void UpdateStats(int defense, int attack, int speed)
+    public void UpdateStats(
+        int processsingPower,
+        int structuralIntetrity,
+        int sensorRange,
+        int powerEfficiency
+    )
     {
-        _defenseStatText.text = defense.ToString();
-        _attackStatText.text = attack.ToString();
-        _speedStatText.text = speed.ToString();
+        _processingPoswerStatText.text = processsingPower.ToString();
+        _structuralIntegrityStatText.text = structuralIntetrity.ToString();
+        _sensorRangeStatText.text = sensorRange.ToString();
+        _powerEfficiencyText.text = powerEfficiency.ToString();
     }
 
     public void CheckIfAgentIsCreated()
@@ -161,13 +186,6 @@ public class AcademyMainView : View
     }
 
 
-    public void ShowEvaluateButton()
-    {
-        _createAgentButton.gameObject.SetActive(false);
-        _selectAgentButton.gameObject.SetActive(false);
-        _watchTrainButton.gameObject.SetActive(false);
-        _evaluateModelButton.gameObject.SetActive(true);
-    }
 
     public void ShowLoaderPopup(string messange)
     {
@@ -188,13 +206,7 @@ public class AcademyMainView : View
 
     public void SetLastJobStatus(string status, string hexColor = "EFF1F5")
     {
-        if (!ColorUtility.TryParseHtmlString(hexColor, out Color color))
-        {
-            color = Color.white;
-        }
-
-        _lastTrainJobStatus.color = color;
-        _lastTrainJobStatus.text = status;
+        _trainStatus.SetValue(status, hexColor);
     }
 
     public void SetTrainsCount(int trainsCount)
@@ -202,15 +214,75 @@ public class AcademyMainView : View
         _trainsCount.SetValue(trainsCount.ToString());
     }
 
-    public void SetLastTrainSteps(int trainSteps)
+
+    public void SetTotalStepsTrained(int totalSteps, int lastTrainSteps)
     {
-        int lasttotlaSteps = trainSteps / 1000;
-        _lastTrainSteps.SetValue(lasttotlaSteps.ToString() + " k");
+        int totalStepsConverted = totalSteps / 1000;
+        int lastTrainStepsConverted = lastTrainSteps / 1000;
+        _totalTrainStepsKeyValue.SetValue(
+            totalStepsConverted.ToString() + " k", "+ " + lastTrainStepsConverted.ToString() + " k", ChangeStatus.Better
+        );
     }
 
-    public void SetTotalStepsTrained(int totalSteps)
+    #region Section-Model-Evaluation
+
+    public void ShowEvalauteMessage(string message, bool showButton = false)
     {
-        int totlaSteps = totalSteps / 1000;
-        _totalStepsTrainedText.SetValue( totlaSteps.ToString() + " k");
+        _evaluatLayoutMessage.SetActive(true);
+        _evaluatLayotMetrics.SetActive(false);
+        _evaluationActionText.text = message;
+        if(showButton)
+        {
+            ShowEvaluateButton();
+        }
     }
+
+    public void ShowEvaluateMetrics(
+        Dictionary<string, MetricChange> commonMetrics,
+        Dictionary<string, MetricChange> envMetrics
+    )
+    {
+        _evaluatLayotMetrics.SetActive(true);
+        _evaluatLayoutMessage.SetActive(false);
+
+        UpdateEvaluationCommonMetrics(commonMetrics);
+    }
+
+    private void ShowEvaluateButton()
+    {
+        _createAgentButton.gameObject.SetActive(false);
+        _selectAgentButton.gameObject.SetActive(false);
+        _watchTrainButton.gameObject.SetActive(false);
+        _evaluateModelButton.gameObject.SetActive(true);
+    }
+
+    public void UpdateEvaluationCommonMetrics(Dictionary<string, MetricChange> metrics)
+    {
+        foreach (var metric in metrics)
+        {
+            if (!instantiatedPrefabsCommonMetrics.TryGetValue(metric.Key, out KeyValueTextWithChange keyValueTextInstance))
+            {
+                keyValueTextInstance = Instantiate(keyValueTextWithChangePrefab, parentLayoutModelCommonMetrics);
+
+                keyValueTextInstance.SetKeyAndValue(
+                    metric.Key,
+                    metric.Value.GetValueWithSymbol(),
+                    metric.Value.GetValueChangeWithSymbol(),
+                    metric.Value.status
+                );
+
+                instantiatedPrefabsCommonMetrics[metric.Key] = keyValueTextInstance;
+            }
+            else
+            {
+                keyValueTextInstance.SetValue(
+                    metric.Value.GetValueWithSymbol(),
+                    metric.Value.GetValueChangeWithSymbol(),
+                    metric.Value.status
+                );
+            }
+        }
+    }
+
+    #endregion
 }

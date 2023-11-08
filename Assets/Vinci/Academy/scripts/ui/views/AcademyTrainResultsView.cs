@@ -30,15 +30,24 @@ public class AcademyTrainResultsView : View
     private TextMeshProUGUI _meanRweard;
     [SerializeField]
     private TextMeshProUGUI _stdRweard;
+    public Transform parentTransformEvaluatioResults;
 
     [Header("Evaluate Model")]
     [SerializeField]
-    GameObject popUpTestModel;
+    GameObject _hudEvaluateModel;
     [SerializeField]
     private Button _stopTestModelButton;
-    public KeyValueText keyValueTextPrefab;
-    public Transform parentTransformEvaluationHud;
-    public Transform parentTransformEvaluatioResults;
+    [SerializeField]
+    private TextMeshProUGUI _episodeCountText;
+    [SerializeField]
+    private TextMeshProUGUI _totalEpisodeCountText;
+    [SerializeField]
+    private KeyValueText keyValueTextPrefab;
+    [SerializeField]
+    private Transform parentTransformHudCommonMetrics;
+    [SerializeField]
+    private Transform parentTransformHudAgentMetrics;
+
 
     private Dictionary<string, KeyValueText> instantiatedPrefabs = new Dictionary<string, KeyValueText>();
     private Dictionary<string, KeyValueText> instantiatedPrefabsEvaluate = new Dictionary<string, KeyValueText>();
@@ -68,7 +77,7 @@ public class AcademyTrainResultsView : View
             true
         );
 
-        ShowTestModelMetrics();
+       // ShowEvaluationHud();
         base.Show();
     }
 
@@ -88,16 +97,10 @@ public class AcademyTrainResultsView : View
     {
         _categoryNavBar.SetTitles("Train results", "Academy");
         resultsSubView.SetActive(true);
-        popUpTestModel.SetActive(false);
+        _hudEvaluateModel.SetActive(false);
     }
 
-    public void ShowTestModelMetrics()
-    {
-        resultsSubView.SetActive(false);
-        popUpTestModel.SetActive(true);
-    }
-
-    public void UpdateTrainResults(int stepsTrained, float meanReward, float stdReward)
+    public void UpdateModelTrainResults(int stepsTrained, float meanReward, float stdReward)
     {
         _stepTrainedCount.text = stepsTrained.ToString();
         _meanRweard.text = meanReward.ToString("F3");
@@ -121,13 +124,49 @@ public class AcademyTrainResultsView : View
         _loaderPopup.Close();
     }
 
+
+
+    public void UpdateEvaluationResultsMetrics(Dictionary<string, MetricValue> metrics)
+    {
+        UpdateMetricsResults(metrics, parentTransformEvaluatioResults);
+    }
+
+    #region EvaluationHud
+
+    public void ShowEvaluationHud(int episodeEvaluationTotal)
+    {
+        _totalEpisodeCountText.text = episodeEvaluationTotal.ToString();
+        resultsSubView.SetActive(false);
+        _hudEvaluateModel.SetActive(true);
+    }
+
+    public void UpdateEpisodCount(int episodeCount)
+    {
+        _episodeCountText.text = episodeCount.ToString();
+    }
+
     public void UpdateEvaluationCommonMetrics(Dictionary<string, MetricValue> metrics)
+    {
+        UpdateMetricsEvaluate(metrics, parentTransformHudCommonMetrics);
+    }
+
+    public void UpdateEvaluationAgentMetrics(Dictionary<string, MetricValue> metrics)
+    {
+
+        UpdateMetricsEvaluate(metrics, parentTransformHudAgentMetrics);
+    }
+    #endregion
+
+    public void UpdateMetricsResults(
+    Dictionary<string, MetricValue> metrics,
+    Transform parentTransform
+)
     {
         foreach (var metric in metrics)
         {
             if (!instantiatedPrefabs.TryGetValue(metric.Key, out KeyValueText keyValueTextInstance))
             {
-                keyValueTextInstance = Instantiate(keyValueTextPrefab, parentTransformEvaluatioResults);
+                keyValueTextInstance = Instantiate(keyValueTextPrefab, parentTransform);
 
                 keyValueTextInstance.SetKeyAndValue(metric.Key, metric.Value.GetValueWithSymbol());
                 instantiatedPrefabs[metric.Key] = keyValueTextInstance;
@@ -139,13 +178,16 @@ public class AcademyTrainResultsView : View
         }
     }
 
-    public void UpdateEvaluationMetrics(Dictionary<string, MetricValue> metrics)
+    public void UpdateMetricsEvaluate(
+        Dictionary<string, MetricValue> metrics,
+        Transform parentTransform
+    )
     {
         foreach (var metric in metrics)
         {
             if (!instantiatedPrefabsEvaluate.TryGetValue(metric.Key, out KeyValueText keyValueTextInstance))
             {
-                keyValueTextInstance = Instantiate(keyValueTextPrefab, parentTransformEvaluationHud);
+                keyValueTextInstance = Instantiate(keyValueTextPrefab, parentTransform);
 
                 keyValueTextInstance.SetKeyAndValue(metric.Key, metric.Value.GetValueWithSymbol());
                 instantiatedPrefabsEvaluate[metric.Key] = keyValueTextInstance;

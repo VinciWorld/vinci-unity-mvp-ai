@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Sentis;
 
-public class EnvSpecificData
+[Serializable]
+public class EnvMetricsData
 {
     public List<Dictionary<string, MetricValue>> commonEvaluationMetrics = new();
     public List<Dictionary<string, MetricValue>> envEvaluationMetrics = new();
@@ -29,11 +30,11 @@ public class ModelConfig
     public bool isModelMinted = false;
     public bool isEvaluated = false;
 
-    // Trian Metrics & Evaluations
+    // Model Train Metrics
     public List<ModelTrainMetrics> trainMetricsHistory = new();
 
     //Key envId
-    public Dictionary<string, EnvSpecificData> envSpecificData = new();
+    public Dictionary<string, EnvMetricsData> envSpecificData = new();
 
     // Methods
     public ModelTrainMetrics GetMostRecentMetricsHistory() => trainMetricsHistory.LastOrDefault();
@@ -49,7 +50,7 @@ public class ModelConfig
         Dictionary<int, Dictionary<string, MetricValue>> agentMetrics
     )
     {
-        Dictionary<string, MetricValue> envMetricsAvg = EvaluationMetrics.ComputeAverageForEnvMetrics(envMetrics, agentMetrics);
+        Dictionary<string, MetricValue> envMetricsAvg = EvaluationMetrics.ComputeAgentMetricsSumForEnvMetrics(envMetrics, agentMetrics);
 
         AddToCommonEvaluationMetrics(envId, commonMetrics);
         AddToEnvEvaluationMetrics(envId, envMetricsAvg);
@@ -60,7 +61,7 @@ public class ModelConfig
     {
         if (!envSpecificData.ContainsKey(envKey))
         {
-            envSpecificData[envKey] = new EnvSpecificData();
+            envSpecificData[envKey] = new EnvMetricsData();
         }
         envSpecificData[envKey].commonEvaluationMetrics.Add(metrics);
     }
@@ -69,7 +70,7 @@ public class ModelConfig
     {
         if (!envSpecificData.ContainsKey(envKey))
         {
-            envSpecificData[envKey] = new EnvSpecificData();
+            envSpecificData[envKey] = new EnvMetricsData();
         }
         envSpecificData[envKey].envEvaluationMetrics.Add(metrics);
     }
@@ -78,7 +79,7 @@ public class ModelConfig
     {
         if (!envSpecificData.ContainsKey(envKey))
         {
-            envSpecificData[envKey] = new EnvSpecificData();
+            envSpecificData[envKey] = new EnvMetricsData();
         }
 
         envSpecificData[envKey].agentEvaluationMetricsPerEpisode.Add(metrics);
@@ -135,20 +136,26 @@ public class ModelConfig
 
     public void CreateNewTrainMetricsEntry()
     {
+        ResetLastTrainMetricsEntry();
+
         var trainMetric = new ModelTrainMetrics();
         trainMetricsHistory.Add(trainMetric);
     }
 
-    public void AddTrainMetrics(List<MetricsData> metrics)
+    public void CreateNewTrainMetricsEntry(List<MetricsData> metrics)
     {
+        ResetLastTrainMetricsEntry();
+
         trainMetricsHistory.Add(new ModelTrainMetrics(metrics));
     }
 
-    public void ResetLastTrainMetricsEntry()
+    private void ResetLastTrainMetricsEntry()
     {
         var lastMetric = GetMostRecentMetricsHistory();
-        lastMetric.Reset();
-
+        if(lastMetric != null)
+        {   if (!lastMetric.completed)
+                trainMetricsHistory.Remove(lastMetric);
+        }
     }
 
     public void AddStepsTrained(int stepsTrained)
@@ -158,10 +165,11 @@ public class ModelConfig
         if (lastMetric != null)
         {
             lastMetric.stepsTrained = stepsTrained;
+            lastMetric.completed = true;
         }
     }
 
-    public void AddTrainMetrics(int setpCount, float meanReward, float stdReward, float timeElapsed)
+    public void AddTrainMetricsEntry(int setpCount, float meanReward, float stdReward, float timeElapsed)
     {
         var lastMetric = GetMostRecentMetricsHistory();
         if (lastMetric != null)
@@ -178,35 +186,44 @@ public class ModelConfig
 public class ModelTrainMetrics
 {
     // Properties
-    List<MetricsData> _metrics;
+    // List<MetricsData> _metrics = new List<MetricsData>();
 
     public List<int> stepCount = new List<int>();
-    public List<float> meanReward = new List<float>();
-    public List<float> stdReward  = new List<float>();
+    public List<float> meanRewardList = new List<float>();
+    public List<float> stdRewardList  = new List<float>();
     public List<float> timeElapsedList = new List<float>();
     public int stepsTrained = 0;
+    public bool completed = false;
 
     public ModelTrainMetrics(){}
     public ModelTrainMetrics(List<MetricsData> metrics)
     {
-        _metrics = metrics;
+        foreach (var item in metrics)
+        {
+            stepCount.Add(item.step);
+            meanRewardList.Add(item.mean_reward);
+            stdRewardList.Add(item.std_reward);
+            timeElapsedList.Add(item.time_elapsed);
+
+        }
+        stepsTrained = stepCount.LastOrDefault();
+        completed = true;
     }
 
-    // Methods
-    public float GetLastStepCount() => _metrics.LastOrDefault().step;
-    public float GetLastMeanReward() => _metrics.LastOrDefault().mean_reward;
-    public float GetLastStdReward() => _metrics.LastOrDefault().std_reward;
-    public float GetLastTimeElapsed() => _metrics.LastOrDefault().time_elapsed;
+    public float GetLastStepCount() => stepCount.LastOrDefault();
+    public float GetLastMeanReward() => meanRewardList.LastOrDefault();
+    public float GetLastStdReward() => stdRewardList.LastOrDefault();
+    public float GetLastTimeElapsed() => timeElapsedList.LastOrDefault();
     public void AddStepCount(int setpCount) => stepCount.Add(setpCount);
-    public void AddMeanReward(float reward) => meanReward.Add(reward);
-    public void AddStdReward(float reward) => stdReward.Add(reward);
+    public void AddMeanReward(float meanReward) => meanRewardList.Add(meanReward);
+    public void AddStdReward(float stdReward) => stdRewardList.Add(stdReward);
     public void AddTimeElapsed(float timeElapsed) => timeElapsedList.Add(timeElapsed);
 
     public void Reset()
     {
         stepCount.Clear();
-        meanReward.Clear();
-        stdReward.Clear();
+        meanRewardList.Clear();
+        stdRewardList.Clear();
         timeElapsedList.Clear();
         stepsTrained = 0;
     }

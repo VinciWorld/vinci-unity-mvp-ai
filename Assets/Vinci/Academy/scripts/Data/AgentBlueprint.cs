@@ -35,7 +35,7 @@ public class AgentBlueprint
 
     public void AddTrainMetrics(int stepCount, float meanReward, float stdReward, float timeElapsed)
     {
-        modelConfig.AddTrainMetrics(stepCount, meanReward, stdReward, timeElapsed);
+        modelConfig.AddTrainMetricsEntry(stepCount, meanReward, stdReward, timeElapsed);
     }
 
     public void AddStepsTrained(int stepsTrained)
