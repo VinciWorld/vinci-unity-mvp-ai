@@ -20,11 +20,11 @@ public class RobotWaveAgent : Agent, IAgent
 
     private bool _isReplay = false;
     private int _steps = 0;
-    private int _episodes = 0;
+    public int _episodeCounter = 0;
+    public int episodeCount => _episodeCounter;
 
-    public List<ActionRobotBufferMsg> actionsBuffer = new List<ActionRobotBufferMsg>();
-    
     //Replay
+    public List<ActionRobotBufferMsg> actionsBuffer = new List<ActionRobotBufferMsg>();
     private Queue<ActionRobotBufferMsg> _actionsQueueReceived;
 
     //Evaluation Metrics
@@ -72,7 +72,7 @@ public class RobotWaveAgent : Agent, IAgent
         base.OnEpisodeBegin();
         _env?.EpisodeBegin();
         _steps = 0;
-        _episodes++;
+        _episodeCounter++;
         killsPerEpisode = 0;
         shootHitsPerEpisode = 0;
         shootsMissedPerEpisode = 0;
@@ -180,30 +180,32 @@ public class RobotWaveAgent : Agent, IAgent
 
     private void OnKilledTarget()
     {
-        //Debug.Log("kills ");
+        Debug.Log("kills ");
+        killsPerEpisode++;
         agentKill?.Invoke();
         AddReward(0.08f);
         _evaluationMetrics.UpdateAgentMetricForEpisode(
-            _episodes, MetricKeys.Kills.ToString(), new MetricValue(MetricType.Int, killsPerEpisode)
+            _episodeCounter, MetricKeys.Kills.ToString(), new MetricValue(MetricType.Int, killsPerEpisode)
         );
     }
 
     private void OnMissedTarget()
     {
-//        Debug.Log("miss ");
-
+        //        Debug.Log("miss ");
+        shootsMissedPerEpisode++;
         AddReward(-0.05f);
         _evaluationMetrics.UpdateAgentMetricForEpisode(
-            _episodes, MetricKeys.Shoots_Missed.ToString(), new MetricValue(MetricType.Int, shootsMissedPerEpisode)
+            _episodeCounter, MetricKeys.Shoots_Missed.ToString(), new MetricValue(MetricType.Int, shootsMissedPerEpisode)
         );
     }
 
     private void OnhitTarget()
     {
-      //  Debug.Log("hit ");
+       Debug.Log("hit ");
+        shootHitsPerEpisode++;
         AddReward(0.001f);
         _evaluationMetrics.UpdateAgentMetricForEpisode(
-            _episodes, MetricKeys.Shoots_Hits.ToString(), new MetricValue(MetricType.Int, shootHitsPerEpisode)
+            _episodeCounter, MetricKeys.Shoots_Hits.ToString(), new MetricValue(MetricType.Int, shootHitsPerEpisode)
         );
     }
 
@@ -256,7 +258,7 @@ public class RobotWaveAgent : Agent, IAgent
     public void Reset()
     {
         _robot.Reset();
-        _episodes = 0;
+        //_episodeCounter = 0;
     }
 
     public void SetBehaviorType(BehaviorType type)
