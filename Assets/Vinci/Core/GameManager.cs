@@ -1,13 +1,8 @@
-using System.IO;
 using UnityEngine;
 using Vinci.Core.Utils;
-using Unity.MLAgents;
 using Solana.Unity.SDK;
-using System;
-using WebSocketSharp;
 using Unity.Sentis;
-using File = System.IO.File;
-using Newtonsoft.Json;
+
 
 namespace Vinci.Core.Managers
 {
@@ -18,6 +13,7 @@ namespace Vinci.Core.Managers
 
         public UserData UserData;
         public PlayerData playerData;
+        public GameData gameData;
 
         public bool isLoggedIn = false;
 
@@ -38,7 +34,7 @@ namespace Vinci.Core.Managers
             Debug.Log("Init ML "+ version);
             Unity.MLAgents.Academy.Instance.AutomaticSteppingEnabled = false;
 
-            LoadPlayerData();
+            playerData = DataManager.LoadPlayerData();
 
             Web3.OnBalanceChange += OneBalanceChange;
             UserData = new UserData();
@@ -47,7 +43,7 @@ namespace Vinci.Core.Managers
         void Start()
         {
             playerData.CheckAndIncreaseDailySteps();
-            SavePlayerData();
+            DataManager.SavePlayerData(playerData);
         }
 
         private void OneBalanceChange(double sol)
@@ -57,54 +53,13 @@ namespace Vinci.Core.Managers
 
         public void SavePlayerData()
         {
-            string path = Path.Combine(Application.persistentDataPath, PlayerDataFileName);
-            string json = JsonConvert.SerializeObject(playerData, Formatting.Indented);
-            System.IO.File.WriteAllText(path, json);
-            Debug.Log("Player data saved to " + path);
+            DataManager.SavePlayerData(playerData);
         }
 
         private void LoadPlayerData()
         {
-           
-
-            string path = Path.Combine(Application.persistentDataPath, PlayerDataFileName);
-            if (File.Exists(path))
-            {
-                string json = File.ReadAllText(path);
-                playerData = JsonConvert.DeserializeObject<PlayerData>(json);
-
-                //TODO: REMOVE !!!!
-                playerData.highScore = 0;
-                Debug.Log("Player data loaded from " + path);
-
-                LoadModelsRuntime();
-            }
-            else
-            {
-                playerData = new PlayerData(); // Initialize with default values
-
-                Debug.Log("No saved player data found, initialized with default values.");
-            }
-        }
-
-        private void LoadModelsRuntime()
-        {
-            foreach(var agent in playerData.agents)
-            {
-                agent.modelConfig.isModelLoaded = false;
-
-                if(!agent.modelConfig.nnModelPath.IsNullOrEmpty())
-                {
- 
-                    ModelAsset loadedModel = MLHelper.LoadModelRuntime(
-                        agent.modelConfig.behavior.behavior_name, agent.modelConfig.nnModelPath
-                    );
-
-                    agent.modelConfig.nnModel = loadedModel;
-                    agent.modelConfig.isModelLoaded = true;
-            }
-            }
-        }
+            playerData = DataManager.LoadPlayerData();
+        }        
     }
 }
 

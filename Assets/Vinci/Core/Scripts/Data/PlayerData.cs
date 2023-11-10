@@ -5,6 +5,7 @@ using System.Linq;
 using Vinci.Academy.Environement;
 using UnityEngine.Rendering;
 
+
 [System.Serializable]
 public class PlayerData
 {
@@ -13,21 +14,17 @@ public class PlayerData
     public bool isPlayerRegisteredOnCompetition = false;
     public int highScore = 0;
 
+
+
+    public List<AgentBlueprint> agents = new List<AgentBlueprint>();
+
+
+    //Move to server
     private int dailyStepsIncrease = 100000;
     public int availableSteps = 0;
 
     public string _lastUpdatedDay = "2000-01-01";
-
     public event Action<int> stepsAvailableChange;
-
-
-    //public AgentBlueprint currentAgentConfig;
-    public List<AgentBlueprint> agents = new List<AgentBlueprint>();
-
-
-    //Relation between model and train env
-    public Dictionary<string, TrainEnvironmentConfig> modelTrainingEnv = new Dictionary<string, TrainEnvironmentConfig>();
-    
 
     public void AddAgent(AgentBlueprint newAgent)
     {
@@ -104,3 +101,4 @@ public class PlayerData
         }
     }
 }
+
