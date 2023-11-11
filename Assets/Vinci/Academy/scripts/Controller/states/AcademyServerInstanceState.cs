@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Unity.MLAgents;
 using UnityEngine;
 using Vinci.Academy.Environement;
+using Vinci.Core.Managers;
 using Vinci.Core.StateMachine;
 
 public class AcademyServerInstanceState : StateBase
@@ -47,8 +48,8 @@ public class AcademyServerInstanceState : StateBase
     {
         Debug.Log("START TRAINNING");
 
-        TrainEnvironmentConfig envConfig = _controller.academyData.GetTrainEnvById(trainEnvConfig.env_id);
-        AgentBlueprint agentConfig = _controller.academyData.GetAgentById(trainEnvConfig.agent_id);
+        TrainEnvironmentConfig envConfig = GameManager.instance.gameData.GetTrainEnvById(trainEnvConfig.env_id);
+        AgentBlueprint agentConfig = GameManager.instance.gameData.GetAgentById(trainEnvConfig.agent_id);
 
         if(envConfig == null)
         {

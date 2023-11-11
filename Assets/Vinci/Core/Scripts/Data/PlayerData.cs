@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Vinci.Academy.Environement;
 using UnityEngine.Rendering;
+using Newtonsoft.Json;
 
 
 [System.Serializable]
@@ -15,7 +16,7 @@ public class PlayerData
     public int highScore = 0;
 
 
-
+    [JsonConverter(typeof(AgentBlueprintConverter))]
     public List<AgentBlueprint> agents = new List<AgentBlueprint>();
 
 

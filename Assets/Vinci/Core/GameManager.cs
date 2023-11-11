@@ -2,6 +2,7 @@ using UnityEngine;
 using Vinci.Core.Utils;
 using Solana.Unity.SDK;
 using Unity.Sentis;
+using System;
 
 
 namespace Vinci.Core.Managers
@@ -43,7 +44,7 @@ namespace Vinci.Core.Managers
         void Start()
         {
             playerData.CheckAndIncreaseDailySteps();
-            DataManager.SavePlayerData(playerData);
+            DataManager.LoadPlayerData();
         }
 
         private void OneBalanceChange(double sol)
@@ -53,7 +54,14 @@ namespace Vinci.Core.Managers
 
         public void SavePlayerData()
         {
-            DataManager.SavePlayerData(playerData);
+            try{
+                DataManager.SavePlayerData(playerData);
+            }
+            catch(Exception e)
+            {
+                Debug.Log("Error savinf player data: " + e.Message);
+            }
+
         }
 
         private void LoadPlayerData()

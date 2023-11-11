@@ -9,7 +9,6 @@ public class AcademyController : MonoBehaviour
 {
     public GameManager manager;
     public EnvManager envManager;
-    public AcademyData academyData;
     public AcademySession session = new AcademySession();
 
     public bool localTrain = false;

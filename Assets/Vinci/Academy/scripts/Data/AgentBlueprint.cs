@@ -5,8 +5,8 @@ using UnityEngine;
 using Vinci.Academy.Environement;
 using Vinci.Core.Managers;
 
-[Serializable]
-public class AgentBlueprint
+[CreateAssetMenu(fileName = "Agent Blueprint", menuName = "Agent/AgentBlueprint", order = 1)]
+public class AgentBlueprint : ScriptableObject
 {
     public string id;
 
@@ -45,7 +45,7 @@ public class AgentBlueprint
 
     public void SetModelAndPath(string modelPath, ModelAsset nnModel)
     {
-        modelConfig.nnModelPath = modelPath;
+        modelConfig.nnModelResourcePath = modelPath;
         modelConfig.nnModel = nnModel;
     }
 

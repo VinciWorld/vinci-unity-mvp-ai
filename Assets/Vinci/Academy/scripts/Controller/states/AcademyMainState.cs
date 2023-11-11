@@ -41,11 +41,10 @@ public class AcademyMainState : StateBase
         //_controller.session.currentAgentInstance = null;
         //_controller.session.currentEnvInstance = null;
 
-        _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
+        _controller.session.selectedTrainEnv = GameManager.instance.gameData.GetTrainEnvById("1");
         if (GameManager.instance.playerData.agents.Count > 0)
         {
             _controller.session.selectedAgent = GameManager.instance.playerData.GetAgent(0);
-            _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
             UpdateTrainJobStatus();
         }
         else
@@ -55,7 +54,8 @@ public class AcademyMainState : StateBase
             _mainView.SetLastJobStatus("Not trained", "#E44962");
         }
 
-        if(_controller.session.selectedAgent.modelConfig.isEvaluated)
+        if(_controller.session.selectedAgent != null &&
+            _controller.session.selectedAgent.modelConfig.isEvaluated)
         {
             _mainView.ShowEvaluateMetrics(
                 _controller.session.selectedAgent.modelConfig.GetCommonEvaluationMetricsChange(
@@ -92,7 +92,8 @@ public class AcademyMainState : StateBase
         if (_controller.manager.playerData.agents.Count == 0)
         {
             //TODO: Clone agent! This will be done in the create step!
-            _controller.manager.playerData.AddAgent(_controller.academyData.availableAgents[0]);
+            //_controller.manager.playerData.AddAgent(_controller.academyData.availableAgents[0]);
+            _controller.manager.playerData.AddAgent(GameManager.instance.gameData.CreateInstanceById("1"));
         }
         else
         {
@@ -100,7 +101,6 @@ public class AcademyMainState : StateBase
         }
 
         _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
-        _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
 
         GameManager.instance.SavePlayerData();
 
@@ -117,7 +117,6 @@ public class AcademyMainState : StateBase
     private void OnWatchTrainButtonPressed()
     {
         _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
-        _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
 
         _controller.SwitchState(new AcademyTrainState(_controller));
     }
@@ -125,7 +124,6 @@ public class AcademyMainState : StateBase
     private void OnEvaluateButtonPressed()
     {
         _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
-        _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
 
         _controller.SwitchState(new EvaluateAndResultsState(_controller));
     }
@@ -134,7 +132,6 @@ public class AcademyMainState : StateBase
     void OnSelectAgentButtonPressed()
     {
         _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
-        _controller.session.selectedTrainEnv = _controller.academyData.availableTrainEnvs[0];
 
         _controller.SwitchState(new AcademyTrainState(_controller));
     }

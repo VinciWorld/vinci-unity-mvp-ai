@@ -16,7 +16,12 @@ public class PlayerSerilizeData
 
     public List<AgentData> agentsData = new List<AgentData>();
 
-    public void SerilizeAgentData(List<AgentBlueprint> agents)
+    public void SerializeAgentData(List<AgentBlueprint> agents)
+    {
+
+    }
+
+    public void DeSerializeAgentData(List<AgentBlueprint> agents)
     {
 
     }

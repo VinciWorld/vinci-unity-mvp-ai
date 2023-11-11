@@ -5,8 +5,16 @@ public class TrainJobStatusConverter : JsonConverter
 {
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
-        // Implement this if you need to serialize the enum to JSON.
-        throw new NotImplementedException();
+        if (value is TrainJobStatus)
+        {
+            TrainJobStatus status = (TrainJobStatus)value;
+            string enumValue = status.ToString();
+            writer.WriteValue(enumValue);
+        }
+        else
+        {
+            throw new JsonSerializationException("Expected TrainJobStatus object value.");
+        }
     }
 
     public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

@@ -1,14 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Unity.Sentis;
 
 [Serializable]
 public class EnvMetricsData
 {
-    public List<Dictionary<string, MetricValue>> commonEvaluationMetrics = new();
-    public List<Dictionary<string, MetricValue>> envEvaluationMetrics = new();
-    public List<Dictionary<int, Dictionary<string, MetricValue>>> agentEvaluationMetricsPerEpisode = new();
+    [JsonProperty(ItemConverterType = typeof(MetricValueConverter))]
+    public List<Dictionary<string, MetricValue>> commonEvaluationMetrics = new List<Dictionary<string, MetricValue>>();
+    [JsonProperty(ItemConverterType = typeof(MetricValueConverter))]
+    public List<Dictionary<string, MetricValue>> envEvaluationMetrics = new List<Dictionary<string, MetricValue>>();
+    [JsonProperty(ItemConverterType = typeof(MetricValueConverter))]
+    public List<Dictionary<int, Dictionary<string, MetricValue>>> agentEvaluationMetricsPerEpisode = new List<Dictionary<int, Dictionary<string, MetricValue>>>();
 }
 
 [Serializable]
@@ -19,10 +24,14 @@ public class ModelConfig
     public BehaviorConfigSmall behavior;
     public TrainJobStatus trainJobStatus = TrainJobStatus.NONE;
 
-    public string nnModelPath;
+    public string nnModelResourcePath;
+
+    [JsonIgnore]
     public ModelAsset nnModel;
+
     public int trainCount => trainMetricsHistory.Count;
     public int _totalStepsTrained;
+    
     public int totalStepsTrained => _totalStepsTrained;
 
     // Flags
@@ -35,7 +44,7 @@ public class ModelConfig
 
     //Key envId
     public Dictionary<string, EnvMetricsData> envSpecificData = new();
-
+    
     // Methods
     public ModelTrainMetrics GetMostRecentMetricsHistory() => trainMetricsHistory.LastOrDefault();
     public float GetLastMeanReward() => GetMostRecentMetricsHistory()?.GetLastMeanReward() ?? 0f;
@@ -180,6 +189,17 @@ public class ModelConfig
             lastMetric.AddTimeElapsed(timeElapsed);
         }
     }
+
+    public string SerializeEnvMetricsData(EnvMetricsData data)
+    {
+        return JsonConvert.SerializeObject(data, Formatting.Indented);
+    }
+
+    // Deserialize
+    public EnvMetricsData DeserializeEnvMetricsData(string json)
+    {
+        return JsonConvert.DeserializeObject<EnvMetricsData>(json);
+    }
 }
 
 [Serializable]
@@ -226,5 +246,53 @@ public class ModelTrainMetrics
         stdRewardList.Clear();
         timeElapsedList.Clear();
         stepsTrained = 0;
+    }
+}
+
+public class MetricValueConverter : JsonConverter
+{
+    public override bool CanConvert(Type objectType)
+    {
+        return objectType == typeof(MetricValue);
+    }
+
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    {
+        var metricValue = (MetricValue)value;
+        var token = JToken.FromObject(metricValue.value);
+        var obj = new JObject
+        {
+            ["type"] = JToken.FromObject(metricValue.type),
+            ["value"] = token,
+            ["IsHigherBetter"] = metricValue.IsHigherBetter
+        };
+        obj.WriteTo(writer);
+    }
+
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    {
+        JObject obj = JObject.Load(reader);
+        MetricType type = obj["type"].ToObject<MetricType>();
+        object val = obj["value"].ToObject(GetType(type));
+        bool isHigherBetter = obj["IsHigherBetter"].ToObject<bool>();
+
+        return new MetricValue(type, val, isHigherBetter);
+    }
+
+    private Type GetType(MetricType metricType)
+    {
+        switch (metricType)
+        {
+            case MetricType.Int:
+                return typeof(int);
+            case MetricType.Float:
+                return typeof(float);
+            case MetricType.Percent:
+                return typeof(float);
+            case MetricType.String:
+                return typeof(string);
+            default:
+                throw new ArgumentException("Unknown MetricType");
+        }
     }
 }
