@@ -11,15 +11,15 @@ public enum MetricType
     Float,
     Percent,
     String,
-    // Add more types as needed
 }
+
 
 [Serializable]
 public class MetricValue
 {
     public MetricType type;
     public object value;
-    public bool IsHigherBetter; // New field
+    public bool IsHigherBetter;
 
     public MetricValue(MetricType type, object value, bool isHigherBetter = true)
     {
@@ -109,8 +109,6 @@ public enum ChangeStatus
 [Serializable]
 public class EvaluationMetrics
 {
-    public int EvaluationEpisodes = 10;
-
     private static readonly Dictionary<string, MetricValue> commonMetricsTemplate = new Dictionary<string, MetricValue>
     {
         {"Goals Success", new MetricValue(MetricType.Int, 0)},
@@ -123,10 +121,6 @@ public class EvaluationMetrics
     public Dictionary<string, MetricValue> agentEvaluationMetrics = new();
 
     public Dictionary<int, Dictionary<string, MetricValue>> agentEvaluationMetricsPerEpisode = new();
-
-    //public List<Dictionary<string, MetricValue>> commonMetricsHistory = new();
-    //public List<Dictionary<string, MetricValue>> envMetricsHistory = new();
-    //public List<Dictionary<int, Dictionary<string, MetricValue>>> agentMetricsHistory = new();
 
     public event Action<Dictionary<string, MetricValue>> commonMetricsUpdated;
     public event Action<Dictionary<string, MetricValue>> envMetricsUpdated;

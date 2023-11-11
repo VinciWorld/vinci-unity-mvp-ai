@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07bde3dc799d88d449ff1e837eb49cd5, type: 3}
+  m_Name: RobotWave
+  m_EditorClassIdentifier: 
+  id: 1
+  agentName: Robot Wave
+  description: Go with the wave
+  agentImageFullBody: {fileID: 21300000, guid: d1e7c8097e6ec71449d28a239c9b3cd4, type: 3}
+  agentImageHead: {fileID: 21300000, guid: a2a24aaf264108e42a3ce3e5c72dd47b, type: 3}
+  AgentPrice: 100
+  allowedEnvs: []
+  AgentPrefab: {fileID: 6504583924473299732, guid: 6c0cbfd59cd4ee342ae6012c8002f2f6,
+    type: 3}
+  modelConfig:
+    runId: 
+    behavior:
+      behavior_name: RobotWave
+      steps: 10000
+    trainJobStatus: 0
+    nnModelResourcePath: 
+    nnModel: {fileID: 0}
+    _totalStepsTrained: 0
+    isModelLoaded: 0
+    isModelMinted: 0
+    isEvaluated: 0
+    trainMetricsHistory: []

@@ -354,6 +354,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d9a078d414963a4aa218280bd9f9eb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  envId: 0
   _waveController: {fileID: 331335653348149779}
   _enemyManager: {fileID: 4231816471004933721}
   _agentSpawnPose: {fileID: 534391555167566050}

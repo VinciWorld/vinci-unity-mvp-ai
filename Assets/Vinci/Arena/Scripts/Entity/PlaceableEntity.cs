@@ -29,7 +29,6 @@ public class PlaceableEntity : MonoBehaviour
 
         if (statController != null)
         {
-
             Attribute _health = statController.GetAttribute(StatType.HEALTH);
             //Debug.Log("STATS Controler: " + _health);
             targetable.Health = _health;

@@ -4455,7 +4455,7 @@ PrefabInstance:
     - target: {fileID: 3324500770136107276, guid: 2f1e6b9ea2fb00740a152124aa1e7e67,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 23.47
       objectReference: {fileID: 0}
     - target: {fileID: 3324500770136107276, guid: 2f1e6b9ea2fb00740a152124aa1e7e67,
         type: 3}
@@ -4515,7 +4515,7 @@ PrefabInstance:
     - target: {fileID: 8909856591904120664, guid: 2f1e6b9ea2fb00740a152124aa1e7e67,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 33.78
       objectReference: {fileID: 0}
     - target: {fileID: 8909856591904120664, guid: 2f1e6b9ea2fb00740a152124aa1e7e67,
         type: 3}
@@ -4827,69 +4827,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   manager: {fileID: 409798739}
   envManager: {fileID: 791300327}
-  academyData:
-    availableAgents:
-    - id: 1
-      agentName: Robot Wave
-      description: Go with the flow
-      agentImageFullBody: {fileID: 21300000, guid: d1e7c8097e6ec71449d28a239c9b3cd4,
-        type: 3}
-      agentImageHead: {fileID: 21300000, guid: a2a24aaf264108e42a3ce3e5c72dd47b, type: 3}
-      AgentPrice: 100
-      allowedEnvs: []
-      AgentPrefab: {fileID: 6504583924473299732, guid: 6c0cbfd59cd4ee342ae6012c8002f2f6,
-        type: 3}
-      modelConfig:
-        runId: 
-        behavior:
-          behavior_name: RobotWave
-          steps: 15000
-        trainJobStatus: 0
-        nnModelPath: 
-        nnModel: {fileID: 0}
-        _totalStepsTrained: 0
-        isModelLoaded: 0
-        isModelMinted: 0
-        isEvaluated: 0
-        trainMetricsHistory: []
-    - id: 999
-      agentName: Big Eye
-      description: What is a Cross?
-      agentImageFullBody: {fileID: 0}
-      agentImageHead: {fileID: 0}
-      AgentPrice: 100
-      allowedEnvs: []
-      AgentPrefab: {fileID: 5039102789477670585, guid: 20175c003f0502c4da4344f362648ed0,
-        type: 3}
-      modelConfig:
-        runId: 
-        behavior:
-          behavior_name: Hallway
-          steps: 15000
-        trainJobStatus: 0
-        nnModelPath: 
-        nnModel: {fileID: 0}
-        _totalStepsTrained: 0
-        isModelLoaded: 0
-        isModelMinted: 0
-        isEvaluated: 0
-        trainMetricsHistory: []
-    availableTrainEnvs:
-    - env_id: 1
-      envName: RobotWaveEnv
-      num_of_areas: 8
-      bounds:
-        m_Center: {x: 0, y: 0, z: 0}
-        m_Extent: {x: 42, y: 0, z: 52}
-      prefab: {fileID: 6438115727962605961, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
-        type: 3}
-    - env_id: 0001
-      envName: HallwayEnv
-      num_of_areas: 8
-      bounds:
-        m_Center: {x: 0, y: 0, z: 0}
-        m_Extent: {x: 20, y: 0, z: 50}
-      prefab: {fileID: 0}
   session:
     selectedTrainEnv:
       env_id: 
@@ -4899,28 +4836,7 @@ MonoBehaviour:
         m_Center: {x: 0, y: 0, z: 0}
         m_Extent: {x: 0, y: 0, z: 0}
       prefab: {fileID: 0}
-    selectedAgent:
-      id: 1
-      agentName: 
-      description: 
-      agentImageFullBody: {fileID: 0}
-      agentImageHead: {fileID: 0}
-      AgentPrice: 100
-      allowedEnvs: []
-      AgentPrefab: {fileID: 0}
-      modelConfig:
-        runId: 
-        behavior:
-          behavior_name: 
-          steps: 0
-        trainJobStatus: 0
-        nnModelPath: 
-        nnModel: {fileID: 0}
-        _totalStepsTrained: 0
-        isModelLoaded: 0
-        isModelMinted: 0
-        isEvaluated: 0
-        trainMetricsHistory: []
+    selectedAgent: {fileID: 0}
     currentAgentInstance: {fileID: 0}
     currentEnvInstance: {fileID: 0}
   localTrain: 0
@@ -5186,6 +5102,7 @@ GameObject:
   m_Component:
   - component: {fileID: 409798738}
   - component: {fileID: 409798739}
+  - component: {fileID: 409798740}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -5233,13 +5150,37 @@ MonoBehaviour:
     username: 
     isPlayerRegisteredOnCompetition: 0
     highScore: 0
+    agents: []
     availableSteps: 0
     _lastUpdatedDay: 2000-01-01
-    agents: []
+  gameData: {fileID: 409798740}
   isLoggedIn: 0
   solanaBalance: 0
   baseNNModel: {fileID: 5022602860645237092, guid: 61881707995126849805040d9bdd3e61,
     type: 3}
+--- !u!114 &409798740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 409798737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfc39837d463d914398a6f730abb6901, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentsAvailable:
+  - {fileID: 11400000, guid: 8c2b4819f868aa443abd1c82ec0431ee, type: 2}
+  trainEvns:
+  - env_id: 1
+    envName: RobotWaveEnv
+    num_of_areas: 8
+    bounds:
+      m_Center: {x: 0, y: 0, z: 0}
+      m_Extent: {x: 42, y: 0, z: 52}
+    prefab: {fileID: 6438115727962605961, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
+      type: 3}
 --- !u!1001 &421121864
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9438,7 +9379,7 @@ PrefabInstance:
     - target: {fileID: 3324500770136107276, guid: 2f1e6b9ea2fb00740a152124aa1e7e67,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 23.47
       objectReference: {fileID: 0}
     - target: {fileID: 3324500770136107276, guid: 2f1e6b9ea2fb00740a152124aa1e7e67,
         type: 3}
@@ -9498,7 +9439,7 @@ PrefabInstance:
     - target: {fileID: 8909856591904120664, guid: 2f1e6b9ea2fb00740a152124aa1e7e67,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 33.78
       objectReference: {fileID: 0}
     - target: {fileID: 8909856591904120664, guid: 2f1e6b9ea2fb00740a152124aa1e7e67,
         type: 3}
@@ -9819,7 +9760,7 @@ PrefabInstance:
     - target: {fileID: 3324500770136107276, guid: 2f1e6b9ea2fb00740a152124aa1e7e67,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 23.47
       objectReference: {fileID: 0}
     - target: {fileID: 3324500770136107276, guid: 2f1e6b9ea2fb00740a152124aa1e7e67,
         type: 3}
@@ -9879,7 +9820,7 @@ PrefabInstance:
     - target: {fileID: 8909856591904120664, guid: 2f1e6b9ea2fb00740a152124aa1e7e67,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 33.78
       objectReference: {fileID: 0}
     - target: {fileID: 8909856591904120664, guid: 2f1e6b9ea2fb00740a152124aa1e7e67,
         type: 3}
@@ -10818,7 +10759,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.21333332
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 0}
+  m_NavMeshData: {fileID: 23800000, guid: 447d3ee54e4ec994e87c46e9bcbcf741, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1 &793302412
 GameObject:
@@ -14083,7 +14024,7 @@ PrefabInstance:
     - target: {fileID: 831331106581511202, guid: 161d0415e0e734824a5bb72fc42aa7f3,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000026882
+      value: -0.00002670288
       objectReference: {fileID: 0}
     - target: {fileID: 1408521552550797631, guid: 161d0415e0e734824a5bb72fc42aa7f3,
         type: 3}
@@ -27093,6 +27034,74 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1902230171}
   m_CullTransparentMesh: 1
+--- !u!1001 &1906391397
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3024750241991777093, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
+        type: 3}
+      propertyPath: m_Name
+      value: RobotWaveEnv
+      objectReference: {fileID: 0}
+    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1c7361d8eebf1ec4ab6e105ece54bf90, type: 3}
 --- !u!1 &1908036635
 GameObject:
   m_ObjectHideFlags: 0
@@ -29206,79 +29215,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b2a8b52a8fb6cad41ba18b359eff6830, type: 3}
---- !u!1001 &2047814419
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 3024750241991777093, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
-        type: 3}
-      propertyPath: m_Name
-      value: RobotWaveEnv
-      objectReference: {fileID: 0}
-    - target: {fileID: 3024750241991777093, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1c7361d8eebf1ec4ab6e105ece54bf90, type: 3}
 --- !u!1 &2048079792
 GameObject:
   m_ObjectHideFlags: 0
@@ -44229,7 +44165,7 @@ PrefabInstance:
     - target: {fileID: 3324500770136107276, guid: 2f1e6b9ea2fb00740a152124aa1e7e67,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 23.47
       objectReference: {fileID: 0}
     - target: {fileID: 3324500770136107276, guid: 2f1e6b9ea2fb00740a152124aa1e7e67,
         type: 3}
@@ -44274,7 +44210,7 @@ PrefabInstance:
     - target: {fileID: 8909856591904120664, guid: 2f1e6b9ea2fb00740a152124aa1e7e67,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 33.78
       objectReference: {fileID: 0}
     - target: {fileID: 8909856591904120664, guid: 2f1e6b9ea2fb00740a152124aa1e7e67,
         type: 3}
@@ -54735,6 +54671,6 @@ SceneRoots:
   - {fileID: 1909182997}
   - {fileID: 824949595}
   - {fileID: 791300324}
-  - {fileID: 2047814419}
   - {fileID: 1800870444}
   - {fileID: 2080074305}
+  - {fileID: 1906391397}
