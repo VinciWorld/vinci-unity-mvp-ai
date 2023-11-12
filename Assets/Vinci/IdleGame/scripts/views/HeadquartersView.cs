@@ -17,7 +17,7 @@ public class HeadquartersView : View
     private Button _unstakeButton;
 
     [SerializeField]
-    private LoaderPopup _loaderPopup;
+    private PopupAdvance _loaderPopup;
 
     [SerializeField]
     GameObject nftSlotPrefab;
@@ -154,7 +154,7 @@ public class HeadquartersView : View
     public void ShowLoaderPopup(string messange)
     {
         _loaderPopup.gameObject.SetActive(true);
-        _loaderPopup.SetProcessingMEssage(messange);
+        _loaderPopup.SetTitle(messange);
         _loaderPopup.Open();
     }
 
