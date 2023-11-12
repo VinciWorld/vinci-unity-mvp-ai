@@ -12,6 +12,8 @@ public abstract class EnvironementBase : MonoBehaviour
     public abstract event Action<Dictionary<string, MetricValue>> commonMetricsUpdated;
     public abstract event Action<int> episodeCountUpdated;
 
+    public abstract int episodeCount();
+
 
     public abstract void StartEnv(BehaviorType behaviorType);
     public abstract void StopEnv();

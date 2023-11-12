@@ -4,8 +4,10 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Unity.Sentis;
+using UnityEngine;
 
 [Serializable]
+[JsonConverter(typeof(EnvMetricsDataConverter))]
 public class EnvMetricsData
 {
     [JsonProperty(ItemConverterType = typeof(MetricValueConverter))]
@@ -43,8 +45,8 @@ public class ModelConfig
     public List<ModelTrainMetrics> trainMetricsHistory = new();
 
     //Key envId
-    public Dictionary<string, EnvMetricsData> envSpecificData = new();
-    
+    public Dictionary<string, EnvMetricsData> envSpecificData { get; set; } = new();
+
     // Methods
     public ModelTrainMetrics GetMostRecentMetricsHistory() => trainMetricsHistory.LastOrDefault();
     public float GetLastMeanReward() => GetMostRecentMetricsHistory()?.GetLastMeanReward() ?? 0f;
@@ -64,6 +66,7 @@ public class ModelConfig
         AddToCommonEvaluationMetrics(envId, commonMetrics);
         AddToEnvEvaluationMetrics(envId, envMetricsAvg);
         AddToAgentEvaluationMetricsPerEpisode(envId, agentMetrics);
+
     }
 
     public void AddToCommonEvaluationMetrics(string envKey, Dictionary<string, MetricValue> metrics)
@@ -147,8 +150,8 @@ public class ModelConfig
     {
         ResetLastTrainMetricsEntry();
 
-        var trainMetric = new ModelTrainMetrics();
-        trainMetricsHistory.Add(trainMetric);
+       var trainMetric = new ModelTrainMetrics();
+       trainMetricsHistory.Add(trainMetric);
     }
 
     public void CreateNewTrainMetricsEntry(List<MetricsData> metrics)
@@ -208,14 +211,16 @@ public class ModelTrainMetrics
     // Properties
     // List<MetricsData> _metrics = new List<MetricsData>();
 
-    public List<int> stepCount = new List<int>();
-    public List<float> meanRewardList = new List<float>();
-    public List<float> stdRewardList  = new List<float>();
-    public List<float> timeElapsedList = new List<float>();
+    public List<int> stepCount = new();
+    public List<float> meanRewardList = new();
+    public List<float> stdRewardList  = new();
+    public List<float> timeElapsedList = new();
+
     public int stepsTrained = 0;
     public bool completed = false;
 
     public ModelTrainMetrics(){}
+
     public ModelTrainMetrics(List<MetricsData> metrics)
     {
         foreach (var item in metrics)

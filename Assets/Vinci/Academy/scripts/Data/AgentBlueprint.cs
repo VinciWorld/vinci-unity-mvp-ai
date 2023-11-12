@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using Unity.Sentis;
 using UnityEngine;
 using Vinci.Academy.Environement;
@@ -20,7 +21,8 @@ public class AgentBlueprint : ScriptableObject
     public List<TrainEnvironmentConfig> allowedEnvs;
 
     public GameObject AgentPrefab;
-    
+
+    [JsonConverter(typeof(EnvMetricsDataConverter))]
     public ModelConfig modelConfig;
 
     public ModelAsset GetNNModel()

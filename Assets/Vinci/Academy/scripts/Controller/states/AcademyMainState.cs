@@ -247,18 +247,15 @@ public class AcademyMainState : StateBase
                         _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.NONE;
                         _mainView.SetLastJobStatus("Not found", "#E44962");
                         Debug.LogError(e.Message);
+                        _mainView.ShowWTrainButton();
 
                     }
                     catch(Exception e)
                     {
                         _mainView.SetLastJobStatus("Failed", "#E44962");
                         Debug.Log("Error: " + e.Message);
-                    }
-                    finally
-                    {
                         _mainView.ShowWTrainButton();
-                    }
-    
+                    }    
                 }
 
             /*    
@@ -295,6 +292,7 @@ public class AcademyMainState : StateBase
             case TrainJobStatus.STARTING:
                 {
                     _mainView.SetLastJobStatus("On Queue", "#00AE75");
+                    _mainView.ShowEvalauteMessage("Model is training.", false);
                     _mainView.ShowWatchButton();
                     break;
                 }
@@ -309,6 +307,7 @@ public class AcademyMainState : StateBase
                     _mainView.SetTotalStepsTrained(agent.modelConfig.totalStepsTrained, agent.modelConfig.behavior.steps);
 
                     _mainView.SetLastJobStatus("Training", "#00AE75");
+                    _mainView.ShowEvalauteMessage("Model is training.", false);
                     _mainView.ShowWatchButton();
                     break;
                 }
@@ -320,6 +319,7 @@ public class AcademyMainState : StateBase
                     try
                     {
                         await LoadModelAndMetrics(agent);
+                        _mainView.ShowEvalauteMessage("Training complete. Evaluate the model.", true);
                     }
                     catch (Exception e)
                     {
@@ -360,7 +360,7 @@ public class AcademyMainState : StateBase
 
         agent.modelConfig.CreateNewTrainMetricsEntry(metrics);
 
-        Debug.Log("model bytes: " + model.Length);
+        //Debug.Log("model bytes: " + model.Length);
 
         var (filePath, nnModel) = MLHelper.SaveAndLoadModel(model, agent.modelConfig.runId, agent.modelConfig.behavior.behavior_name);
 

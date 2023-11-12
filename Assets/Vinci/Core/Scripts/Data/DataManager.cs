@@ -31,7 +31,11 @@ public static class DataManager
             PlayerData playerData = JsonConvert.DeserializeObject<PlayerData>(json, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
-                Converters = new List<JsonConverter> { new MetricValueConverter() }
+                Converters = new List<JsonConverter> { 
+                    new MetricValueConverter(),
+                    new EnvMetricsDataConverter()
+                }
+
             });
 
             LoadModelsRuntime(playerData);

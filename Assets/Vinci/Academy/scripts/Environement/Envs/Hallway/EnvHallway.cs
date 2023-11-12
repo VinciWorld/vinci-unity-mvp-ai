@@ -375,4 +375,9 @@ public class EnvHallway : EnvironementBase
     {
         throw new System.NotImplementedException();
     }
+
+    public override int episodeCount()
+    {
+        throw new System.NotImplementedException();
+    }
 }

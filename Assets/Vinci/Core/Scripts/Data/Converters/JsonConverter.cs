@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Vinci.Core.Managers;
+
 
 public class AgentBlueprintConverter : JsonConverter
 {
@@ -47,5 +49,39 @@ public class AgentBlueprintConverter : JsonConverter
         }
 
         agentsArray.WriteTo(writer);
+    }
+}
+
+public class EnvMetricsDataConverter : JsonConverter
+{
+    public override bool CanConvert(Type objectType)
+    {
+        return objectType == typeof(EnvMetricsData);
+    }
+
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    {
+        JObject jsonObject = JObject.Load(reader);
+        EnvMetricsData envMetricsData = new EnvMetricsData();
+
+        // Deserialize each property of EnvMetricsData
+        envMetricsData.commonEvaluationMetrics = jsonObject["commonEvaluationMetrics"].ToObject<List<Dictionary<string, MetricValue>>>(serializer);
+        envMetricsData.envEvaluationMetrics = jsonObject["envEvaluationMetrics"].ToObject<List<Dictionary<string, MetricValue>>>(serializer);
+        envMetricsData.agentEvaluationMetricsPerEpisode = jsonObject["agentEvaluationMetricsPerEpisode"].ToObject<List<Dictionary<int, Dictionary<string, MetricValue>>>>(serializer);
+
+        return envMetricsData;
+    }
+
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    {
+        var envMetricsData = (EnvMetricsData)value;
+        JObject jsonObject = new JObject
+        {
+            ["commonEvaluationMetrics"] = JToken.FromObject(envMetricsData.commonEvaluationMetrics, serializer),
+            ["envEvaluationMetrics"] = JToken.FromObject(envMetricsData.envEvaluationMetrics, serializer),
+            ["agentEvaluationMetricsPerEpisode"] = JToken.FromObject(envMetricsData.agentEvaluationMetricsPerEpisode, serializer)
+        };
+
+        jsonObject.WriteTo(writer);
     }
 }

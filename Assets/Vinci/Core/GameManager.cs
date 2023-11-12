@@ -29,13 +29,15 @@ namespace Vinci.Core.Managers
         protected override void Awake()
         {
             base.Awake();
+            playerData = DataManager.LoadPlayerData();
+
             isLoggedIn = false;
             Application.runInBackground = true;
 
             Debug.Log("Init ML "+ version);
             Unity.MLAgents.Academy.Instance.AutomaticSteppingEnabled = false;
 
-            playerData = DataManager.LoadPlayerData();
+    
 
             Web3.OnBalanceChange += OneBalanceChange;
             UserData = new UserData();
@@ -44,7 +46,7 @@ namespace Vinci.Core.Managers
         void Start()
         {
             playerData.CheckAndIncreaseDailySteps();
-            DataManager.LoadPlayerData();
+           // DataManager.LoadPlayerData();
         }
 
         private void OneBalanceChange(double sol)
@@ -59,7 +61,7 @@ namespace Vinci.Core.Managers
             }
             catch(Exception e)
             {
-                Debug.Log("Error savinf player data: " + e.Message);
+                Debug.Log("Error savinf player data: " + e.Message + " trace: " + e.StackTrace);
             }
 
         }

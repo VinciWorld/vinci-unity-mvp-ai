@@ -27047,6 +27047,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: RobotWaveEnv
       objectReference: {fileID: 0}
+    - target: {fileID: 3024750241991777093, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5673466583438905410, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
         type: 3}
       propertyPath: m_LocalPosition.x

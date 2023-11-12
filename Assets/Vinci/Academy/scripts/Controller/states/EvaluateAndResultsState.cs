@@ -12,7 +12,7 @@ public class EvaluateAndResultsState : StateBase
 
     EnvironementBase currentEnvInstance;
 
-    private int episodeEvaluationTotal = 10;
+    private int episodeEvaluationTotal = 2;
 
     public EvaluateAndResultsState(AcademyController controller)
     {
@@ -142,11 +142,9 @@ public class EvaluateAndResultsState : StateBase
             _resultsView.UpdateEvaluationAgentMetrics
         );
 
-        _controller.session.currentEnvInstance.episodeCountUpdated += OnEpisodeUpdated;
+        _controller.session.currentEnvInstance.episodeCountUpdated -= OnEpisodeUpdated;
 
         _controller.session.selectedAgent.modelConfig.isEvaluated = false;
-   
-
 
         ShowResults();
     }

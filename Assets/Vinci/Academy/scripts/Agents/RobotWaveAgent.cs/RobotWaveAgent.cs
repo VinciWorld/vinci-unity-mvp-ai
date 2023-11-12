@@ -18,10 +18,9 @@ public class RobotWaveAgent : Agent, IAgent
 
     Rigidbody _rb;
 
+    private bool isheuristicInput = false;
     private bool _isReplay = false;
     private int _steps = 0;
-    public int _episodeCounter = 0;
-    public int episodeCount => _episodeCounter;
 
     //Replay
     public List<ActionRobotBufferMsg> actionsBuffer = new List<ActionRobotBufferMsg>();
@@ -69,10 +68,10 @@ public class RobotWaveAgent : Agent, IAgent
 
     public override void OnEpisodeBegin()
     {
+        Debug.Log("Episode being: " + _env.episodeCount());
         base.OnEpisodeBegin();
         _env?.EpisodeBegin();
         _steps = 0;
-        _episodeCounter++;
         killsPerEpisode = 0;
         shootHitsPerEpisode = 0;
         shootsMissedPerEpisode = 0;
@@ -92,7 +91,6 @@ public class RobotWaveAgent : Agent, IAgent
         _steps++;
         var discreteActionsOut = actionBuffers.DiscreteActions;
 
-        Debug.Log(_isReplay);
         if (_isReplay)
         {
             if (_actionsQueueReceived.Count > 0)
@@ -128,41 +126,45 @@ public class RobotWaveAgent : Agent, IAgent
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        var discreteActionsOut = actionsOut.DiscreteActions;
+        if(isheuristicInput)
+        {
+            var discreteActionsOut = actionsOut.DiscreteActions;
 
-        if (Input.GetKey(KeyCode.E))
-        {
-            discreteActionsOut[0] = 3;
-        }
-        else if (Input.GetKey(KeyCode.W))
-        {
-            discreteActionsOut[0] = 1;
-        }
-        else if (Input.GetKey(KeyCode.Q))
-        {
-            discreteActionsOut[0] = 4;
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            discreteActionsOut[0] = 2;
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            discreteActionsOut[0] = 5;
-        }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            discreteActionsOut[0] = 6;
+            if (Input.GetKey(KeyCode.E))
+            {
+                discreteActionsOut[0] = 3;
+            }
+            else if (Input.GetKey(KeyCode.W))
+            {
+                discreteActionsOut[0] = 1;
+            }
+            else if (Input.GetKey(KeyCode.Q))
+            {
+                discreteActionsOut[0] = 4;
+            }
+            else if (Input.GetKey(KeyCode.S))
+            {
+                discreteActionsOut[0] = 2;
+            }
+            else if (Input.GetKey(KeyCode.D))
+            {
+                discreteActionsOut[0] = 5;
+            }
+            else if (Input.GetKey(KeyCode.A))
+            {
+                discreteActionsOut[0] = 6;
+            }
+
+            if (Input.GetMouseButton(1))
+            {
+                discreteActionsOut[1] = 1;
+            }
+            else
+            {
+                discreteActionsOut[1] = 0;
+            }
         }
 
-        if (Input.GetMouseButton(1))
-        {
-            discreteActionsOut[1] = 1;
-        }
-        else
-        {
-            discreteActionsOut[1] = 0;
-        }
     }
 
     private void OnDied(DamageableObject @object, float arg2, Vector3 vector)
@@ -170,22 +172,23 @@ public class RobotWaveAgent : Agent, IAgent
         //Debug.Log("DIEDDDDD");
         AddReward(-1f);
         agentDied?.Invoke(this);
-        EndEpisode();
-
+  
         if(_env != null)
         {
             _env.GoalCompleted(false);
         }
+
+        EndEpisode();
     }
 
     private void OnKilledTarget()
     {
-        Debug.Log("kills ");
+        //Debug.Log("kills ");
         killsPerEpisode++;
         agentKill?.Invoke();
         AddReward(0.08f);
         _evaluationMetrics.UpdateAgentMetricForEpisode(
-            _episodeCounter, MetricKeys.Kills.ToString(), new MetricValue(MetricType.Int, killsPerEpisode)
+            _env.episodeCount(), MetricKeys.Kills.ToString(), new MetricValue(MetricType.Int, killsPerEpisode)
         );
     }
 
@@ -195,17 +198,17 @@ public class RobotWaveAgent : Agent, IAgent
         shootsMissedPerEpisode++;
         AddReward(-0.05f);
         _evaluationMetrics.UpdateAgentMetricForEpisode(
-            _episodeCounter, MetricKeys.Shoots_Missed.ToString(), new MetricValue(MetricType.Int, shootsMissedPerEpisode)
+            _env.episodeCount(), MetricKeys.Shoots_Missed.ToString(), new MetricValue(MetricType.Int, shootsMissedPerEpisode)
         );
     }
 
     private void OnhitTarget()
     {
-       Debug.Log("hit ");
+       //Debug.Log("hit ");
         shootHitsPerEpisode++;
         AddReward(0.001f);
         _evaluationMetrics.UpdateAgentMetricForEpisode(
-            _episodeCounter, MetricKeys.Shoots_Hits.ToString(), new MetricValue(MetricType.Int, shootHitsPerEpisode)
+            _env.episodeCount(), MetricKeys.Shoots_Hits.ToString(), new MetricValue(MetricType.Int, shootHitsPerEpisode)
         );
     }
 
@@ -262,7 +265,7 @@ public class RobotWaveAgent : Agent, IAgent
     }
 
     public void SetBehaviorType(BehaviorType type)
-    {
+    {    
         _beahivor.BehaviorType = type;
     }
 

@@ -162,22 +162,53 @@ public class EnvRobotWaves : EnvironementBase
     public override void StartEnv(BehaviorType behaviorType)
     {
         _agent.EndEpisode();
-        
-        Reset();
 
+        Reset();
+        Debug.Log("Start env: " + _episodeCount);
         _agent.SetBehaviorType(behaviorType);
         Academy.Instance.AutomaticSteppingEnabled = true;
     }
 
     public override void StopEnv()
     {
+
         _agent.SetBehaviorType(BehaviorType.HeuristicOnly);
         Academy.Instance.AutomaticSteppingEnabled = false;
         Reset();
+
+        Debug.Log("Start stop: " + _episodeCount);
+    }
+
+    public override void StartReplay()
+    {
+        _isReplay = true;
+        Reset();
+        _agent.SetBehaviorType(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
+        Academy.Instance.AutomaticSteppingEnabled = true;
+        //ShowLoaderPopup("Buffering episodes...");
+
+    }
+
+    public override void StopReplay()
+    {
+        Debug.Log("Stop reaply: " + replayActionsLoopCoroutine);
+        _isReplay = false;
+        _agent.SetIsReplay(false);
+        if (replayActionsLoopCoroutine != null)
+        {
+            StopCoroutine(replayActionsLoopCoroutine);
+        }
+        replayActionsLoopCoroutine = null;
+
+        Time.timeScale = 1f;
+
+        Academy.Instance.AutomaticSteppingEnabled = false;
+
+        Debug.Log("Start stop: " + Academy.Instance.AutomaticSteppingEnabled);
     }
 
 
-#region Replay
+    #region Replay
     //Server side code!
 #if !UNITY_EDITOR && UNITY_SERVER
     private void SendEpisodeActionsToClient()
@@ -198,14 +229,7 @@ public class EnvRobotWaves : EnvironementBase
 #endif
 
 
-    public override void StartReplay()
-    {
-        _isReplay = true;
-        Reset();
-        _agent.SetBehaviorType(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
-        //ShowLoaderPopup("Buffering episodes...");
 
-    }
     // CLIENT SIDE
     public override void OnActionsFromServerReceived(string actions)
     {
@@ -273,19 +297,7 @@ public class EnvRobotWaves : EnvironementBase
         _isReplay = isResplay;
     }
 
-    public override void StopReplay()
-    {
-        Debug.Log("Stop reaply: " + replayActionsLoopCoroutine);
-        _isReplay = false;
-        _agent.SetIsReplay(false);
-        if(replayActionsLoopCoroutine != null)
-        {
-            StopCoroutine(replayActionsLoopCoroutine);
-        }
-        replayActionsLoopCoroutine = null;
 
-        Time.timeScale = 1f;
-    }
 
 #endregion
 
@@ -412,6 +424,11 @@ public class EnvRobotWaves : EnvironementBase
             _evaluationMetrics.envMetricsUpdated += envMetricsUpdated;
         }
         _evaluationMetrics.agentMetricsUpdated -= agentMetricsUpdated;
+    }
+
+    public override int episodeCount()
+    {
+        return _episodeCount;
     }
 
     #endregion

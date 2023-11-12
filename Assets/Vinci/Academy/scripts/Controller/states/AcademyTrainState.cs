@@ -253,6 +253,8 @@ public class AcademyTrainState : StateBase
             _controller.session.selectedTrainEnv
         );
 
+  
+
         GameObject created_agent = AgentFactory.instance.CreateAgent(
             _controller.session.selectedAgent,
             new Vector3(0, 1.54f, -8.5f), Quaternion.identity,
@@ -260,6 +262,7 @@ public class AcademyTrainState : StateBase
         );
 
         created_env.Initialize(created_agent);
+        created_env.StopEnv();
 
         _controller.session.currentAgentInstance = created_agent;
         _controller.session.currentEnvInstance = created_env;
