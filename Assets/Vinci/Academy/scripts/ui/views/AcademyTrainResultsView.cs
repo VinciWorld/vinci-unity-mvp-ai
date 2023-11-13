@@ -16,7 +16,7 @@ public class AcademyTrainResultsView : View
     GameObject resultsSubView;
 
     [SerializeField]
-    private LoaderPopup _loaderPopup;
+    private PopupAdvance _loaderPopup;
 
     [SerializeField]
     private Button _mintModelButton;
@@ -110,13 +110,13 @@ public class AcademyTrainResultsView : View
     public void ShowLoaderPopup(string messange)
     {
         _loaderPopup.gameObject.SetActive(true);
-        _loaderPopup.SetProcessingMEssage(messange);
+        _loaderPopup.SetTitle(messange);
         _loaderPopup.Open();
     }
 
     public void UpdatePopupMessange(string message)
     {
-        _loaderPopup.SetProcessingMEssage(message);
+        _loaderPopup.SetTitle(message);
     }
 
     public void CloseLoaderPopup()

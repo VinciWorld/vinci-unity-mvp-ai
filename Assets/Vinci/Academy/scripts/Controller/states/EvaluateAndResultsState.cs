@@ -144,7 +144,7 @@ public class EvaluateAndResultsState : StateBase
 
         _controller.session.currentEnvInstance.episodeCountUpdated -= OnEpisodeUpdated;
 
-        _controller.session.selectedAgent.modelConfig.isEvaluated = false;
+        _controller.session.selectedAgent.modelConfig.isEvaluated = true;
 
         ShowResults();
     }

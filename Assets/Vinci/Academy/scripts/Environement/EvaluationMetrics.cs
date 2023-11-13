@@ -3,6 +3,8 @@ using UnityEngine;
 using System;
 using System.Linq;
 using WebSocketSharp;
+using Newtonsoft.Json;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 
 [Serializable]
 public enum MetricType
@@ -15,6 +17,7 @@ public enum MetricType
 
 
 [Serializable]
+[JsonConverter(typeof(MetricValueConverter))]
 public class MetricValue
 {
     public MetricType type;
@@ -85,16 +88,31 @@ public class MetricChange
         switch (currentValue.type)
         {
             case MetricType.Int:
-                return change.ToString();
+                return CheckChangeStatusSymbol(change.ToString());
             case MetricType.Float:
-                return ((float)change).ToString("F2");
+                return CheckChangeStatusSymbol(((float)change).ToString("F2"));
             case MetricType.Percent:
-                return ((float)change).ToString("P1");
+                return CheckChangeStatusSymbol(((float)change).ToString("P1"));
             case MetricType.String:
-                return change as string;
+                return CheckChangeStatusSymbol(change as string);
             default:
                 return "Unknown Type";
         }
+    }
+
+    private string CheckChangeStatusSymbol(string change)
+    {
+        switch (status)
+        {
+            case ChangeStatus.Better:
+                return "+ " + change;
+            case ChangeStatus.Same:
+                return change;
+            case ChangeStatus.Worse:
+                return "- " + change;
+        }
+
+        return change;
     }
 }
 
@@ -311,6 +329,9 @@ public class EvaluationMetrics
         object change;
         ChangeStatus status = ChangeStatus.Same;
 
+        Debug.Log(currentValue.type);
+        Debug.Log(currentValue.value.GetType());
+
         switch (currentValue.type)
         {
             case MetricType.Int:
@@ -354,6 +375,8 @@ public class EvaluationMetrics
     {
         Dictionary<string, MetricValue> lastMetrics;
         Dictionary<string, MetricValue> secondToLastMetrics;
+
+        Debug.Log("targetHistory: " + targetHistory.Count);
 
         if (targetHistory.Count == 1)
         {

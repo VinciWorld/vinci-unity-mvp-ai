@@ -31,9 +31,10 @@ public class PopupManager : PersistentSingleton<PopupManager>
         Action closeButtonCallback = null
     )
     {
-
         if (_isLoaderPopupActive)
             return;
+
+        _isLoaderPopupActive = true;
 
         canvas.SetActive(true);
         Debug.Log(canvas.activeSelf);
@@ -51,7 +52,7 @@ public class PopupManager : PersistentSingleton<PopupManager>
             secondaryButtonName,
             secondaryButtonCallback
         );
-        _isLoaderPopupActive = true;
+
     }
 
     public void ShowInfo(
@@ -110,6 +111,9 @@ public class PopupManager : PersistentSingleton<PopupManager>
 
     public void Close()
     {
+        if (!_isLoaderPopupActive)
+            return;
+
         popoup.Close();        
         canvas.SetActive(false);
     }

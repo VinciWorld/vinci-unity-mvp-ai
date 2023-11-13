@@ -10,8 +10,8 @@ using Vinci.Core.UI;
 
 public class AcademyMainView : View
 {
-    [SerializeField]
-    LoaderPopup _loaderPopup;
+    //[SerializeField]
+    //PopupAdvance _loaderPopup;
 
     [SerializeField]
     CategoryNavBar _categoryNavBar;
@@ -185,24 +185,25 @@ public class AcademyMainView : View
         _evaluateModelButton.gameObject.SetActive(false);
     }
 
-
+/*
 
     public void ShowLoaderPopup(string messange)
     {
         _loaderPopup.gameObject.SetActive(true);
-        _loaderPopup.SetProcessingMEssage(messange);
+        _loaderPopup.SetTitle(messange);
         _loaderPopup.Open();
     }
 
     public void UpdateLoaderMessage(string messange)
     {
-        _loaderPopup.SetProcessingMEssage(messange);
+        _loaderPopup.SetTitle(messange);
     }
 
     public void CloseLoaderPopup()
     {
         _loaderPopup.Close();
     }
+*/
 
     public void SetLastJobStatus(string status, string hexColor = "EFF1F5")
     {

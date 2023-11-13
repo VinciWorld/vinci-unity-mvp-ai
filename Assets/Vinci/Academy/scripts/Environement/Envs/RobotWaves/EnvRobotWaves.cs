@@ -30,9 +30,6 @@ public class EnvRobotWaves : EnvironementBase
     [SerializeField]
     ObservationHelper _observationHelper;
 
-    [SerializeField]
-    LoaderPopup _loaderPopup;
-
     [Header("Replay")]
     private bool _isReplay = false;
     private int _episodeCount = 0;
@@ -69,7 +66,6 @@ public class EnvRobotWaves : EnvironementBase
 
         // _loaderPopup = GameObject.Find("PopupLoader").GetComponent<LoaderPopup>();
         _agent = agent.GetComponent<IAgent>();
-        Debug.Log("RobotWaveAgentTrain" + _agent);
 
         _agent.SetEnv(this);
         _agent.SetEvaluationMetrics(_evaluationMetrics);
@@ -93,10 +89,10 @@ public class EnvRobotWaves : EnvironementBase
     public void OnCompletedAllWaves()
     {
         Debug.Log("Complete all Waves");
+        GoalCompleted(true);
+        
         _agent.AddReward(1);
         _agent.EndEpisode();
-
-        GoalCompleted(true);
     }
 
 
@@ -121,12 +117,8 @@ public class EnvRobotWaves : EnvironementBase
         }
 
         _episodeCount++;
+        Debug.Log("Episode being: " + _episodeCount);
         episodeCountUpdated?.Invoke(_episodeCount);
-    }
-
-    public override IAgent GetAgent()
-    {
-        return _agent;
     }
 
     public override void GoalCompleted(bool result)
@@ -161,22 +153,23 @@ public class EnvRobotWaves : EnvironementBase
 */
     public override void StartEnv(BehaviorType behaviorType)
     {
-        _agent.EndEpisode();
+        //_agent.EndEpisode();
 
         Reset();
-        Debug.Log("Start env: " + _episodeCount);
+        Debug.Log("env: " + _episodeCount);
         _agent.SetBehaviorType(behaviorType);
         Academy.Instance.AutomaticSteppingEnabled = true;
     }
 
     public override void StopEnv()
     {
-
         _agent.SetBehaviorType(BehaviorType.HeuristicOnly);
+        //_agent.EndEpisode();
         Academy.Instance.AutomaticSteppingEnabled = false;
-        Reset();
 
-        Debug.Log("Start stop: " + _episodeCount);
+        Reset();
+    
+        Debug.Log("stop: " + _episodeCount);
     }
 
     public override void StartReplay()
@@ -186,6 +179,11 @@ public class EnvRobotWaves : EnvironementBase
         _agent.SetBehaviorType(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
         Academy.Instance.AutomaticSteppingEnabled = true;
         //ShowLoaderPopup("Buffering episodes...");
+        Debug.Log("Start replay");
+        PopupManager.instance.UpdateMessage(
+            "Buffering episodes...",
+            "Please wait"
+        );
 
     }
 
@@ -248,8 +246,6 @@ public class EnvRobotWaves : EnvironementBase
     {
         _agent.SetIsReplay(true);
 
-
-        UpdateLoaderMessage("Buffering episode...");
         Time.timeScale = 2f;
         while (_isReplay)
         {
@@ -272,7 +268,8 @@ public class EnvRobotWaves : EnvironementBase
 
                 Academy.Instance.AutomaticSteppingEnabled = true;
 
-                CloseLoaderPopup();
+                PopupManager.instance.Close();
+
                 while (_agent.GetActionsQueueReceived().Count > 0)
                 {
                     episodeCountStepCountTotalStepCountUpdated?.Invoke(action.episodeCount, _agent.GetSteps(), _agent.GetSteps() + totalStepCount);
@@ -301,22 +298,6 @@ public class EnvRobotWaves : EnvironementBase
 
 #endregion
 
-    public void ShowLoaderPopup(string messange)
-    {
-        _loaderPopup.gameObject.SetActive(true);
-        _loaderPopup.SetProcessingMEssage(messange);
-        _loaderPopup.Open();
-    }
-
-    public void UpdateLoaderMessage(string messange)
-    {
-        _loaderPopup.SetProcessingMEssage(messange);
-    }
-
-    public void CloseLoaderPopup()
-    {
-        _loaderPopup.Close();
-    }
 
     #region Evaluations Metrics
 
@@ -381,6 +362,7 @@ public class EnvRobotWaves : EnvironementBase
         // Calculate success ratio
         float totalGoals = goalsCompletedCount + goalsFailedCount;
         successRatio = totalGoals > 0 ? (float)goalsCompletedCount / totalGoals : 0f;
+        Debug.Log("Update metrics: " + totalGoals + " episode_count: " + _episodeCount);
         _evaluationMetrics.UpdateCommonMetrics(goalsCompletedCount, goalsFailedCount, successRatio);
 
         //updateCommonResults?.Invoke(_evaluationMetrics.GetCommonMetrics());
@@ -430,6 +412,12 @@ public class EnvRobotWaves : EnvironementBase
     {
         return _episodeCount;
     }
+
+    public override IAgent GetAgent()
+    {
+        return _agent;
+    }
+
 
     #endregion
 

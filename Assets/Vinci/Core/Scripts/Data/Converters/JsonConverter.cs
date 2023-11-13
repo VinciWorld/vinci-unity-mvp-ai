@@ -85,3 +85,51 @@ public class EnvMetricsDataConverter : JsonConverter
         jsonObject.WriteTo(writer);
     }
 }
+
+public class MetricValueConverter : JsonConverter
+{
+    public override bool CanConvert(Type objectType)
+    {
+        return objectType == typeof(MetricValue);
+    }
+
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    {
+        var metricValue = (MetricValue)value;
+        var token = JToken.FromObject(metricValue.value);
+        var obj = new JObject
+        {
+            ["type"] = JToken.FromObject(metricValue.type),
+            ["value"] = token,
+            ["IsHigherBetter"] = metricValue.IsHigherBetter
+        };
+        obj.WriteTo(writer);
+    }
+
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    {
+        JObject obj = JObject.Load(reader);
+        MetricType type = obj["type"].ToObject<MetricType>();
+        object val = obj["value"].ToObject(GetType(type));
+        bool isHigherBetter = obj["IsHigherBetter"].ToObject<bool>();
+
+        return new MetricValue(type, val, isHigherBetter);
+    }
+
+    private Type GetType(MetricType metricType)
+    {
+        switch (metricType)
+        {
+            case MetricType.Int:
+                return typeof(int);
+            case MetricType.Float:
+                return typeof(float);
+            case MetricType.Percent:
+                return typeof(float);
+            case MetricType.String:
+                return typeof(string);
+            default:
+                throw new ArgumentException("Unknown MetricType");
+        }
+    }
+}

@@ -57,6 +57,7 @@ public class AcademyMainState : StateBase
         if(_controller.session.selectedAgent != null &&
             _controller.session.selectedAgent.modelConfig.isEvaluated)
         {
+            _mainView.ShowEvaluateMetrics();
             _mainView.ShowEvaluateMetrics(
                 _controller.session.selectedAgent.modelConfig.GetCommonEvaluationMetricsChange(
                     _controller.session.selectedTrainEnv.env_id
@@ -66,6 +67,8 @@ public class AcademyMainState : StateBase
                 )
             );
         }
+
+        
 
         //TODO: Load available models for this model
     }
@@ -131,6 +134,7 @@ public class AcademyMainState : StateBase
 
     void OnSelectAgentButtonPressed()
     {
+        PopupManager.instance.Close();
         _controller.session.selectedAgent = _controller.manager.playerData.GetAgent(0);
 
         _controller.SwitchState(new AcademyTrainState(_controller));
@@ -146,7 +150,9 @@ public class AcademyMainState : StateBase
                 RemoteTrainManager.instance.CloseWebSocketConnection();
 
                 _mainView.SetLastJobStatus("Loading model...", "#00AE75");
-                _mainView.ShowLoaderPopup("Train is completed! Downloading Model...");
+
+                PopupManager.instance.ShowLoader("Train is completed! Downloading Model.", "Please wait");
+                // _mainView.ShowLoaderPopup("Train is completed! Downloading Model...");
 
                 try
                 {
@@ -155,18 +161,19 @@ public class AcademyMainState : StateBase
                 catch (Exception e)
                 {
                     _mainView.SetLastJobStatus("Failed to donwload model!", "#E44962");
-                    _mainView.CloseLoaderPopup();
+                    PopupManager.instance.Close();
                     Debug.Log("Error Unable to load model: " + e.Message + " stake: " + e.StackTrace);
                 }
 
                 //Show button evaluate model
                 _mainView.SetLastJobStatus("Train completed", "#FFB33A");
-                _mainView.CloseLoaderPopup();
+                PopupManager.instance.Close();
 
             }
             catch (Exception e)
             {
                 Debug.LogError("Unable to save and Load model: " + e.Message);
+                PopupManager.instance.Close();
             }
         }
         else if (trainJobStatus.status == TrainJobStatus.FAILED)
@@ -314,7 +321,7 @@ public class AcademyMainState : StateBase
             case TrainJobStatus.SUCCEEDED:
                 {
                     _mainView.SetLastJobStatus("Loading model...", "#00AE75");
-                    _mainView.ShowLoaderPopup("Train is completed! Downloading Model...");
+                    PopupManager.instance.ShowLoader("Train is completed! Downloading Model.", "Please wait");
 
                     try
                     {
@@ -326,9 +333,10 @@ public class AcademyMainState : StateBase
                         _mainView.SetLastJobStatus("Failed to donwload model!", "#E44962");
                         Debug.Log("Error Unable to load model: " + e.Message + " stake: " + e.StackTrace);
                         agent.modelConfig.isModelLoaded = false;
+                        PopupManager.instance.Close();
                     }
 
-                    _mainView.CloseLoaderPopup();
+                    PopupManager.instance.Close();
                     break;
                 }
 

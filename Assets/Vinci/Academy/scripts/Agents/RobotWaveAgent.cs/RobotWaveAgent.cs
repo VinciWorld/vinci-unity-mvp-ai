@@ -68,7 +68,7 @@ public class RobotWaveAgent : Agent, IAgent
 
     public override void OnEpisodeBegin()
     {
-        Debug.Log("Episode being: " + _env.episodeCount());
+   
         base.OnEpisodeBegin();
         _env?.EpisodeBegin();
         _steps = 0;

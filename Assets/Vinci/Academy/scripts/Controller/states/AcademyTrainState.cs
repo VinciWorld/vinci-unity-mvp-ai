@@ -57,7 +57,7 @@ public class AcademyTrainState : StateBase
 
     public override void OnExitState()
     {
-        GameManager.instance.SavePlayerData();
+        //GameManager.instance.SavePlayerData();
 
         trainView.homeButtonPressed -= OnHomeButtonPressed;
         trainView.backButtonPressed -= OnBackButtonPressed;
@@ -77,7 +77,7 @@ public class AcademyTrainState : StateBase
             _controller.session.currentEnvInstance.StopReplay();
         }
 
-        trainView.CloseLoaderPopup();
+        //trainView.CloseLoaderPopup();
     }
 
     void OnHomeButtonPressed()
@@ -109,8 +109,6 @@ public class AcademyTrainState : StateBase
 
        // _controller.session.currentEnvInstance.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
         _controller.session.currentEnvInstance.episodeCountStepCountTotalStepCountUpdated += trainView.UptadeInfo;
-        _controller.session.currentEnvInstance.StartReplay();
-
 
         if (!RemoteTrainManager.instance.isConnected)
         {
@@ -121,7 +119,11 @@ public class AcademyTrainState : StateBase
         trainView.UpdateMetrics(0,0);
         trainView.SetTrainSetupSubViewState(false);
         trainView.SetTrainHudSubViewState(true);
-        trainView.ShowLoaderPopup("Connecting to remote server...");
+        //trainView.ShowLoaderPopup("Connecting to remote server...");
+        PopupManager.instance.ShowLoader(
+            "Preparing Simulation...",
+            "Please wait"
+        );
 
         await ConnectToRemoteInstance();
 
@@ -148,7 +150,10 @@ public class AcademyTrainState : StateBase
         trainView.UpdateMetrics(0, 0);
         trainView.SetTrainSetupSubViewState(false);
         trainView.SetTrainHudSubViewState(true);
-        trainView.ShowLoaderPopup("Connecting to remote server...");
+        PopupManager.instance.ShowLoader(
+            "Preparing Simulation...",
+            "Please wait"
+        );
 
         trainView.SetTrainHudSubViewState(true);
 
@@ -193,7 +198,13 @@ public class AcademyTrainState : StateBase
             GameManager.instance.playerData.SubtractStepsAvailable(_controller.session.selectedAgent.modelConfig.behavior.steps);
             GameManager.instance.SavePlayerData();
 
-            trainView.UpdateLoaderMessage("Train job submitted \nTrain job status: " + response.job_status);
+            //trainView.UpdateLoaderMessage("Train job submitted \nTrain job status: " + response.job_status);
+
+            PopupManager.instance.UpdateMessage(
+                "Train job submitted \nTrain job status: " + response.job_status,
+                "Please wait"
+            );
+
             Debug.Log("response: " + response + " run_id: " + response.run_id);
         }
         catch (Exception e)
@@ -202,14 +213,19 @@ public class AcademyTrainState : StateBase
             trainView.SetTrainHudSubViewState(false);
             _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.FAILED;
             Debug.LogError("Unable to add job to the queue: " + e.Message);
-            trainView.CloseLoaderPopup();
+            PopupManager.instance.Close();
         }
     }
 
 
     void OnReceivedTrainStatus(TrainJobStatusMsg trainJobStatus)
     {
-        trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + trainJobStatus.status);
+        //trainView.UpdateLoaderMessage("Connected!\nTrain job status: " + trainJobStatus.status);
+        PopupManager.instance.UpdateMessage(
+            "Stream initialized\nTrain job status: " + trainJobStatus.status,
+            "Please wait"
+        );
+
 
         if (trainJobStatus.status == TrainJobStatus.SUCCEEDED)
         {
@@ -241,7 +257,8 @@ public class AcademyTrainState : StateBase
         else if(trainJobStatus.status == TrainJobStatus.RUNNING)
         {
             _controller.session.selectedAgent.modelConfig.trainJobStatus = TrainJobStatus.RUNNING;
-            trainView.CloseLoaderPopup();
+            _controller.session.currentEnvInstance.StartReplay();
+            //trainView.CloseLoaderPopup();
         }
         
         Debug.Log("Status received: " + trainJobStatus.status);
@@ -301,15 +318,36 @@ public class AcademyTrainState : StateBase
             );
 
             _controller.session.currentEnvInstance.StopReplay();
+            Time.timeScale = 0;
 
             RemoteTrainManager.instance.CloseWebSocketConnection();
 
-            _controller.SwitchState(new EvaluateAndResultsState(_controller));
+            PopupManager.instance.ShowInfo(
+                "Train Complete, continue watching train replay or evaluate model",
+                "Please wait",
+                true, "Watch train", OnContinueWatchingReplay,
+                true, "Evaluate", OnEvaluateModel,
+                false
+            );
         }
         catch(Exception e)
         {
             Debug.Log("OnBinaryDataRecived error: " + e.Message + " trace: " + e.StackTrace);
         }
+    }
+
+    private void OnContinueWatchingReplay()
+    {
+        _controller.session.currentEnvInstance.StartReplay();
+        PopupManager.instance.Close();
+        Time.timeScale = 2;
+
+    }
+
+    private void OnEvaluateModel()
+    {
+        _controller.SwitchState(new EvaluateAndResultsState(_controller));
+        Time.timeScale = 1;
     }
 
     void OnReceivedTrainMetrics(MetricsMsg metrics)
