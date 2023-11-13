@@ -57,13 +57,13 @@ public static class DataManager
         {
             agent.modelConfig.isModelLoaded = false;
 
-            if (!(agent.modelConfig.nnModelResourcePath != null || agent.modelConfig.nnModelResourcePath.Length == 0))
+            if (!(agent.modelConfig.nnModelResourcePath == null || agent.modelConfig.nnModelResourcePath.Length == 0))
             {
-
+                
                 ModelAsset loadedModel = MLHelper.LoadModelRuntime(
                     agent.modelConfig.behavior.behavior_name, agent.modelConfig.nnModelResourcePath
                 );
-
+                Debug.Log("model loaded: " + agent.modelConfig.nnModelResourcePath);
                 agent.modelConfig.nnModel = loadedModel;
                 agent.modelConfig.isModelLoaded = true;
             }

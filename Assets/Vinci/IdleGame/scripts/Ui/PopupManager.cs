@@ -78,7 +78,7 @@ public class PopupManager : PersistentSingleton<PopupManager>
         popoup.Show(
             title,
             message,
-            PopupMode.LOADING,
+            PopupMode.INFO,
             showCloseButton,
             closeButtonCallback,
             showPrimaryButton,
@@ -116,6 +116,7 @@ public class PopupManager : PersistentSingleton<PopupManager>
 
         popoup.Close();        
         canvas.SetActive(false);
+        _isLoaderPopupActive = false;
     }
 
     private void OnPopupClose()

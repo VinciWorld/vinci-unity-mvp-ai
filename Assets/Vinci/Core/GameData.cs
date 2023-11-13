@@ -21,7 +21,6 @@ public class GameData : MonoBehaviour {
     public AgentBlueprint CreateInstanceById(string id)
     {
         var agent = agentsAvailable.FirstOrDefault(agent => agent.id == id);
-        Debug.Log("agent: " + agent + " id: " + id);
 
         return agent.Clone();
     }

@@ -305,6 +305,7 @@ public class AcademyTrainState : StateBase
             var (filePath, nnModel) = MLHelper.SaveAndLoadModel(data, runId, _controller.session.selectedAgent.modelConfig.behavior.behavior_name);
 
             _controller.session.selectedAgent.modelConfig.isModelLoaded = true;
+            _controller.session.selectedAgent.modelConfig.isEvaluated = false;
             _controller.session.selectedAgent.SetModelAndPath(filePath, nnModel);
 
             // Load model on current agent
@@ -318,12 +319,11 @@ public class AcademyTrainState : StateBase
             );
 
             _controller.session.currentEnvInstance.StopReplay();
-            Time.timeScale = 0;
-
+            
             RemoteTrainManager.instance.CloseWebSocketConnection();
 
             PopupManager.instance.ShowInfo(
-                "Train Complete, continue watching train replay or evaluate model",
+                "Train Complete\n Continue watching train replay or evaluate model",
                 "Please wait",
                 true, "Watch train", OnContinueWatchingReplay,
                 true, "Evaluate", OnEvaluateModel,
@@ -340,7 +340,6 @@ public class AcademyTrainState : StateBase
     {
         _controller.session.currentEnvInstance.StartReplay();
         PopupManager.instance.Close();
-        Time.timeScale = 2;
 
     }
 

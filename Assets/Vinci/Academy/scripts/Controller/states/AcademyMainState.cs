@@ -50,25 +50,9 @@ public class AcademyMainState : StateBase
         else
         {
             _mainView.ShowCreateButton();
-            _mainView.ShowEvalauteMessage("Train the model first.", false);
+            _mainView.ShowEvalauteMessage("Train your first model first.", false);
             _mainView.SetLastJobStatus("Not trained", "#E44962");
         }
-
-        if(_controller.session.selectedAgent != null &&
-            _controller.session.selectedAgent.modelConfig.isEvaluated)
-        {
-            _mainView.ShowEvaluateMetrics();
-            _mainView.ShowEvaluateMetrics(
-                _controller.session.selectedAgent.modelConfig.GetCommonEvaluationMetricsChange(
-                    _controller.session.selectedTrainEnv.env_id
-                ),
-                _controller.session.selectedAgent.modelConfig.GetEnvEvaluationMetricsChange(
-                    _controller.session.selectedTrainEnv.env_id
-                )
-            );
-        }
-
-        
 
         //TODO: Load available models for this model
     }
@@ -212,6 +196,9 @@ public class AcademyMainState : StateBase
     {
         foreach (var agent in _controller.manager.playerData.agents)
         {
+            Debug.Log("status: " + _controller.session.selectedAgent.modelConfig.trainJobStatus
+            + " is loaded: " + _controller.session.selectedAgent.modelConfig.isModelLoaded
+            );
             if (!agent.modelConfig.runId.IsNullOrEmpty())
             {
                 if(_controller.session.selectedAgent.modelConfig.trainJobStatus == TrainJobStatus.SUCCEEDED
@@ -224,11 +211,13 @@ public class AcademyMainState : StateBase
                     if(_controller.session.selectedAgent.modelConfig.isEvaluated)
                     {
                         _mainView.ShowEvaluateMetrics(
-                            _controller.session.selectedAgent.modelConfig.GetCommonEvaluationMetricsChange(
-                                _controller.session.selectedTrainEnv.env_id
-                            ),
-                            null
-                        );
+                              _controller.session.selectedAgent.modelConfig.GetCommonEvaluationMetricsChange(
+                                  _controller.session.selectedTrainEnv.env_id
+                              ),
+                              _controller.session.selectedAgent.modelConfig.GetEnvEvaluationMetricsChange(
+                                  _controller.session.selectedTrainEnv.env_id
+                              )
+                          );
 
                         _mainView.ShowWTrainButton();
                     }

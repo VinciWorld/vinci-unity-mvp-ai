@@ -247,6 +247,7 @@ public class AcademyMainView : View
         _evaluatLayoutMessage.SetActive(false);
 
         UpdateEvaluationCommonMetrics(commonMetrics);
+        UpdateEvaluationEnvMetrics(envMetrics);
     }
 
     private void ShowEvaluateButton()
@@ -259,11 +260,21 @@ public class AcademyMainView : View
 
     public void UpdateEvaluationCommonMetrics(Dictionary<string, MetricChange> metrics)
     {
+        UpdateEvaluatioMetrics(parentLayoutModelCommonMetrics, metrics);
+    }
+
+    public void UpdateEvaluationEnvMetrics(Dictionary<string, MetricChange> metrics)
+    {
+        UpdateEvaluatioMetrics(parentLayoutModelEnvMetrics, metrics);
+    }
+
+    public void UpdateEvaluatioMetrics(Transform transformParent, Dictionary<string, MetricChange> metrics)
+    {
         foreach (var metric in metrics)
         {
             if (!instantiatedPrefabsCommonMetrics.TryGetValue(metric.Key, out KeyValueTextWithChange keyValueTextInstance))
             {
-                keyValueTextInstance = Instantiate(keyValueTextWithChangePrefab, parentLayoutModelCommonMetrics);
+                keyValueTextInstance = Instantiate(keyValueTextWithChangePrefab, transformParent);
 
                 keyValueTextInstance.SetKeyAndValue(
                     metric.Key,
