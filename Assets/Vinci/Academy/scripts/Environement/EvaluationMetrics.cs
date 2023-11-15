@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using WebSocketSharp;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Bcpg.OpenPgp;
 
 [Serializable]
 public enum MetricType
@@ -14,7 +13,6 @@ public enum MetricType
     Percent,
     String,
 }
-
 
 [Serializable]
 [JsonConverter(typeof(MetricValueConverter))]
@@ -105,11 +103,20 @@ public class MetricChange
         switch (status)
         {
             case ChangeStatus.Better:
-                return "+ " + change;
+                if(currentValue.IsHigherBetter)
+                {
+                    return "+" + change;
+                }
+                return change;
+
             case ChangeStatus.Same:
                 return change;
             case ChangeStatus.Worse:
-                return "- " + change;
+                if (currentValue.IsHigherBetter)
+                {
+                    return change;
+                }
+                return "+" + change;
         }
 
         return change;
@@ -329,9 +336,6 @@ public class EvaluationMetrics
         object change;
         ChangeStatus status = ChangeStatus.Same;
 
-        Debug.Log(currentValue.type);
-        Debug.Log(currentValue.value.GetType());
-
         switch (currentValue.type)
         {
             case MetricType.Int:
@@ -375,8 +379,6 @@ public class EvaluationMetrics
     {
         Dictionary<string, MetricValue> lastMetrics;
         Dictionary<string, MetricValue> secondToLastMetrics;
-
-        Debug.Log("targetHistory: " + targetHistory.Count);
 
         if (targetHistory.Count == 1)
         {
@@ -454,6 +456,7 @@ public class EvaluationMetrics
             }
             else if (envMetrics[key].type == MetricType.Int)
             {
+                Debug.Log("sum: " + totalValue);
                 envMetrics[key] = new MetricValue(MetricType.Int, (int)Math.Round(totalValue), envMetrics[key].IsHigherBetter);
             }
         }
@@ -510,6 +513,11 @@ public class EvaluationMetrics
         }
 
         return envMetrics;
+    }
+
+    public void Reset()
+    {
+        agentEvaluationMetricsPerEpisode.Clear();
     }
 
     public static Dictionary<string, MetricChange> CompareAgentMetricsWithPreviousEpisode(Dictionary<int, Dictionary<string, MetricValue>> agentMetrics)

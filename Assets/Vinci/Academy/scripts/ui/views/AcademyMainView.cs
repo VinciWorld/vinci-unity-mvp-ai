@@ -10,9 +10,6 @@ using Vinci.Core.UI;
 
 public class AcademyMainView : View
 {
-    //[SerializeField]
-    //PopupAdvance _loaderPopup;
-
     [SerializeField]
     CategoryNavBar _categoryNavBar;
 

@@ -88,14 +88,14 @@ public class EvaluateAndResultsState : StateBase
 
     async void OnMintModelButtonPressed()
     {
-        _resultsView.ShowLoaderPopup("Uploading trained Model to Arweave...");
+       // _resultsView.ShowLoaderPopup("Uploading trained Model to Arweave...");
 
         string uri = await RemoteTrainManager.instance.SaveOnArweaveModelFromS3(_controller.session.selectedAgent.GetModelRunID());
         Debug.Log("uri: " + uri);
-        _resultsView.UpdatePopupMessange("Minting model...");
+        //_resultsView.UpdatePopupMessange("Minting model...");
 
         await BlockchainManager.instance.MintNNmodel(uri);
-        _resultsView.CloseLoaderPopup();
+       // _resultsView.CloseLoaderPopup();
 
     }
 
@@ -115,10 +115,6 @@ public class EvaluateAndResultsState : StateBase
         _resultsView.UpdateEvaluationResultsMetrics(
             _controller.session.selectedAgent.GetEnvEvaluationMetrics(_controller.session.selectedTrainEnv.env_id)
         );
-
-        //_resultsView.UpdateEvaluationCommonMetrics(currentEnvInstance.GetEvaluaitonCommonTemplate());
-
-    
     }
 
     #region EvluateModel
@@ -135,7 +131,6 @@ public class EvaluateAndResultsState : StateBase
             _controller.session.currentEnvInstance.GetEvaluationMetricAgentResults()
         );
 
-        GameManager.instance.SavePlayerData();
 
         _controller.session.currentEnvInstance.RemoveListeners(
             _resultsView.UpdateEvaluationCommonMetrics,
@@ -143,8 +138,9 @@ public class EvaluateAndResultsState : StateBase
         );
 
         _controller.session.currentEnvInstance.episodeCountUpdated -= OnEpisodeUpdated;
-
         _controller.session.selectedAgent.modelConfig.isEvaluated = true;
+
+        GameManager.instance.SavePlayerData();
 
         ShowResults();
     }
@@ -169,7 +165,7 @@ public class EvaluateAndResultsState : StateBase
         _resultsView.ShowEvaluationHud(episodeEvaluationTotal);
         createdEnv.episodeCountUpdated += OnEpisodeUpdated;
 
-        createdEnv.StartEnv(BehaviorType.InferenceOnly);
+        createdEnv.StartEnv(BehaviorType.InferenceOnly, EnvMode.EVAUATION);
     }
 
     void OnEpisodeUpdated(int episodeCount)

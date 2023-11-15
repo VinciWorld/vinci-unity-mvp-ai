@@ -8,9 +8,6 @@ using Vinci.Core.UI;
 
 public class AcademyTrainView : View
 {
-    //[SerializeField]
-    //PopupAdvance _loaderPopup;
-
     [SerializeField]
     CategoryNavBar _categoryNavBar;
 
@@ -203,22 +200,4 @@ public class AcademyTrainView : View
         _attackStatText.text = attack.ToString();
         _speedStatText.text = speed.ToString();
     }
-/*
-    public void ShowLoaderPopup(string messange)
-    {
-        _loaderPopup.gameObject.SetActive(true);
-        _loaderPopup.SetTitle(messange);
-        _loaderPopup.Open();
-    }
-
-    public void UpdateLoaderMessage(string messange)
-    {
-        _loaderPopup.SetTitle(messange);
-    }
-
-    public void CloseLoaderPopup()
-    {
-        _loaderPopup.Close();
-    }
-*/
 }

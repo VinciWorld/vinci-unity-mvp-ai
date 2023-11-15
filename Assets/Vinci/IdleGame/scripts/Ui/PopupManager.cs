@@ -37,7 +37,6 @@ public class PopupManager : PersistentSingleton<PopupManager>
         _isLoaderPopupActive = true;
 
         canvas.SetActive(true);
-        Debug.Log(canvas.activeSelf);
 
         popoup.Show(
             title,
@@ -115,12 +114,12 @@ public class PopupManager : PersistentSingleton<PopupManager>
             return;
 
         popoup.Close();        
-        canvas.SetActive(false);
-        _isLoaderPopupActive = false;
     }
 
     private void OnPopupClose()
     {
+        _isLoaderPopupActive = false;
+        canvas.SetActive(false);
         _isLoaderPopupActive = false;
     }
 }

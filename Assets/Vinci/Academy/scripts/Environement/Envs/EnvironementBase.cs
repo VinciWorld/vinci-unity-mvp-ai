@@ -3,8 +3,19 @@ using System.Collections.Generic;
 using Unity.MLAgents.Policies;
 using UnityEngine;
 
+public enum EnvMode
+{
+    NONE,
+    TRAIN,
+    REPLAY,
+    EVAUATION
+}
+
+
 public abstract class EnvironementBase : MonoBehaviour
 {
+    protected EnvMode currentEnvMode = EnvMode.NONE;
+
     //public abstract event Action<Dictionary<string, MetricValue>> updateCommonResults;
     public abstract event Action<string> actionsReceived;
     public abstract event Action<int, int, int> episodeCountStepCountTotalStepCountUpdated;
@@ -15,7 +26,7 @@ public abstract class EnvironementBase : MonoBehaviour
     public abstract int episodeCount();
 
 
-    public abstract void StartEnv(BehaviorType behaviorType);
+    public abstract void StartEnv(BehaviorType behaviorType, EnvMode mode);
     public abstract void StopEnv();
 
     public abstract void StartReplay();

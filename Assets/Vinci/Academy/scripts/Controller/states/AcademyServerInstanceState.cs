@@ -82,7 +82,7 @@ public class AcademyServerInstanceState : StateBase
         //mainEnv.GetAgent().episodeBegin += OnEpisodeBegin;
       
         mainEnv.actionsReceived += OnActionReceived;
-        mainEnv.StartEnv(Unity.MLAgents.Policies.BehaviorType.Default);
+        mainEnv.StartEnv(Unity.MLAgents.Policies.BehaviorType.Default, EnvMode.TRAIN);
         //mainEnv.SetAgentBehavior(Unity.MLAgents.Policies.BehaviorType.Default);
         //Academy.Instance.AutomaticSteppingEnabled = true;
         RemoteTrainManager.instance.SendWebSocketJson("Instance: Start Training");

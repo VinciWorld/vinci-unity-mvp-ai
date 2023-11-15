@@ -75,7 +75,8 @@ public class ModelConfig
         {
             envSpecificData[envKey] = new EnvMetricsData();
         }
-        envSpecificData[envKey].commonEvaluationMetrics.Add(metrics);
+        var metricsCopy = new Dictionary<string, MetricValue>(metrics);
+        envSpecificData[envKey].commonEvaluationMetrics.Add(metricsCopy);
     }
 
     public void AddToEnvEvaluationMetrics(string envKey, Dictionary<string, MetricValue> metrics)
@@ -84,7 +85,8 @@ public class ModelConfig
         {
             envSpecificData[envKey] = new EnvMetricsData();
         }
-        envSpecificData[envKey].envEvaluationMetrics.Add(metrics);
+        var metricsCopy = new Dictionary<string, MetricValue>(metrics);
+        envSpecificData[envKey].envEvaluationMetrics.Add(metricsCopy);
     }
 
     public void AddToAgentEvaluationMetricsPerEpisode(string envKey, Dictionary<int, Dictionary<string, MetricValue>> metrics)
@@ -94,7 +96,10 @@ public class ModelConfig
             envSpecificData[envKey] = new EnvMetricsData();
         }
 
-        envSpecificData[envKey].agentEvaluationMetricsPerEpisode.Add(metrics);
+        var metricsCopy = metrics.ToDictionary(entry => entry.Key,
+                                               entry => new Dictionary<string, MetricValue>(entry.Value));
+
+        envSpecificData[envKey].agentEvaluationMetricsPerEpisode.Add(metricsCopy);
     }
 
     public Dictionary<string, MetricValue> GetCommonEvaluationMetrics(string envKey)

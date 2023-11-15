@@ -16,9 +16,6 @@ public class AcademyTrainResultsView : View
     GameObject resultsSubView;
 
     [SerializeField]
-    private PopupAdvance _loaderPopup;
-
-    [SerializeField]
     private Button _mintModelButton;
     [SerializeField]
     private Button _trainAgainButton;
@@ -106,25 +103,6 @@ public class AcademyTrainResultsView : View
         _meanRweard.text = meanReward.ToString("F3");
         _stdRweard.text = stdReward.ToString("F3");
     }
-
-    public void ShowLoaderPopup(string messange)
-    {
-        _loaderPopup.gameObject.SetActive(true);
-        _loaderPopup.SetTitle(messange);
-        _loaderPopup.Open();
-    }
-
-    public void UpdatePopupMessange(string message)
-    {
-        _loaderPopup.SetTitle(message);
-    }
-
-    public void CloseLoaderPopup()
-    {
-        _loaderPopup.Close();
-    }
-
-
 
     public void UpdateEvaluationResultsMetrics(Dictionary<string, MetricValue> metrics)
     {

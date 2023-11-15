@@ -37,6 +37,8 @@ public class PopupAdvance : Popup
 
     private void OnEnable() 
     {
+        onCloseTerminated += ClosePopup;
+
         _closeButton.onClick.AddListener(ClosePopup);
         _primaryButton.onClick.AddListener(ClosePopup);
         _secondaryButton.onClick.AddListener(ClosePopup);
@@ -133,8 +135,8 @@ public class PopupAdvance : Popup
         _primaryButton.onClick.RemoveAllListeners();
         _secondaryButton.onClick.RemoveAllListeners();
         _closeButton.onClick.RemoveAllListeners();
+
         closeButtonPressed?.Invoke();
-        Close();
     }
 
     public void ShowPrimaryButton(bool state)

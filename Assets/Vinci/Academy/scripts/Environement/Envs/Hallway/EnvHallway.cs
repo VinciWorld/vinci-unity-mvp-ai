@@ -199,7 +199,7 @@ public class EnvHallway : EnvironementBase
         _agent.SetBehaviorType(type);
     }
 */
-    public override void StartEnv(BehaviorType type)
+    public override void StartEnv(BehaviorType type, EnvMode mode)
     {
         Reset();
         Academy.Instance.AutomaticSteppingEnabled = true;

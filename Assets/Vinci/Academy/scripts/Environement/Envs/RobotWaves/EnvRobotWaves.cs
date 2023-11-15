@@ -90,7 +90,7 @@ public class EnvRobotWaves : EnvironementBase
     {
         Debug.Log("Complete all Waves");
         GoalCompleted(true);
-        
+
         _agent.AddReward(1);
         _agent.EndEpisode();
     }
@@ -151,31 +151,62 @@ public class EnvRobotWaves : EnvironementBase
         _agent.SetBehaviorType(type);
     }
 */
-    public override void StartEnv(BehaviorType behaviorType)
+    public override void StartEnv(BehaviorType behaviorType, EnvMode mode)
     {
-        //_agent.EndEpisode();
 
+        _evaluationMetrics.Reset();
+        
         Reset();
-        Debug.Log("env: " + _episodeCount);
+
+        Debug.Log("Start env: " + _episodeCount + " behaviour: " + behaviorType);
+        Debug.Log(
+            "Start Env StepCount " + Academy.Instance.StepCount
+            + " total steps: " + Academy.Instance.TotalStepCount
+            + " episodes: " + Academy.Instance.EpisodeCount
+        );
+
         _agent.SetBehaviorType(behaviorType);
+
+        if(Academy.Instance.TotalStepCount > 0)
+        {
+            Reset();
+            _agent.EndEpisode();
+        }
         Academy.Instance.AutomaticSteppingEnabled = true;
+        //Reset();
+        //_agent.EndEpisode();
+        //Academy.Instance.Dispose()
     }
 
     public override void StopEnv()
     {
-        _agent.SetBehaviorType(BehaviorType.HeuristicOnly);
-        //_agent.EndEpisode();
         Academy.Instance.AutomaticSteppingEnabled = false;
-
         Reset();
-    
+
+        Debug.Log(
+            "Stop env: StepCount " + Academy.Instance.StepCount
+            + " total steps: " + Academy.Instance.TotalStepCount
+            + " episodes: " + Academy.Instance.EpisodeCount
+        );
+
+    }
+
+    public IEnumerator StopEnvCoroutine()
+    {
+        _agent.SetBehaviorType(BehaviorType.HeuristicOnly);
+
+        Academy.Instance.AutomaticSteppingEnabled = false;
+        yield return new WaitForEndOfFrame();
+        _agent.EndEpisode();
+        Reset();
+
         Debug.Log("stop: " + _episodeCount);
     }
 
     public override void StartReplay()
     {
         _isReplay = true;
-        Reset();
+        //Reset();
         _agent.SetBehaviorType(Unity.MLAgents.Policies.BehaviorType.HeuristicOnly);
         Academy.Instance.AutomaticSteppingEnabled = true;
         //ShowLoaderPopup("Buffering episodes...");
@@ -199,10 +230,10 @@ public class EnvRobotWaves : EnvironementBase
         replayActionsLoopCoroutine = null;
 
         Time.timeScale = 1f;
-
+        Reset();
         Academy.Instance.AutomaticSteppingEnabled = false;
 
-        Debug.Log("Start stop: " + Academy.Instance.AutomaticSteppingEnabled);
+        Debug.Log("stop replay : " + Academy.Instance.AutomaticSteppingEnabled);
     }
 
 
@@ -362,7 +393,7 @@ public class EnvRobotWaves : EnvironementBase
         // Calculate success ratio
         float totalGoals = goalsCompletedCount + goalsFailedCount;
         successRatio = totalGoals > 0 ? (float)goalsCompletedCount / totalGoals : 0f;
-        Debug.Log("Update metrics: " + totalGoals + " episode_count: " + _episodeCount);
+        Debug.Log("Update Common metrics: " + totalGoals + " episode_count: " + _episodeCount);
         _evaluationMetrics.UpdateCommonMetrics(goalsCompletedCount, goalsFailedCount, successRatio);
 
         //updateCommonResults?.Invoke(_evaluationMetrics.GetCommonMetrics());

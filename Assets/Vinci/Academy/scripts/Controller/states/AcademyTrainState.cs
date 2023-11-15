@@ -74,7 +74,6 @@ public class AcademyTrainState : StateBase
         if(_controller.session.currentEnvInstance)
         {
             _controller.session.currentEnvInstance.episodeCountStepCountTotalStepCountUpdated -= trainView.UptadeInfo;
-            _controller.session.currentEnvInstance.StopReplay();
         }
 
         //trainView.CloseLoaderPopup();
@@ -346,7 +345,6 @@ public class AcademyTrainState : StateBase
     private void OnEvaluateModel()
     {
         _controller.SwitchState(new EvaluateAndResultsState(_controller));
-        Time.timeScale = 1;
     }
 
     void OnReceivedTrainMetrics(MetricsMsg metrics)
