@@ -17,7 +17,7 @@ public interface IAgent
     public void SetAgentPose(Vector3 position, Quaternion quaternion);
     public void EndEpisode();
     public void AddReward(float reward);
-    public void SetObservationHelper(ObservationHelper obsHelper);
+    public void SetObservationHelper(EnvironementSensor obsHelper);
     public void SetEnv(EnvironementBase env);
     public void SetEvaluationMetrics(EvaluationMetrics evaluationMetrics);
     public void Reset();

@@ -254,7 +254,7 @@ public class HallwayAgent : Agent, IAgent
         throw new NotImplementedException();
     }
 
-    public void SetObservationHelper(ObservationHelper obsHelper)
+    public void SetObservationHelper(EnvironementSensor obsHelper)
     {
         throw new NotImplementedException();
     }

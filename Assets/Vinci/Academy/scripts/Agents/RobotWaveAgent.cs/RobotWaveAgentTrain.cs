@@ -11,7 +11,7 @@ using Vinci.Core.BattleFramework;
 
 public class RobotWaveAgentTrain : Agent, IAgent
 {
-    public ObservationHelper observationHelper;
+    public EnvironementSensor observationHelper;
     InputControllerBasic _input;
     Robot _robot;
     private EnvironementBase _env;
@@ -24,13 +24,6 @@ public class RobotWaveAgentTrain : Agent, IAgent
 
     public List<ActionRobotBufferMsg> actionsBuffer = new List<ActionRobotBufferMsg>();
 
-    //Energy
-    private const float startingEnergy = 50;
-    private const float maxEnergy = 100f;  // Max energy the robot can have
-    private float currentEnergy = startingEnergy; // The robot starts with max energy
-    private const float energyRestorationRate = 0.75f; // Amount of energy restored per second
-    private const float energyRequiredToShoot = 2; // Energy required to shoot
-    float threshold = 10;
 
 
     //Replay
@@ -63,8 +56,7 @@ public class RobotWaveAgentTrain : Agent, IAgent
     // Start is called before the first frame update
     void Start()
     {
-        threshold = 0.25f * maxEnergy;
-
+     
         _robot.targetable.hitTarget += OnhitTarget;
         _robot.targetable.missedTarget += OnMissedTarget;
         _robot.targetable.killedTarget += OnKilledTarget;
@@ -74,7 +66,7 @@ public class RobotWaveAgentTrain : Agent, IAgent
     public override void OnEpisodeBegin()
     {
         base.OnEpisodeBegin();
-        currentEnergy = startingEnergy;
+        _robot.Reset();
         _env?.EpisodeBegin();
         _steps = 0;
     }
@@ -84,10 +76,8 @@ public class RobotWaveAgentTrain : Agent, IAgent
     {
         //sensor.AddObservation(StepCount / (float)MaxStep);
         bool isLokking = observationHelper.IsPlayerLookingAtClosestEnemy(transform);
-
-        sensor.AddObservation(currentEnergy / 100);
-        sensor.AddObservation(_robot.CanShoot() && currentEnergy >= energyRequiredToShoot);
         sensor.AddObservation(isLokking);
+
     }
 
 
@@ -108,30 +98,8 @@ public class RobotWaveAgentTrain : Agent, IAgent
 
         AddReward(-1f / MaxStep);
 
-        if (currentEnergy < threshold)
-        {
-            float ratio = 1 - (currentEnergy / maxEnergy);
-
-            float negativeReward = -0.001f * ratio;
-
-            AddReward(negativeReward);
-        }
-        else
-        {
-            AddReward(0.001f);
-        }
-
 
         MoveAgent(actionBuffers.DiscreteActions);
-        if (discreteActionsOut[1] == 1 && currentEnergy >= energyRequiredToShoot)
-        {
-           
-            if(_robot.Shoot())
-            {
-                currentEnergy -= energyRequiredToShoot;
-                //Debug.Log("Shoot");
-            }
-        }
 
 #if !UNITY_EDITOR && UNITY_SERVER
 
@@ -147,44 +115,12 @@ public class RobotWaveAgentTrain : Agent, IAgent
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        var discreteActionsOut = actionsOut.DiscreteActions;
-
-        if (Input.GetKey(KeyCode.E))
-        {
-            discreteActionsOut[0] = 3;
-        }
-        else if (Input.GetKey(KeyCode.W))
-        {
-            discreteActionsOut[0] = 1;
-        }
-        else if (Input.GetKey(KeyCode.Q))
-        {
-            discreteActionsOut[0] = 4;
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            discreteActionsOut[0] = 2;
-        }
-
-        if (Input.GetMouseButton(0))
-        {
-            discreteActionsOut[1] = 1;
-        }
-        else
-        {
-            discreteActionsOut[1] = 0;
-        }
+ 
     }
 
-    private void FixedUpdate()
-    {
-        RestoreEnergy(Time.fixedDeltaTime);
-    }
 
-    private void RestoreEnergy(float deltaTime)
-    {
-        currentEnergy = Mathf.Min(currentEnergy + energyRestorationRate * deltaTime, maxEnergy);
-    }
+
+
 
     private void OnDied(DamageableObject @object, float arg2, Vector3 vector)
     {
@@ -313,7 +249,7 @@ public class RobotWaveAgentTrain : Agent, IAgent
         transform.rotation = quaternion;
     }
 
-    public void SetObservationHelper(ObservationHelper obsHelper)
+    public void SetObservationHelper(EnvironementSensor obsHelper)
     {
         observationHelper = obsHelper;
     }

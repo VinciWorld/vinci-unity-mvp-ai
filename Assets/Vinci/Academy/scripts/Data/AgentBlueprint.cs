@@ -21,7 +21,7 @@ public class AgentBlueprint : ScriptableObject
     public List<TrainEnvironmentConfig> allowedEnvs;
 
     public GameObject AgentPrefab;
-
+    
     [JsonConverter(typeof(EnvMetricsDataConverter))]
     public ModelConfig modelConfig;
 
