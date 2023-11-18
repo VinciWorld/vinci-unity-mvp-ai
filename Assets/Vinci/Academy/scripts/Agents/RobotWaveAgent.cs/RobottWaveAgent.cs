@@ -8,12 +8,14 @@ public class RobottWaveAgent : GenericAgent
 {
 
     [SerializeField]
-
     private RobotWave _robot;
-
     InputControllerBasic _input;
 
-    public override event Action<IAgent> agentDied;
+    //Sensor
+    RadiiusSensor _radiusSensor;
+    DebugTextureDrawer debugTextureDrawer;
+
+    public override event Action<GenericAgent> agentDied;
     public override event Action agentKill;
 
     //Metrics
@@ -35,6 +37,7 @@ public class RobottWaveAgent : GenericAgent
         base.Awake();
         _robot = GetComponent<RobotWave>();
         _input = GetComponent<InputControllerBasic>();
+        _radiusSensor = GetComponent<RadiiusSensor>();
     }
 
     void Start()
@@ -52,6 +55,20 @@ public class RobottWaveAgent : GenericAgent
         RestoreEnergy(Time.fixedDeltaTime);
     }
 
+    protected override void InitAgent(Vector3 envOrigin)
+    {
+        _radiusSensor.mapOrigin = envOrigin;
+        Debug.Log(agentId);
+        Debug.Log(envOrigin);
+
+        if (agentId == 0)
+        {
+            debugTextureDrawer = FindObjectOfType<DebugTextureDrawer>();
+
+            debugTextureDrawer.sensor = _radiusSensor;
+        }
+    }
+
     protected override void OnAgentEpisodeBegin()
     {
         killsPerEpisode = 0;
@@ -63,9 +80,23 @@ public class RobottWaveAgent : GenericAgent
     {
         sensor.AddObservation(currentEnergy / 100);
         sensor.AddObservation(_robot.CanShoot() && currentEnergy >= energyRequiredToShoot);
+/*
+        bool isLokking = false;
+        if (environamentSensor != null)
+        {
 
-        bool isLokking = environamentSensor.IsPlayerLookingAtClosestEnemy(transform);
-        sensor.AddObservation(isLokking);
+            if (agentId == 0)
+                Debug.Log("isLooking: " + isLokking);
+            isLokking = environamentSensor.IsPlayerLookingAtClosestEnemy(transform);
+        }
+*/
+
+        Vector2 agentPosNorm = _radiusSensor.NormalizePosition(new Vector2(transform.position.x, transform.position.z));
+        sensor.AddObservation(agentPosNorm);
+        sensor.AddObservation(new Vector2(transform.forward.x, transform.forward.z));
+        //sensor.AddObservation(isLokking);
+
+        _radiusSensor.AddObservationsToSensor(sensor);
     }
 
     protected override void OnAgentActionReceived(ActionBuffers actionBuffers) 
@@ -128,7 +159,7 @@ public class RobottWaveAgent : GenericAgent
 
     private void OnGUI() 
     {
-        if(instanceId == 0)
+        if(agentId == 0)
         {
 
             // Initialize the GUIStyle
@@ -182,5 +213,7 @@ public class RobottWaveAgent : GenericAgent
         currentEnergy = startingEnergy;
         _robot.Reset();
     }
-#endregion
+
+
+    #endregion
 }

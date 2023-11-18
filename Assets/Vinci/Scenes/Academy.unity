@@ -13106,7 +13106,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _categoryNavBar: {fileID: 421121866}
   resultsSubView: {fileID: 602719069}
-  _loaderPopup: {fileID: 0}
   _mintModelButton: {fileID: 311950041}
   _trainAgainButton: {fileID: 496191934}
   _evaluateButton: {fileID: 572525775}
@@ -38819,6 +38818,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -40
+      objectReference: {fileID: 0}
+    - target: {fileID: 3027187354015750042, guid: 369c2c363705ada4baca27550d6bbc36,
+        type: 3}
+      propertyPath: m_Name
+      value: CanvasPopup
       objectReference: {fileID: 0}
     - target: {fileID: 3027187354015750042, guid: 369c2c363705ada4baca27550d6bbc36,
         type: 3}

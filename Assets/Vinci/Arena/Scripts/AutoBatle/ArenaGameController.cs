@@ -13,7 +13,7 @@ public class ArenaGameController : MonoBehaviour
     private WaveController _waveController;
     private PlacableEntityManager _placableEntityManager;
 
-    private List<IAgent> agentsInGame = new List<IAgent>();
+    private List<GenericAgent> agentsInGame = new List<GenericAgent>();
 
     private int _startingCoins = 100;
     public int currentCoins = 100;
@@ -92,7 +92,7 @@ public class ArenaGameController : MonoBehaviour
             agentPrefab, new Vector3(position.x, position.y + 0.1f, position.z)  , Quaternion.identity
         );
 
-        RobotWaveAgent waveAgent = agent.GetComponent<RobotWaveAgent>();
+        GenericAgent waveAgent = agent.GetComponent<GenericAgent>();
         agentsInGame.Add(waveAgent);
 
         waveAgent.agentDied += OnAgentDied;
@@ -160,7 +160,7 @@ public class ArenaGameController : MonoBehaviour
         GameOver();
     }
 
-    public void OnAgentDied(IAgent agent)
+    public void OnAgentDied(GenericAgent agent)
     {
         _agentDeaths++;
         _gameHudView.UpdateDeaths(_agentDeaths);

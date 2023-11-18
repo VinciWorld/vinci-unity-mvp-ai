@@ -196,7 +196,7 @@ public class EvaluateAndResultsState : StateBase
             created_env.transform
         );
 
-        created_env.Initialize(created_agent);
+        created_env.Initialize(created_agent, 0);
 
         _controller.session.currentAgentInstance = created_agent;
         _controller.session.currentEnvInstance = created_env;

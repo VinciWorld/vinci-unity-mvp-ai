@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class ObservationHelper : MonoBehaviour 
-{
-    [SerializeField]
-    TextMeshProUGUI proximityText;
-    
+public class EnvironementSensor : MonoBehaviour 
+{    
     [SerializeField]
     EnemyManager _enemyManager;
 
@@ -25,6 +22,27 @@ public class ObservationHelper : MonoBehaviour
     float farErrorThreshold = 0.998f;
     float maxDistanceBeyondThreshold = 20f;
 
+    public Vector3 mapSize; // Set this based on your map's dimensions
+    private float maxDistance;
+
+
+    float NormalizeSquaredDistance(float squaredDistance)
+    {
+        float maxSquaredDistance = maxDistance * maxDistance;
+        return Mathf.Clamp01(squaredDistance / maxSquaredDistance);
+    }
+
+    float NormalizeDistance(float distance)
+    {
+        return Mathf.Clamp01(distance / maxDistance);
+    }
+
+    float CalculateMaxDistance(Vector3 size)
+    {
+        return size.magnitude;
+    }
+
+    #region old
 
     public bool IsPlayerLookingAtClosestEnemy(Transform player)
     {
@@ -64,10 +82,6 @@ public class ObservationHelper : MonoBehaviour
         float distanceToEnemy = directionToEnemy.magnitude;
 
         float dotProductValue = Vector3.Dot(player.forward, directionToEnemy.normalized);
-        if (proximityText != null)
-        {
-            proximityText.text = distanceToEnemy.ToString("F3");
-        }
 
         // If enemy is close and in front of the player, return true
         Debug.Log(distanceToEnemy);
@@ -116,5 +130,5 @@ public class ObservationHelper : MonoBehaviour
 
         return closestEnemy;
     }
-
+#endregion
 }

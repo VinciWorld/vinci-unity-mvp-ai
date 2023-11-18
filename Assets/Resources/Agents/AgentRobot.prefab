@@ -340,15 +340,16 @@ GameObject:
   - component: {fileID: 6504583924473299727}
   - component: {fileID: 6504583924473299724}
   - component: {fileID: 6991581965257795161}
-  - component: {fileID: 9011227382353136111}
-  - component: {fileID: 8894374898956181245}
+  - component: {fileID: 4234617753435143190}
+  - component: {fileID: 7459089818487709103}
+  - component: {fileID: 800996919024026891}
   - component: {fileID: 2988852670849673628}
   - component: {fileID: 7776951457158921130}
   - component: {fileID: 6504583924473299713}
   - component: {fileID: 6504583924473299712}
   - component: {fileID: 7373272184450868191}
   - component: {fileID: 1618134375771447625}
-  - component: {fileID: 800996919024026891}
+  - component: {fileID: 3941850274884629692}
   m_Layer: 6
   m_Name: AgentRobot
   m_TagString: Player
@@ -418,9 +419,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 2
+  m_Height: 3
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 1.5, z: 0}
 --- !u!54 &6504583924473299724
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -461,7 +462,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 2
+    VectorObservationSize: 86
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -470,16 +471,16 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 661542ac2b8ec8c409b195aa19068287, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: RobotWave
   TeamId: 0
-  m_UseChildSensors: 1
+  m_UseChildSensors: 0
   m_UseChildActuators: 1
   m_DeterministicInference: 0
   m_ObservableAttributeHandling: 0
---- !u!114 &9011227382353136111
+--- !u!114 &4234617753435143190
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -488,18 +489,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 6504583924473299732}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a099b5349cf25d443ba69e5c1ae461b2, type: 3}
+  m_Script: {fileID: 11500000, guid: edbb505179142b64d94039ecc09c0146, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 3000
-  _robot: {fileID: 8894374898956181245}
+  MaxStep: 0
+  isheuristicInput: 0
   actionsBuffer: []
-  agentRunSpeed: 1.5
-  rotationSpeed: 100
---- !u!114 &8894374898956181245
+  _robot: {fileID: 0}
+--- !u!114 &7459089818487709103
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -508,13 +508,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 6504583924473299732}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84beda0420377084c98a15989d28f499, type: 3}
+  m_Script: {fileID: 11500000, guid: b5cae770da4031e4c802f9a60ce75e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   targetable: {fileID: 0}
-  _moveSpeed: 2
-  _rotSpeed: 10
-  gizmoArrow: {fileID: 0}
+  agentRunSpeed: 0.5
+  rotationSpeed: 100
+--- !u!114 &800996919024026891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6504583924473299732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  DecisionStep: 4
+  TakeActionsBetweenDecisions: 1
 --- !u!114 &2988852670849673628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -693,9 +707,9 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.1986866, y: 0.4694604, z: 0.8025637}
-  m_Center: {x: 0.01229763, y: 0.9833501, z: 0.5780921}
---- !u!114 &800996919024026891
+  m_Size: {x: 0.1986866, y: 0.46946037, z: 0.9315839}
+  m_Center: {x: 0.01229763, y: 0.9833501, z: 0.6426022}
+--- !u!114 &3941850274884629692
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -704,12 +718,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 6504583924473299732}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Script: {fileID: 11500000, guid: ebcf1fc33e2b6e04aadf99fc03d78c1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DecisionPeriod: 5
-  DecisionStep: 4
-  TakeActionsBetweenDecisions: 1
+  mapOrigin: {x: 0, y: 0, z: 0}
+  maxDetectedObjects: 10
+  detectionRadius: 10
+  mapSize: {x: 40, y: 0, z: 50}
+  detectableTags:
+  - Enemy
+  - Obstacle
+  - Projectile
+  _detectableLayers:
+    serializedVersion: 2
+    m_Bits: 2688
 --- !u!1 &6504583924745361688
 GameObject:
   m_ObjectHideFlags: 0
@@ -756,7 +778,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5177431919736109625
 Transform:
   m_ObjectHideFlags: 0

@@ -37,7 +37,7 @@ public class RobotWave : PlaceableEntity
     {
         var discreteActionsOut = actionsOut.DiscreteActions;
 
-        HeuristicSimple(discreteActionsOut);
+        HeuristicAdvance(discreteActionsOut);
     }
 
     public void HeuristicAdvance(ActionSegment<int> discreteActionsOut)

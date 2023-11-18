@@ -8,19 +8,16 @@ TagManager:
   - ground
   - target
   - agent
-  - symbol_X
   - stone
   - block
   - goal
   - wall
-  - switchOff
-  - switchOn
-  - symbol_O_Goal
-  - symbol_X_Goal
   - Enemy
   - obstacles
   - Target
   - Wall
+  - Projectile
+  - Obstacle
   layers:
   - Default
   - TransparentFX

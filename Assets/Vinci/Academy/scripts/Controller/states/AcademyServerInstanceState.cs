@@ -76,7 +76,8 @@ public class AcademyServerInstanceState : StateBase
 
             );
 
-            envsInstances[i].Initialize(created_agent);
+            GenericAgent genericAgent = created_agent.GetComponent<GenericAgent>();
+            envsInstances[i].Initialize(created_agent, i);
         }
 
         //mainEnv.GetAgent().episodeBegin += OnEpisodeBegin;

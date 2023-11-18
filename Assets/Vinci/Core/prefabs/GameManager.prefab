@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &860805531357260056
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2749257586448223202}
+  - component: {fileID: 1122955383074420436}
+  - component: {fileID: 4504438367692431809}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2749257586448223202
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 860805531357260056}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1122955383074420436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 860805531357260056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bb4fc4d74127014da8f9400c725484b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: v0.0.3
+  localEnv: 1
+  UserData:
+    pubkey: 
+    username: 
+    bio: 
+    image_url: 
+    player_data: 
+    avatar: {fileID: 0}
+  playerData:
+    username: 
+    isPlayerRegisteredOnCompetition: 0
+    highScore: 0
+    agents: []
+    availableSteps: 0
+    _lastUpdatedDay: 2000-01-01
+  gameData: {fileID: 4504438367692431809}
+  isLoggedIn: 0
+  solanaBalance: 0
+  baseNNModel: {fileID: 5022602860645237092, guid: 61881707995126849805040d9bdd3e61,
+    type: 3}
+--- !u!114 &4504438367692431809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 860805531357260056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfc39837d463d914398a6f730abb6901, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentsAvailable:
+  - {fileID: 11400000, guid: 8c2b4819f868aa443abd1c82ec0431ee, type: 2}
+  trainEvns:
+  - env_id: 1
+    envName: RobotWaveEnv
+    num_of_areas: 8
+    bounds:
+      m_Center: {x: 0, y: 0, z: 0}
+      m_Extent: {x: 42, y: 0, z: 52}
+    prefab: {fileID: 6438115727962605961, guid: 1c7361d8eebf1ec4ab6e105ece54bf90,
+      type: 3}

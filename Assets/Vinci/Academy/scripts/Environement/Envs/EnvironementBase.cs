@@ -33,9 +33,9 @@ public abstract class EnvironementBase : MonoBehaviour
     public abstract void SetIsReplay(bool isResplay);
     public abstract void StopReplay();
 
-    public abstract IAgent GetAgent();
+    public abstract GenericAgent GetAgent();
 
-    public abstract void Initialize(GameObject agent);
+    public abstract void Initialize(GameObject agent, int agentId);
     public abstract void EpisodeBegin();
     public abstract void GoalCompleted(bool result);
     public abstract void Reset();

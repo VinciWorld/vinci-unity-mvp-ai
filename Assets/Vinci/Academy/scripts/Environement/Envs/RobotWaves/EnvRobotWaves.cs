@@ -17,7 +17,7 @@ public class EnvRobotWaves : EnvironementBase
 {
     public int envId = 0;
 
-    IAgent _agent;
+    GenericAgent _agent;
     [SerializeField]
     WaveController _waveController;
     [SerializeField]
@@ -28,7 +28,7 @@ public class EnvRobotWaves : EnvironementBase
     public Transform AgentSpawnPose => _agentSpawnPose;
 
     [SerializeField]
-    ObservationHelper _observationHelper;
+    EnvironementSensor _observationHelper;
 
     [Header("Replay")]
     private bool _isReplay = false;
@@ -59,17 +59,17 @@ public class EnvRobotWaves : EnvironementBase
     Dictionary<string, MetricValue> envMetricsTemplate;
     Dictionary<string, MetricValue> agentMetricsTemplate;
 
-    public override void Initialize(GameObject agent)
+    public override void Initialize(GameObject agent, int instanceId)
     {
         _waveController.Initialized(_enemyManager);
         InitializeEvaluationMetrics();
 
         // _loaderPopup = GameObject.Find("PopupLoader").GetComponent<LoaderPopup>();
-        _agent = agent.GetComponent<IAgent>();
+        _agent = agent.GetComponent<GenericAgent>();
 
         _agent.SetEnv(this);
-        _agent.SetEvaluationMetrics(_evaluationMetrics);
         _agent.SetObservationHelper(_observationHelper);
+        _agent.Init(instanceId, _evaluationMetrics, transform.position);
 
         goalsCompletedCount = 0;
         goalsFailedCount = 0;
@@ -444,7 +444,7 @@ public class EnvRobotWaves : EnvironementBase
         return _episodeCount;
     }
 
-    public override IAgent GetAgent()
+    public override GenericAgent GetAgent()
     {
         return _agent;
     }

@@ -7,9 +7,9 @@ using Unity.MLAgents.Sensors;
 using Unity.Sentis;
 using UnityEngine;
 
-public abstract class GenericAgent : Agent, IAgent
+public abstract class GenericAgent : Agent
 {
-    public int instanceId = 0;
+    protected int agentId = 0;
 
     protected EnvironementBase _env;
     BehaviorParameters _beahivor;
@@ -26,9 +26,9 @@ public abstract class GenericAgent : Agent, IAgent
     private Queue<ActionRobotBufferMsg> _actionsQueueReceived;
 
     //Evaluation Metrics
-    protected EvaluationMetrics _evaluationMetrics;
+    protected EvaluationMetrics evaluationMetrics;
 
-    public abstract event Action<IAgent> agentDied;
+    public abstract event Action<GenericAgent> agentDied;
     public abstract event Action agentKill;
 
     protected override void Awake()
@@ -36,6 +36,16 @@ public abstract class GenericAgent : Agent, IAgent
         base.Awake();
         _beahivor = GetComponent<BehaviorParameters>();
     }
+
+    public virtual void Init(int agentId, EvaluationMetrics evaluationMetrics, Vector3 envOffset)
+    {
+        this.agentId = agentId;
+        this.evaluationMetrics = evaluationMetrics;
+
+        InitAgent(envOffset);
+    }
+
+    protected abstract void InitAgent(Vector3 envOffset);
 
     protected override void OnEnable()
     {
@@ -109,7 +119,7 @@ public abstract class GenericAgent : Agent, IAgent
 
     protected void RegisterMetric(string metricKey, MetricType type, object value, bool isHigherBetter = true)
     {
-        _evaluationMetrics.UpdateAgentMetricForEpisode(
+        evaluationMetrics.UpdateAgentMetricForEpisode(
             _env.episodeCount(), metricKey, new MetricValue(type, value, isHigherBetter)
         );
     }
@@ -161,9 +171,9 @@ public abstract class GenericAgent : Agent, IAgent
         transform.rotation = quaternion;
     }
 
-    public void SetObservationHelper(EnvironementSensor observationHelper)
+    public void SetObservationHelper(EnvironementSensor envSnsor)
     {
-        environamentSensor = observationHelper;
+        environamentSensor = envSnsor;
     }
 
     public void SetEnv(EnvironementBase env)
@@ -173,7 +183,7 @@ public abstract class GenericAgent : Agent, IAgent
 
     public void SetEvaluationMetrics(EvaluationMetrics evaluationMetrics)
     {
-        _evaluationMetrics = evaluationMetrics;
+      
     }
 
     public virtual void Reset()

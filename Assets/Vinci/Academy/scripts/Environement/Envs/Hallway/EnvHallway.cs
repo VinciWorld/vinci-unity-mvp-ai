@@ -53,7 +53,7 @@ public class EnvHallway : EnvironementBase
         hallwaySettings = GameObject.FindObjectOfType<HallwaySettings>();
     }
 
-    public override void Initialize(GameObject agent)
+    public override void Initialize(GameObject agent, int agent_id)
     {
         _agent = agent.GetComponent<HallwayAgent>();
         _agent.env = this;
@@ -189,9 +189,9 @@ public class EnvHallway : EnvironementBase
     }
 
 
-    public override IAgent GetAgent()
+    public override GenericAgent GetAgent()
     {
-        return _agent;
+        return null;
     }
 /*
     public override void SetAgentBehavior(BehaviorType type)
